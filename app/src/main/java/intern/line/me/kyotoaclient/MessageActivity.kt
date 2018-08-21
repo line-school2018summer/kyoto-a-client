@@ -2,7 +2,6 @@ package intern.line.me.kyotoaclient
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
@@ -27,7 +26,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 1,
                     text = "foundgfsauygfoeufiovbreyiaofgbysadrofvbywoabfvisobveiosbahgiovlsabuigpvp;bsauviprfbgeauvifbvuilaboggvuifdb",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 2,
@@ -35,7 +34,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 2,
                     text = "hello 1!",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 3,
@@ -43,7 +42,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 1,
                     text = "どうよ",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 4,
@@ -51,7 +50,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "わーい",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 5,
@@ -59,7 +58,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "たーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 6,
@@ -67,7 +66,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "かばんちゃん！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 7,
@@ -75,7 +74,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 5,
                     text = "サーバルちゃん！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 8,
@@ -83,7 +82,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "たーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 9,
@@ -91,7 +90,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "すごくたーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 10,
@@ -99,7 +98,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "めっちゃたーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 11,
@@ -107,7 +106,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "やばたーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             ),
             Message(
                     id = 8,
@@ -115,7 +114,7 @@ class MessageActivity : AppCompatActivity() {
                     user_id = 4,
                     text = "たーのしー！",
                     createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(352843758)
+                    updatedAt = Timestamp(439208349)
             )
     ))
 
@@ -195,7 +194,12 @@ class MessageActivity : AppCompatActivity() {
         }
         val editText: EditText = findViewById(R.id.message_edit_text)
         var message: Message = this.messages.messageAt(editingMessagePosition)
+        if (message.text == editText.text.toString()){
+            this.toSendMode()
+            return
+        }
         message.text = editText.text.toString()
+        message.updatedAt = Timestamp(System.currentTimeMillis())
         this.messages.updateAt(editingMessagePosition, message)
         this.drawMessagesList()
         this.toSendMode()
