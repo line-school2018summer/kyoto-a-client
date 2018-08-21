@@ -3,4 +3,6 @@
     <string name="message_input">Input text</string>
     <string name="message_send">Send</string>
     <string name="message_edit">Edit</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>
