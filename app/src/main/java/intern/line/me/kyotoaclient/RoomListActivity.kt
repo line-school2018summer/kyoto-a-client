@@ -8,11 +8,15 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
+import android.support.design.widget.FloatingActionButton
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
 import intern.line.me.kyotoaclient.lib.Room
 import intern.line.me.kyotoaclient.lib.RoomList
 import java.sql.Timestamp
 import java.util.*
+import android.content.Intent
+
+
 
 class RoomListActivity : AppCompatActivity() {
 
@@ -96,6 +100,12 @@ class RoomListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_list)
         this.drawRoomsList()
+
+        val createButton = findViewById(R.id.room_create_button) as FloatingActionButton
+        createButton.setOnClickListener(View.OnClickListener {
+            val intent = Intent(application, RoomCreateActivity::class.java)
+            startActivity(intent)
+        })
     }
 
     private fun drawRoomsList() {
