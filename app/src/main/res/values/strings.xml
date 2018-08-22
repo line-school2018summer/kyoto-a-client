@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Kyotoaclient</string>
+    <string name="room_create_input">Room Name</string>
+    <string name="room_create_button">Create</string>
 </resources>
