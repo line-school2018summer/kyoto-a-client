@@ -193,14 +193,16 @@ class MessageActivity : AppCompatActivity() {
             return
         }
         val editText: EditText = findViewById(R.id.message_edit_text)
-        var message: Message = this.messages.messageAt(editingMessagePosition)
-        if (message.text == editText.text.toString()){
+        val originMessage: Message = this.messages.messageAt(editingMessagePosition)
+        if (originMessage.text == editText.text.toString()){
             this.toSendMode()
             return
         }
+        var message = originMessage
         message.text = editText.text.toString()
         message.updatedAt = Timestamp(System.currentTimeMillis())
         this.messages.updateAt(editingMessagePosition, message)
+        originMessage.update(message)
         this.drawMessagesList()
         this.toSendMode()
     }
