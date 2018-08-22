@@ -18,10 +18,8 @@ class Update(private var message: Message, private val newMessage: Message): API
     private suspend fun updateMessage(newMessage: Message) {
         try {
             val resMessage = updateAsyncMessage(newMessage)
-            println(resMessage.text)
             message = resMessage
         } catch (t: HttpException) {
-            Log.v("RESPONSE", t.response().body().toString())
             throw Exception("message update failed")
         }
     }
@@ -41,10 +39,8 @@ class Delete(private var message: Message): API() {
     private suspend fun deleteMessage(message: Message): Boolean {
         try {
             val res = deleteAsyncMessage(message)
-            println(res.toString())
             return res
         } catch (t: Throwable) {
-            println(t)
             throw Exception("message deletion failed")
         }
     }
