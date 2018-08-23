@@ -19,24 +19,14 @@
         
         <activity android:name=".AuthActivity">
             <intent-filter>
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
+                <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".RoomListActivity">
-            <intent-filter>
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name=".MessageActivity">
+        <activity android:name=".MessageActivity"></activity>
         <activity android:name=".RoomCreateActivity">
-            <intent-filter>
-                <!--<action android:name="android.intent.action.MAIN" />-->
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".LoginedActivity">
         </activity>
