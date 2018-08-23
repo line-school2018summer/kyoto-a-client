@@ -1,5 +1,7 @@
 package intern.line.me.kyotoaclient.lib.api
 
+import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.experimental.*
 import okhttp3.OkHttpClient
@@ -17,7 +19,6 @@ class APIInterceptor: Interceptor {
         val original: Request = chain.request()
 
         val request: Request = original.newBuilder()
-                .header("Token", "fake token")
                 .header("Content-Type", "application/json")
                 .method(original.method(), original.body())
                 .build()
@@ -32,9 +33,11 @@ class APIInterceptor: Interceptor {
 
 open class API {
     protected val job = Job()
-    var debug = false
+    var debug = true
     private val gson = GsonBuilder().create()
     private var client = OkHttpClient.Builder()
+    val auth = FirebaseAuth.getInstance()
+
 
     init {
         client = client.addInterceptor(APIInterceptor())
@@ -49,7 +52,7 @@ open class API {
     }
 
     val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.0.16:8080")
+            .baseUrl("https://kyoto-a-api.pinfort.me/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(CoroutineCallAdapterFactory()) // Adapter を登録
             .client(client.build())
@@ -58,4 +61,5 @@ open class API {
     open fun start() {
         throw NotImplementedError("start function must be overridden")
     }
+
 }

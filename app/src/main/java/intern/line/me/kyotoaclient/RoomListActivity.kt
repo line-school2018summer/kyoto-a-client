@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient
 
+import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.ContextMenu
@@ -19,6 +20,12 @@ import android.content.Intent
 
 
 class RoomListActivity : AppCompatActivity() {
+
+    companion object {
+        fun intent(context: Context): Intent =
+                Intent(context,RoomListActivity::class.java)
+    }
+
 
     private var rooms: RoomList = RoomList(mutableListOf(
             Room(
