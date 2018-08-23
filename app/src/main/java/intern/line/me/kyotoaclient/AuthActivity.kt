@@ -26,7 +26,7 @@ class AuthActivity : AppCompatActivity() {
         setContentView(R.layout.activity_auth)
 
         if(auth.currentUser != null){
-            RoomListActivity.intent(this).let { startActivity(it) }
+//            RoomListActivity.intent(this).let { startActivity(it) }
         }
 
         val providers = Arrays.asList(AuthUI.IdpConfig.GoogleBuilder().build(),
