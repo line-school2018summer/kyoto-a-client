@@ -2,7 +2,7 @@ package intern.line.me.kyotoaclient.lib
 
 import java.sql.Timestamp
 
-class User(
+data class User(
         var id: Long,
         var name: String,
         var createdAt: Timestamp,
