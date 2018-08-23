@@ -10,4 +10,8 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="message_modified">Modified</string>
+    <string name="title_activity_user_list">user_list</string>
+    <string name="apply_button">変更する</string>
+    <string name="item_name">Name :</string>
+    <string name="item_id">id :</string>
 </resources>
