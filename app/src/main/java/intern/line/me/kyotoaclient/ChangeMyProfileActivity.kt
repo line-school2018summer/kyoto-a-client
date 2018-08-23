@@ -12,6 +12,7 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import rx.schedulers.Schedulers
+import java.sql.Timestamp
 
 class ChangeMyProfileActivity : AppCompatActivity() {
 
@@ -19,14 +20,13 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_my_profile)
 
+
         val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
         val retrofit = Retrofit.Builder().baseUrl("http://localhost:8080")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
         val usersApi = retrofit.create(UsersApi::class.java)
-
-        //val nonUidUser = NonUidUser(1, "kotlin")
 
         val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
@@ -42,6 +42,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             showCreatedAt.text = nonUidUser.createdAt.toString()
             showUpdatedAt.text = nonUidUser.updatedAt.toString()
         }
+
 
         val changedName = findViewById<EditText>(R.id.changed_name)
 
@@ -59,5 +60,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                 changedName.error = "不正な文字が使われています"
             }
         }
+
     }
+
 }

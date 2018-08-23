@@ -43,7 +43,6 @@ class UserListActivity : AppCompatActivity() {
         }
 
 
-
         val timestamp = Timestamp(System.currentTimeMillis())
         val nonUidUserList = arrayOf(NonUidUser(1, "kot", timestamp, timestamp))
         adapter = UserListAdapter(this, nonUidUserList)
