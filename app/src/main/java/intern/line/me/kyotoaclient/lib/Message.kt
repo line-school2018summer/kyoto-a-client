@@ -5,12 +5,12 @@ import intern.line.me.kyotoaclient.lib.api.Update
 import java.sql.Timestamp
 
 class Message(
-        var id: Long,
-        var room_id: Long,
-        var user_id: Long,
-        var text: String,
-        var createdAt: Timestamp,
-        var updatedAt: Timestamp
+    var id: Long,
+    var room_id: Long,
+    var user_id: Long,
+    var text: String,
+    var createdAt: Timestamp,
+    var updatedAt: Timestamp
 ) {
     fun update(message: Message) {
         Update(this, message).start()

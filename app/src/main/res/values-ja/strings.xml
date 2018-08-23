@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Kyotoaclient</string>
+    <string name="message_input">テキストを入力</string>
+    <string name="message_send">送信</string>
+    <string name="message_edit">編集</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="message_modified">編集済</string>
+</resources>
