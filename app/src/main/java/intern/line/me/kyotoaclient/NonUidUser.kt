@@ -1,6 +1,5 @@
 package intern.line.me.kyotoaclient
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import java.sql.Timestamp
 
 data class NonUidUser(

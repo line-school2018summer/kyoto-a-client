@@ -16,6 +16,8 @@ class GetUserProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_get_user_profile)
 
+        val selectedId = intent.getLongExtra("longTapUserId", -1)
+
         val showName = findViewById<TextView>(R.id.show_name)
         val showId = findViewById<TextView>(R.id.show_id)
 
