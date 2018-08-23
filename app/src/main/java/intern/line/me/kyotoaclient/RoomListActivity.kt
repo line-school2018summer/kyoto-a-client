@@ -24,11 +24,89 @@ import intern.line.me.kyotoaclient.lib.api.GetRooms
 class RoomListActivity : AppCompatActivity() {
 
     companion object {
+
         fun intent(context: Context): Intent =
                 Intent(context,RoomListActivity::class.java)
     }
 
     lateinit var adapter: RoomListAdapter
+    private var rooms: RoomList = RoomList(mutableListOf(
+            Room(
+                    id = 1,
+                    name = "Room1",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 2,
+                    name = "Room2",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 3,
+                    name = "Room3",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 4,
+                    name = "Room4",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 5,
+                    name = "Room5",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 6,
+                    name = "Room6",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 7,
+                    name = "Room7",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 8,
+                    name = "Room8",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            ),
+            Room(
+                    id = 9,
+                    name = "Room9",
+                    createdAt = Timestamp(439208349),
+                    updatedAt = Timestamp(439208349),
+                    latestMessage = "最新のメッセージだよー",
+                    messageTime = Timestamp(439208349)
+            )
+    )
+    )
+
+>>>>>>> rebase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
