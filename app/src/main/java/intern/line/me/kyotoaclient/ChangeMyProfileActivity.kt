@@ -18,20 +18,23 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_my_profile)
 
-        val nonUidUser = NonUidUser(1, "kotlin")
-
-        val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
-        val presentName = findViewById<TextView>(R.id.present_name)
-        presentName.text = nonUidUser.name
-
-        val changedName = findViewById<EditText>(R.id.changed_name)
-
         val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
         val retrofit = Retrofit.Builder().baseUrl("http://localhost:8080")
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
         val usersApi = retrofit.create(UsersApi::class.java)
+
+        //val nonUidUser = NonUidUser(1, "kotlin")
+
+        val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
+
+        val presentName = findViewById<TextView>(R.id.present_name)
+        usersApi.getMyInfo("token").subscribeOn(Schedulers.io()).subscribe{
+            presentName.text = it.name
+        }
+
+        val changedName = findViewById<EditText>(R.id.changed_name)
 
         val button = findViewById<Button>(R.id.apply_button)
         button.setOnClickListener{

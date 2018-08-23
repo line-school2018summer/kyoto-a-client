@@ -13,7 +13,7 @@ interface UsersApi {
     fun getUserInfoById(@Path("id")id: Long): Observable<NonUidUser>
 
     @GET("/users/me")
-    fun getUserInfoById(): Observable<NonUidUser>
+    fun getMyInfo(@Body Token: String): Observable<NonUidUser>
 
     @PUT("/users/me")
     fun changeUserInfo(@Body Token: String, @Query("name")name: String): Observable<NonUidUser>
