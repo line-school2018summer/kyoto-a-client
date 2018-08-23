@@ -122,5 +122,11 @@ class RoomListActivity : AppCompatActivity() {
         val listView: ListView = this.findViewById(R.id.room_list)
         listView.adapter = adapter
         registerForContextMenu(listView)
+
+        listView.setOnItemClickListener { parent, view, position, id ->
+            val intent = Intent(this@RoomListActivity, MessageActivity::class.java)
+            intent.putExtra("roomId",rooms.roomAt(position).id)
+            startActivity(intent)
+        }
     }
 }

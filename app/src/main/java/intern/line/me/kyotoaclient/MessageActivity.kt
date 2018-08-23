@@ -11,6 +11,7 @@ import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.MessageList
+import intern.line.me.kyotoaclient.lib.Room
 import java.sql.Timestamp
 import java.util.*
 
@@ -122,9 +123,11 @@ class MessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
+        val roomId = intent.getLongExtra("roomId", -1)
+        val room: Room = getRoom(roomId)
+        this.title = room.name
         this.drawMessagesList()
     }
-
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
@@ -198,6 +201,9 @@ class MessageActivity : AppCompatActivity() {
             this.toSendMode()
             return
         }
+        if (editText.text.isBlank()) {
+            return
+        }
         var message = originMessage
         message.text = editText.text.toString()
         message.updatedAt = Timestamp(System.currentTimeMillis())
@@ -209,6 +215,9 @@ class MessageActivity : AppCompatActivity() {
 
     fun onSend(v: View) {
         val sendText: EditText = findViewById(R.id.message_send_text)
+        if (sendText.text.isBlank()) {
+            return
+        }
         val created_at = Timestamp(System.currentTimeMillis())
         val newMessage = Message(
                 id = Random().nextLong(),
@@ -223,12 +232,23 @@ class MessageActivity : AppCompatActivity() {
         this.toSendMode()
     }
 
-    private fun drawMessagesList() {
+    private fun drawMessagesList(scrollAt: Int? = null) {
         val messages = this.messages
         val adapter = MessageListAdapter(this)
         adapter.setMessages(messages)
         val listView: ListView = this.findViewById(R.id.main_list)
+        var scrollTo: Int = 0
+        if (scrollAt == null) {
+            scrollTo = listView.count - 1
+        } else {
+            scrollTo = scrollAt
+        }
         listView.adapter = adapter
+        listView.setSelection(scrollTo)
         registerForContextMenu(listView)
+    }
+
+    private fun getRoom(id: Long): Room{
+        return Room(1, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
     }
 }

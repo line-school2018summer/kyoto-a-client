@@ -3,29 +3,30 @@ package intern.line.me.kyotoaclient.lib.api
 import android.util.Log
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
+import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 
-class Update(private var message: Message, private val newMessage: Message): API() {
-    val api = retrofit.create(MessagesAPI::class.java)
+class GetMessages(private val id:Long): API() {
+    val api = retrofit.create(RoomsAPI::class.java)
 
-    private suspend fun updateAsyncMessage(newMessage: Message): Message = withContext(CommonPool) {
-        api.updateMessage(message.id, hashMapOf("text" to newMessage.text)).await()
+    private suspend fun getAsyncMessages(id: Long): List<Message> = withContext(CommonPool) {
+        api.getMessages(id).await()
     }
 
-    private suspend fun updateMessage(newMessage: Message) {
-        try {
-            val resMessage = updateAsyncMessage(newMessage)
-            message = resMessage
-        } catch (t: HttpException) {
-            throw Exception("message update failed")
-        }
+    private suspend fun getMessages(id: Long) {
+//        try {
+//            val resMessages = getAsyncMessages(id)
+//            message = resMessages
+//        } catch (t: HttpException) {
+//            throw Exception("message update failed")
+//        }
     }
 
     override fun start() {
-        launch(this.job) { updateMessage(newMessage) }
+//        launch(this.job) { updateMessage(newMessage) }
     }
 }
 
