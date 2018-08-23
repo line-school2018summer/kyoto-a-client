@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Kyotoaclient</string>
+    <string name="room_create_input">Room Name</string>
+    <string name="room_create_button">Create</string>
     <string name="hello_login_text_View">ログイン方法を選択してください</string>
     <string name="request_client_id">129455307189-1p8npv3edhllc5p9nrt3i7kif4irlvkp.apps.googleusercontent.com</string>
     <string name="message_input">Input text</string>
