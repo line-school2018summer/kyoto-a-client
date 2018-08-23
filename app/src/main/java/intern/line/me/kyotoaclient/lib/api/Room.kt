@@ -1,45 +1,57 @@
 package intern.line.me.kyotoaclient.lib.api
 
-import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.lib.Message
+import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
+import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 
-class GetMessages(private val id:Long): API() {
+class GetMessages (private val adapter: MessagesAdapter, private val room_id:Long): API() {
     val api = retrofit.create(RoomsAPI::class.java)
 
-    private suspend fun getAsyncMessages(id: Long): List<Message> = withContext(CommonPool) {
-        api.getMessages(id).await()
+    private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {
+        api.getMessages(token, room_id).await()
     }
 
-    private suspend fun getMessages(id: Long) {
-//        try {
-//            val resMessages = getAsyncMessages(id)
-//            message = resMessages
-//        } catch (t: HttpException) {
-//            throw Exception("message update failed")
-//        }
+    private suspend fun getMessages(room_id: Long) {
+        val token: String? = FirebaseUtil().getIdToken()
+        token ?: throw Exception("message update failed")
+        try {
+            val resMessages = getAsyncMessages(token, room_id)
+            adapter.messages = resMessages
+        } catch (t: HttpException) {
+            throw Exception("message update failed")
+        }
     }
 
     override fun start() {
-//        launch(this.job) { updateMessage(newMessage) }
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            FirebaseUtil().startWithGettingToken(user) {
+                launch(this.job) { getMessages(room_id) }
+            }
+        }
     }
 }
 
 class Delete(private var message: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
 
-    private suspend fun deleteAsyncMessage(message: Message): Boolean = withContext(CommonPool) {
-        api.deleteMessage(message.id).await()
+    private suspend fun deleteAsyncMessage(token: String, message: Message): Boolean = withContext(CommonPool) {
+        api.deleteMessage(token, message.id).await()
     }
 
     private suspend fun deleteMessage(message: Message): Boolean {
+        val token: String? = FirebaseUtil().getIdToken()
+        token ?: throw Exception("message update failed")
         try {
-            val res = deleteAsyncMessage(message)
+            val res = deleteAsyncMessage(token, message)
             return res
         } catch (t: Throwable) {
             throw Exception("message deletion failed")
@@ -47,6 +59,12 @@ class Delete(private var message: Message): API() {
     }
 
     override fun start() {
-        launch(this.job) { deleteMessage(message) }
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            FirebaseUtil().startWithGettingToken(user) {
+                launch(this.job) { deleteMessage(message) }
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ import retrofit2.http.*
 interface RoomsAPI {
     @GET("/rooms/{id}/messages")
     fun getMessages(
+        @Header("Token") token : String,
         @Path("id") id: Long
     ): Deferred<List<Message>>
 }
