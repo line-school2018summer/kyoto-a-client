@@ -14,7 +14,7 @@ import rx.schedulers.Schedulers
 
 class UserListActivity : AppCompatActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?): Boolean {
+    override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_list)
 
@@ -53,7 +53,7 @@ class UserListActivity : AppCompatActivity() {
             val intent = Intent(this, GetUserProfileActivity::class.java)
             intent.putExtra("longTapUserId", longTapUserId)
             startActivityForResult(intent, 11)
-            return@setOnItemLongClickListener false
+            return@setOnItemLongClickListener true
         }
     }
 }
