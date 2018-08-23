@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 class UserListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    private var users: UserList? = null
+    private var users: List<User> = emptyList()
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -42,5 +42,10 @@ class UserListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getItemId(position: Int): Long {
         return users?.userAt(position)?.id ?: throw Exception("user not found")
+    }
+
+
+    fun setUsers(set_users: List<User>){
+        users = set_users
     }
 }

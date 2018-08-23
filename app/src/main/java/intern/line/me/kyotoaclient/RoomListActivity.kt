@@ -22,11 +22,18 @@ import android.content.Intent
 class RoomListActivity : AppCompatActivity() {
 
     companion object {
+<<<<<<< HEAD
+=======
+
+>>>>>>> rebase
         fun intent(context: Context): Intent =
                 Intent(context,RoomListActivity::class.java)
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> rebase
     private var rooms: RoomList = RoomList(mutableListOf(
             Room(
                     id = 1,
@@ -100,7 +107,8 @@ class RoomListActivity : AppCompatActivity() {
                     latestMessage = "最新のメッセージだよー",
                     messageTime = Timestamp(439208349)
             )
-    ))
+    )
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -3,6 +3,13 @@
     package="intern.line.me.kyotoaclient">
     <uses-permission android:name="android.permission.INTERNET" />
 
+<<<<<<< HEAD
+=======
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+>>>>>>> rebase
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,7 +17,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".MainActivity">
         </activity>
         
@@ -21,15 +27,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".RoomListActivity">
+<<<<<<< HEAD
         </activity>
         <activity android:name=".MessageActivity"
             android:parentActivityName=".RoomListActivity">
+=======
+>>>>>>> rebase
         </activity>
+        <activity android:name=".MessageActivity"></activity>
         <activity android:name=".RoomCreateActivity">
         </activity>
         <activity android:name=".LoginedActivity">
         </activity>
-
+        <activity android:name=".UserListActivity"></activity>
+        <activity android:name=".ChangeMyProfileActivity"></activity>
+        <activity android:name=".GetUserProfileActivity"></activity>
     </application>
 
 </manifest>
