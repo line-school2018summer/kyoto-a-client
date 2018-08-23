@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import kotlinx.android.synthetic.main.activity_change_my_profile.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -29,9 +30,17 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
-        val presentName = findViewById<TextView>(R.id.present_name)
+        val showName = findViewById<TextView>(R.id.show_name)
+        val showId = findViewById<TextView>(R.id.show_id)
+        val showCreatedAt = findViewById<TextView>(R.id.item_created_at)
+        val showUpdatedAt = findViewById<TextView>(R.id.item_updated_at)
+
         usersApi.getMyInfo("token").subscribeOn(Schedulers.io()).subscribe{
-            presentName.text = it.name
+            val nonUidUser = it
+            showName.text = nonUidUser.name
+            showId.text = nonUidUser.id.toString()
+            showCreatedAt.text = nonUidUser.createdAt.toString()
+            showUpdatedAt.text = nonUidUser.updatedAt.toString()
         }
 
         val changedName = findViewById<EditText>(R.id.changed_name)
@@ -42,7 +51,8 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             var isValid = regex.matches(inputText)
             if(isValid){
                 usersApi.changeUserInfo("token", inputText).subscribeOn(Schedulers.io()).subscribe{
-                    presentName.text = it.name
+                    show_name.text = it.name
+                    show_updated_at.text = it.updatedAt.toString()
                 }
             }
             else{
