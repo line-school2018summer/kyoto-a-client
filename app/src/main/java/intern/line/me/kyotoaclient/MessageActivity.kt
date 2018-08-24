@@ -191,4 +191,8 @@ class MessageActivity : AppCompatActivity() {
     private fun getRoom(id: Long): Room{
         return Room(1, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
     }
+
+    fun doMessagesAction() {
+        drawMessagesList()
+    }
 }
