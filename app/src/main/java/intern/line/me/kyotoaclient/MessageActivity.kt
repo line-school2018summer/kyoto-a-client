@@ -15,16 +15,17 @@ import intern.line.me.kyotoaclient.lib.Room
 import intern.line.me.kyotoaclient.lib.User
 import intern.line.me.kyotoaclient.lib.api.GetMessages
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
-import intern.line.me.kyotoaclient.lib.api.interfaces.GetMessagesInActivity
 import java.sql.Time
 import java.sql.Timestamp
 import java.util.*
 
-class MessageActivity : GetMessagesInActivity() {
+class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
-    override var messages: MessageList? = null
+
+    var messages: MessageList? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,7 +155,7 @@ class MessageActivity : GetMessagesInActivity() {
         this.toSendMode()
     }
 
-    private fun drawMessagesList(scrollAt: Int? = null) {
+    fun drawMessagesList(scrollAt: Int? = null) {
         var messages = this.messages
         messages = messages ?: MessageList(mutableListOf(Message(
                 id = 1L,
@@ -190,9 +191,4 @@ class MessageActivity : GetMessagesInActivity() {
     private fun getRoom(id: Long): Room{
         return Room(1, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
     }
-
-    override fun doMessagesAction() {
-        drawMessagesList()
-    }
-
 }

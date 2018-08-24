@@ -8,10 +8,9 @@ import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.MessageList
 import intern.line.me.kyotoaclient.lib.api.GetMessages
-import intern.line.me.kyotoaclient.lib.api.interfaces.GetMessagesInActivity
 import java.lang.Thread.sleep
 
-class MessagesAdapter(var activity: GetMessagesInActivity): AsyncTask<Long, Int, Unit>() {
+class MessagesAdapter(var activity: MessageActivity): AsyncTask<Long, Int, Unit>() {
     var messages: MutableList<Message>? = null
     var responseCode: Int? = null
 
@@ -50,7 +49,7 @@ class MessagesAdapter(var activity: GetMessagesInActivity): AsyncTask<Long, Int,
             goBack()
             return
         }
-        activity.doMessagesAction()
+        activity.drawMessagesList()
     }
 
     private fun makeToast(string_id: Int, show: Int) {
