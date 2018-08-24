@@ -9,8 +9,8 @@ class Message(
     var room_id: Long,
     var user_id: Long,
     var text: String,
-    var createdAt: Timestamp,
-    var updatedAt: Timestamp
+    var created_at: Timestamp,
+    var updated_at: Timestamp
 ) {
     fun update(message: Message) {
         MessageUpdate(this, message).start()
