@@ -157,23 +157,15 @@ class MessageActivity : AppCompatActivity() {
 
     fun drawMessagesList(scrollAt: Int? = null) {
         var messages = this.messages
-        messages = messages ?: MessageList(mutableListOf(Message(
-                id = 1L,
-                room_id = 1L,
-                user_id = 1L,
-                text = "ss",
-                user = User(
-                        id = 4,
-                        name = "hoge",
-                        created_at = Timestamp(1L),
-                        updated_at = Timestamp(1L)
-                ),
-                created_at = Timestamp(1L),
-                updated_at = Timestamp(1L)
-        )))
+        val listView: ListView = this.findViewById(R.id.main_list)
+        val progress: View = this.findViewById(R.id.message_loading)
+        if (messages == null) {
+            listView.visibility = View.INVISIBLE
+            progress.visibility = View.VISIBLE
+            return
+        }
         val adapter = MessageListAdapter(this)
         adapter.setMessages(messages)
-        val listView: ListView = this.findViewById(R.id.main_list)
         var scrollTo = 0
         if (scrollAt == null) {
             scrollTo = listView.count - 1
@@ -183,7 +175,6 @@ class MessageActivity : AppCompatActivity() {
         listView.adapter = adapter
         listView.setSelection(scrollTo)
         registerForContextMenu(listView)
-        val progress: View = this.findViewById(R.id.message_loading)
         listView.visibility = View.VISIBLE
         progress.visibility = View.INVISIBLE
     }
