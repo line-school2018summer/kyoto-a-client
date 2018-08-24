@@ -13,7 +13,7 @@ class MessagesAdapter(var activity: MessageActivity) {
     var responseCode: Int? = null
     val handler = Handler()
 
-    fun execute(roomId: Long) {
+    fun get(roomId: Long) {
         GetMessages(this, roomId).start()
     }
 

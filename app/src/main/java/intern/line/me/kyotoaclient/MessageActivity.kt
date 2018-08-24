@@ -33,7 +33,7 @@ class MessageActivity : AppCompatActivity() {
         val roomId = intent.getLongExtra("roomId", -1)
         val room: Room = getRoom(roomId)
         this.title = room.name
-        MessagesAdapter(this).execute(roomId)
+        MessagesAdapter(this).get(roomId)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
