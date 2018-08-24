@@ -26,8 +26,8 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
         token ?: throw Exception("message update failed")
         try {
             val resMessages = getAsyncMessages(token, room_id)
-            context.responseCode = 200
             context.messages = resMessages as MutableList<Message>?
+            context.responseCode = 200
         } catch (t: HttpException) {
             context.responseCode = t.response().code()
             return
