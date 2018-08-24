@@ -20,56 +20,56 @@ class RoomCreateActivity : AppCompatActivity() {
             User(
                     id = 1,
                     name = "User1",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 2,
                     name = "User2",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 3,
                     name = "User3",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 4,
                     name = "User4",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 5,
                     name = "User5",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 6,
                     name = "User6",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 7,
                     name = "User7",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 8,
                     name = "User8",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             ),
             User(
                     id = 9,
                     name = "User9",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
+                    created_at = Timestamp(439208349),
+                    updated_at = Timestamp(439208349)
             )
     ))
 

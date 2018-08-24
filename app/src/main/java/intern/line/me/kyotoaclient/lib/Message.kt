@@ -9,6 +9,7 @@ class Message(
     var room_id: Long,
     var user_id: Long,
     var text: String,
+    var user: User,
     var created_at: Timestamp,
     var updated_at: Timestamp
 ) {

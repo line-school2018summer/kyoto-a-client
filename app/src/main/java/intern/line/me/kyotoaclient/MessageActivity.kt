@@ -12,8 +12,10 @@ import intern.line.me.kyotoaclient.adapter.MessageListAdapter
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.MessageList
 import intern.line.me.kyotoaclient.lib.Room
+import intern.line.me.kyotoaclient.lib.User
 import intern.line.me.kyotoaclient.lib.api.GetMessages
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
+import java.sql.Time
 import java.sql.Timestamp
 import java.util.*
 
@@ -138,6 +140,12 @@ class MessageActivity : AppCompatActivity() {
                 id = Random().nextLong(),
                 room_id = 1,
                 user_id = 4,
+                user = User(
+                        id = 4,
+                        name = "hoge",
+                        created_at = Timestamp(1L),
+                        updated_at = Timestamp(1L)
+                ),
                 text = sendText.text.toString(),
                 created_at = created_at,
                 updated_at = created_at
@@ -154,6 +162,12 @@ class MessageActivity : AppCompatActivity() {
                 room_id = 1L,
                 user_id = 1L,
                 text = "ss",
+                user = User(
+                        id = 4,
+                        name = "hoge",
+                        created_at = Timestamp(1L),
+                        updated_at = Timestamp(1L)
+                ),
                 created_at = Timestamp(1L),
                 updated_at = Timestamp(1L)
         )))

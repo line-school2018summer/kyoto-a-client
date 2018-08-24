@@ -5,8 +5,8 @@ import java.sql.Timestamp
 data class User(
         var id: Long,
         var name: String,
-        var createdAt: Timestamp,
-        var updatedAt: Timestamp
+        var created_at: Timestamp,
+        var updated_at: Timestamp
 )
 
 class UserList(private val users: MutableList<User>) {

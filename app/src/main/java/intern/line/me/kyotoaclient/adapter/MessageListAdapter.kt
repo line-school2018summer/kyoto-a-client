@@ -36,7 +36,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         val format = SimpleDateFormat("HH:mm")
         val time = Date(created_at.time)
 
-        (convertView.findViewById(R.id.message_author) as TextView).setText(message.user_id.toString())
+        (convertView.findViewById(R.id.message_author) as TextView).setText(message.user.name)
         (convertView.findViewById(R.id.message_text) as TextView).setText((message.text))
         (convertView.findViewById(R.id.message_time) as TextView).setText(format.format(time))
         if (message.created_at != message.updated_at){
