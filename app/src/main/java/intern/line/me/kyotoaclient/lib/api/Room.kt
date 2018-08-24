@@ -10,8 +10,10 @@ import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
+import java.net.ConnectException
 
-class GetMessages (private val adapter: MessagesAdapter, private val room_id:Long): API() {
+
+class GetMessages (private val context: MessagesAdapter, private val room_id:Long): API() {
     val api = retrofit.create(RoomsAPI::class.java)
 
     private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {
@@ -23,9 +25,14 @@ class GetMessages (private val adapter: MessagesAdapter, private val room_id:Lon
         token ?: throw Exception("message update failed")
         try {
             val resMessages = getAsyncMessages(token, room_id)
-            adapter.messages = resMessages
+            context.responseCode = 200
+            context.messages = resMessages as MutableList<Message>?
         } catch (t: HttpException) {
-            throw Exception("message update failed")
+            context.responseCode = t.response().code()
+            return
+        } catch (t: ConnectException) {
+            context.responseCode = 500
+            return
         }
     }
 
