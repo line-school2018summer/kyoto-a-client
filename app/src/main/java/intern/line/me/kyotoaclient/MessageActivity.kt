@@ -49,6 +49,7 @@ class MessageActivity : AppCompatActivity() {
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
+        // TODO("myIdをちゃんと取得する")
         val myId: Long = 1
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
