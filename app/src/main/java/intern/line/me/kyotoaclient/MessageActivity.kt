@@ -22,7 +22,7 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
 
-    private var messages: MessageList? = null
+    var messages: MessageList? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,12 +31,7 @@ class MessageActivity : AppCompatActivity() {
         val roomId = intent.getLongExtra("roomId", -1)
         val room: Room = getRoom(roomId)
         this.title = room.name
-        val adapter = MessagesAdapter()
-        GetMessages(adapter, roomId).start()
-        if (adapter.messages != null){
-            messages = MessageList(adapter.messages as MutableList<Message>)
-        }
-        this.drawMessagesList()
+        MessagesAdapter(this).execute(roomId)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -70,12 +65,13 @@ class MessageActivity : AppCompatActivity() {
 
     fun onUpdate(v: View) {
         println(this.messages)
+        drawMessagesList()
     }
 
     private fun onUpdateMessage(id: Int): Boolean {
         this.toEditMode(id)
         val editInput: EditText = findViewById(R.id.message_edit_text)
-        val message: Message = this.messages?.messageAt(id) ?: return true
+        val message: Message = this.messages?.messageAt(id) ?: return false
         editInput.setText(message.text)
 
         return true
@@ -109,8 +105,13 @@ class MessageActivity : AppCompatActivity() {
             this.toSendMode()
             return
         }
+        val messages: MessageList? = this.messages
+        if (messages == null) {
+            this.toSendMode()
+            return
+        }
         val editText: EditText = findViewById(R.id.message_edit_text)
-        val originMessage: Message = this.messages?.messageAt(editingMessagePosition) ?: return
+        val originMessage: Message = messages.messageAt(editingMessagePosition)
         if (originMessage.text == editText.text.toString()){
             this.toSendMode()
             return
@@ -120,8 +121,8 @@ class MessageActivity : AppCompatActivity() {
         }
         var message = originMessage
         message.text = editText.text.toString()
-        message.updatedAt = Timestamp(System.currentTimeMillis())
-        this.messages?.updateAt(editingMessagePosition, message)
+        message.updated_at = Timestamp(System.currentTimeMillis())
+        messages.updateAt(editingMessagePosition, message)
         originMessage.update(message)
         this.drawMessagesList()
         this.toSendMode()
@@ -138,23 +139,23 @@ class MessageActivity : AppCompatActivity() {
                 room_id = 1,
                 user_id = 4,
                 text = sendText.text.toString(),
-                createdAt = created_at,
-                updatedAt = created_at
+                created_at = created_at,
+                updated_at = created_at
         )
         this.messages?.add(newMessage)
         this.drawMessagesList()
         this.toSendMode()
     }
 
-    private fun drawMessagesList(scrollAt: Int? = null) {
+    fun drawMessagesList(scrollAt: Int? = null) {
         var messages = this.messages
         messages = messages ?: MessageList(mutableListOf(Message(
                 id = 1L,
                 room_id = 1L,
                 user_id = 1L,
                 text = "ss",
-                createdAt = Timestamp(1L),
-                updatedAt = Timestamp(1L)
+                created_at = Timestamp(1L),
+                updated_at = Timestamp(1L)
         )))
         val adapter = MessageListAdapter(this)
         adapter.setMessages(messages)
@@ -168,6 +169,9 @@ class MessageActivity : AppCompatActivity() {
         listView.adapter = adapter
         listView.setSelection(scrollTo)
         registerForContextMenu(listView)
+        val progress: View = this.findViewById(R.id.message_loading)
+        listView.visibility = View.VISIBLE
+        progress.visibility = View.INVISIBLE
     }
 
     private fun getRoom(id: Long): Room{
