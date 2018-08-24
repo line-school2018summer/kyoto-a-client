@@ -44,9 +44,7 @@ class MessagesAdapter(var activity: MessageActivity): AsyncTask<Long, Int, Unit>
             makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
             goBack()
             return
-        }
-        // 500えらーとか400以外のエラー
-        if (activity.messages == null) {
+        } else if (responseCode != 200) {
             makeToast(R.string.api_failed, Toast.LENGTH_LONG)
             goBack()
             return

@@ -11,6 +11,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import java.net.ConnectException
+import java.net.SocketTimeoutException
 
 
 class GetMessages (private val context: MessagesAdapter, private val room_id:Long): API() {
@@ -31,6 +32,9 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
             context.responseCode = t.response().code()
             return
         } catch (t: ConnectException) {
+            context.responseCode = 500
+            return
+        } catch (t: SocketTimeoutException) {
             context.responseCode = 500
             return
         }
