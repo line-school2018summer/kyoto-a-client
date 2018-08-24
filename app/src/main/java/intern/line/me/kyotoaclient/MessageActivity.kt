@@ -23,6 +23,7 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
+    private var room: Room? = null
 
     var messages: MessageList? = null
 
@@ -31,8 +32,15 @@ class MessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         val roomId = intent.getLongExtra("roomId", -1)
-        val room: Room = getRoom(roomId)
-        this.title = room.name
+        room = getRoom(roomId)
+        val room = room
+        if (room != null) {
+            this.title = room.name
+        } else {
+            this.title = "Room"
+        }
+        val listView: ListView = this.findViewById(R.id.main_list)
+        registerForContextMenu(listView)
         MessagesAdapter(this).get(roomId)
     }
 
@@ -41,7 +49,7 @@ class MessageActivity : AppCompatActivity() {
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
-        val myId: Long = 4
+        val myId: Long = 1
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -60,8 +68,8 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun onDeleteMessage(id: Int): Boolean {
-        this.messages?.removeAt(id)
-        this.drawMessagesList()
+        val messages = this.messages ?: return false
+        MessagesAdapter(this).delete(id, messages.messageAt(id))
         return true
     }
 
@@ -124,9 +132,9 @@ class MessageActivity : AppCompatActivity() {
         var message = originMessage
         message.text = editText.text.toString()
         message.updated_at = Timestamp(System.currentTimeMillis())
-        messages.updateAt(editingMessagePosition, message)
-        originMessage.update(message)
-        this.drawMessagesList()
+        this.messages?.updateAt(editingMessagePosition, message)
+        doMessagesAction()
+        MessagesAdapter(this).update(editingMessagePosition, originMessage, message)
         this.toSendMode()
     }
 
@@ -135,23 +143,12 @@ class MessageActivity : AppCompatActivity() {
         if (sendText.text.isBlank()) {
             return
         }
-        val created_at = Timestamp(System.currentTimeMillis())
-        val newMessage = Message(
-                id = Random().nextLong(),
-                room_id = 1,
-                user_id = 4,
-                user = User(
-                        id = 4,
-                        name = "hoge",
-                        created_at = Timestamp(1L),
-                        updated_at = Timestamp(1L)
-                ),
-                text = sendText.text.toString(),
-                created_at = created_at,
-                updated_at = created_at
-        )
-        this.messages?.add(newMessage)
-        this.drawMessagesList()
+        val room = room
+        if (room == null) {
+            this.toSendMode()
+            return
+        }
+        MessagesAdapter(this).create(room.id, sendText.text.toString())
         this.toSendMode()
     }
 
@@ -174,7 +171,6 @@ class MessageActivity : AppCompatActivity() {
         }
         listView.adapter = adapter
         listView.setSelection(scrollTo)
-        registerForContextMenu(listView)
         listView.visibility = View.VISIBLE
         progress.visibility = View.INVISIBLE
     }

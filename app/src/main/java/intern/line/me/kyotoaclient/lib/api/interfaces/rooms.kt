@@ -9,4 +9,11 @@ interface RoomsAPI {
         @Header("Token") token : String,
         @Path("id") id: Long
     ): Deferred<List<Message>>
+
+    @POST("/rooms/{id}/messages")
+    fun createMessage(
+        @Header("Token") token : String,
+        @Path("id") id: Long,
+        @Body body: HashMap<String, String>
+    ): Deferred<Message>
 }

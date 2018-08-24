@@ -6,15 +6,30 @@ import android.widget.Toast
 import intern.line.me.kyotoaclient.MessageActivity
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.MessageList
+import intern.line.me.kyotoaclient.lib.api.CreateMessage
+import intern.line.me.kyotoaclient.lib.api.DeleteMessage
 import intern.line.me.kyotoaclient.lib.api.GetMessages
+import intern.line.me.kyotoaclient.lib.api.UpdateMessage
 
-class MessagesAdapter(var activity: MessageActivity) {
-    var messages: MutableList<Message>? = null
+class MessagesAdapter(private var activity: MessageActivity) {
+    var messages: MutableList<Message>? = activity.messages?.messages
     var responseCode: Int? = null
     val handler = Handler()
 
     fun get(roomId: Long) {
         GetMessages(this, roomId).start()
+    }
+
+    fun create(roomId: Long, text: String) {
+        CreateMessage(this, roomId, text).start()
+    }
+
+    fun update(position: Int, originMessage: Message, newMessage: Message) {
+        UpdateMessage(this, position, originMessage, newMessage).start()
+    }
+
+    fun delete(position: Int, message: Message) {
+        DeleteMessage(this, position, message).start()
     }
 
     fun makeToast(string_id: Int, show: Int) {

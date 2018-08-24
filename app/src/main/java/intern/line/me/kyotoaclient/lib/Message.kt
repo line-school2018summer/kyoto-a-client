@@ -1,7 +1,5 @@
 package intern.line.me.kyotoaclient.lib
 
-import intern.line.me.kyotoaclient.lib.api.MessageDelete
-import intern.line.me.kyotoaclient.lib.api.MessageUpdate
 import java.sql.Timestamp
 
 class Message(
@@ -12,17 +10,9 @@ class Message(
     var user: User,
     var created_at: Timestamp,
     var updated_at: Timestamp
-) {
-    fun update(message: Message) {
-        MessageUpdate(this, message).start()
-    }
+)
 
-    fun delete() {
-        MessageDelete(this).start()
-    }
-}
-
-class MessageList(private val messages: MutableList<Message>) {
+class MessageList(val messages: MutableList<Message>) {
     var count: Int = messages.count()
 
     fun messageAt(index: Int): Message {

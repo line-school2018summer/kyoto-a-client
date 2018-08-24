@@ -15,5 +15,5 @@ interface MessagesAPI {
     fun deleteMessage(
         @Header("Token") token : String,
         @Path("id") id: Long
-    ): Deferred<Boolean>
+    ): Deferred<HashMap<String, Boolean>>
 }

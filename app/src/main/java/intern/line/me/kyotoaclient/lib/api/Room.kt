@@ -72,21 +72,46 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
     }
 }
 
-class Delete(private var message: Message): API() {
-    val api = retrofit.create(MessagesAPI::class.java)
+class CreateMessage (private val context: MessagesAdapter, private val room_id:Long, private val text: String): API() {
+    val api = retrofit.create(RoomsAPI::class.java)
 
-    private suspend fun deleteAsyncMessage(token: String, message: Message): Boolean = withContext(CommonPool) {
-        api.deleteMessage(token, message.id).await()
+    private suspend fun createAsyncMessage(token: String, room_id: Long, text: String):Message = withContext(CommonPool) {
+        api.createMessage(token, room_id, hashMapOf("text" to text)).await()
     }
 
-    private suspend fun deleteMessage(message: Message): Boolean {
+    private suspend fun createMessage(room_id: Long, text: String) {
         val token: String? = FirebaseUtil().getIdToken()
-        token ?: throw Exception("message update failed")
+        if (token == null) {
+            context.responseCode = 500
+            context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
+            context.goBack()
+            return
+        }
         try {
-            val res = deleteAsyncMessage(token, message)
-            return res
-        } catch (t: Throwable) {
-            throw Exception("message deletion failed")
+            val resMessage = createAsyncMessage(token, room_id, text)
+            context.responseCode = 200
+            context.messages?.add(resMessage)
+            context.handler.post {
+                context.doMessagesAction()
+            }
+        } catch (t: HttpException) {
+            context.responseCode = t.response().code()
+            context.handler.post {
+                context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
+                context.goBack()
+            }
+        } catch (t: SocketTimeoutException) {
+            context.responseCode = 500
+            context.handler.post {
+                context.makeToast(R.string.api_timeout, Toast.LENGTH_LONG)
+                context.goBack()
+            }
+        } catch (t: IOException) {
+            context.responseCode = 500
+            context.handler.post {
+                context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
+                context.goBack()
+            }
         }
     }
 
@@ -95,7 +120,7 @@ class Delete(private var message: Message): API() {
         val user = auth.currentUser
         if(user != null) {
             FirebaseUtil().startWithGettingToken(user) {
-                launch(this.job) { deleteMessage(message) }
+                launch(this.job) { createMessage(room_id, text) }
             }
         }
     }
