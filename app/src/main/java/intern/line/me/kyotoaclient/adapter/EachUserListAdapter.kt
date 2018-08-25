@@ -1,15 +1,15 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewParent
 import android.widget.BaseAdapter
 import android.widget.TextView
-import java.text.FieldPosition
+import intern.line.me.kyotoaclient.NonUidUser
+import intern.line.me.kyotoaclient.R
 
-class UserListAdapter(private val context: Context,
+class EachUserListAdapter(private val context: Context,
                       private val nonUidUserList: Array<NonUidUser>): BaseAdapter() {
     private val inflater = LayoutInflater.from(context)
 
