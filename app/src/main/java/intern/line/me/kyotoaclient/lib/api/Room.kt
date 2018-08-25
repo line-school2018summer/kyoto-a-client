@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.lib.api
 
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
@@ -10,9 +11,12 @@ import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import java.io.IOException
+import java.lang.Thread.sleep
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 
@@ -66,9 +70,45 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
         val user = auth.currentUser
         if(user != null) {
             FirebaseUtil().startWithGettingToken(user) {
-                launch(this.job) { getMessages(room_id) }
+                launch(this.job + UI) { getMessages(room_id) }
             }
         }
+    }
+
+    private suspend fun poolMessages(user: FirebaseUser) {
+        while (context.running) {
+            val util = FirebaseUtil()
+            util.startWithGettingToken(user) {
+                launch(UI) {
+                    getMessages(room_id)
+                }
+            }
+            while (util.ret == null) {
+                sleep(10)
+            }
+            (util.ret as Job).join()
+            // 0.2秒ごとに終了指示がないか調べる
+            for (i in 1..5) {
+                if (!context.running) {
+                    return
+                }
+                sleep(200)
+            }
+        }
+    }
+
+    fun startPool(): Job? {
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user == null) {
+            context.responseCode = 403
+            context.handler.post {
+                context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
+                context.goBack()
+            }
+            return null
+        }
+        return launch { poolMessages(user) }
     }
 }
 
@@ -92,7 +132,7 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
             context.responseCode = 200
             context.messages?.add(resMessage)
             context.handler.post {
-                context.doMessagesAction()
+                context.doMessagesAction(-1)
             }
         } catch (t: HttpException) {
             context.responseCode = t.response().code()

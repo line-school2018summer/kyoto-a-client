@@ -10,14 +10,23 @@ import intern.line.me.kyotoaclient.lib.api.CreateMessage
 import intern.line.me.kyotoaclient.lib.api.DeleteMessage
 import intern.line.me.kyotoaclient.lib.api.GetMessages
 import intern.line.me.kyotoaclient.lib.api.UpdateMessage
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
 
 class MessagesAdapter(private var activity: MessageActivity) {
     var messages: MutableList<Message>? = activity.messages?.messages
     var responseCode: Int? = null
     val handler = Handler()
+    var running: Boolean = true
+    var messagePool: Job? = null
 
     fun get(roomId: Long) {
         GetMessages(this, roomId).start()
+    }
+
+    fun getPool(roomId: Long): MessagesAdapter {
+        messagePool = GetMessages(this, roomId).startPool()
+        return this
     }
 
     fun create(roomId: Long, text: String) {
@@ -41,13 +50,22 @@ class MessagesAdapter(private var activity: MessageActivity) {
         activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
     }
 
-    fun doMessagesAction() {
+    fun doMessagesAction(scrollAt: Int? = null) {
         val messages =  this.messages
         if (messages == null) {
             activity.messages = null
         } else {
             activity.messages = MessageList(messages)
         }
-        activity.doMessagesAction()
+        activity.doMessagesAction(scrollAt)
+    }
+
+    fun stopMessagePool() {
+        val messagePool = messagePool
+        messagePool ?: return
+        running = false
+        launch {
+            messagePool.join()
+        }
     }
 }
