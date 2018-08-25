@@ -3,13 +3,6 @@
     package="intern.line.me.kyotoaclient">
     <uses-permission android:name="android.permission.INTERNET" />
 
-<<<<<<< HEAD
-=======
-    <uses-permission android:name="android.permission.INTERNET" />
-
-    <uses-permission android:name="android.permission.INTERNET" />
-
->>>>>>> rebase
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,27 +14,25 @@
         </activity>
         
         <activity android:name=".AuthActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".RoomListActivity">
-<<<<<<< HEAD
         </activity>
-        <activity android:name=".MessageActivity"
-            android:parentActivityName=".RoomListActivity">
-=======
->>>>>>> rebase
+        <activity android:name=".MessageActivity">
         </activity>
-        <activity android:name=".MessageActivity"></activity>
         <activity android:name=".RoomCreateActivity">
         </activity>
         <activity android:name=".LoginedActivity">
         </activity>
-        <activity android:name=".UserListActivity"></activity>
-        <activity android:name=".ChangeMyProfileActivity"></activity>
-        <activity android:name=".GetUserProfileActivity"></activity>
+        <activity android:name=".UserListActivity">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+        <activity android:name=".ChangeMyProfileActivity">
+        </activity>
+        <activity android:name=".GetUserProfileActivity">
+        </activity>
     </application>
 
 </manifest>

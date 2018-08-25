@@ -22,18 +22,11 @@ import android.content.Intent
 class RoomListActivity : AppCompatActivity() {
 
     companion object {
-<<<<<<< HEAD
-=======
-
->>>>>>> rebase
         fun intent(context: Context): Intent =
                 Intent(context,RoomListActivity::class.java)
     }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> rebase
     private var rooms: RoomList = RoomList(mutableListOf(
             Room(
                     id = 1,

@@ -30,7 +30,7 @@ class GetMessages(private val id:Long): API() {
     }
 }
 
-class Delete(private var message: Message): API() {
+class MessageDelete(private var message: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
 
     private suspend fun deleteAsyncMessage(message: Message): Boolean = withContext(CommonPool) {
