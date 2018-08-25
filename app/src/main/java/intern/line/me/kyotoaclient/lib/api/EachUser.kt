@@ -1,97 +1,110 @@
 package intern.line.me.kyotoaclient.lib.api
 
-import com.firebase.ui.auth.data.model.User
-import intern.line.me.kyotoaclient.NonUidUser
-import intern.line.me.kyotoaclient.adapter.EachUserListAdapter
-import intern.line.me.kyotoaclient.lib.api.interfaces.UsersApi
+import intern.line.me.kyotoaclient.ChangeMyProfileActivity
+import intern.line.me.kyotoaclient.GetUserProfileActivity
+import intern.line.me.kyotoaclient.UserListActivity
+import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
+import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 
-class GetUserList(): API(){
+class GetUserList(val activity: UserListActivity): API(){
 
-    val api = retrofit.create(UsersApi::class.java)
+    val api = retrofit.create(UserAPI::class.java)
 
-    private suspend fun getAsyncUsersList(): Array<NonUidUser> = withContext(CommonPool){
+    private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool){
         api.getUsers().await()
     }
 
-    private suspend fun getUsersList() : Array<NonUidUser>{
+    private suspend fun getUsersList(){
         try {
             val usersList = getAsyncUsersList()
-            return usersList
+            activity.setUsers(usersList)
+
         } catch (t: HttpException) {
             throw Exception("update failed.")
         }
     }
 
     override fun start() {
-        launch(this.job) { getUsersList() }
+        launch(this.job + UI) { getUsersList() }
     }
 }
 
-class GetUserInfo(private val id: Long): API(){
+class GetUserInfo(val activity: GetUserProfileActivity, val id: Long): API(){
 
-    val api = retrofit.create(UsersApi::class.java)
+    val api = retrofit.create(UserAPI::class.java)
 
-    private suspend fun getAsyncUserInfo(): NonUidUser = withContext(CommonPool){
+    private suspend fun getAsyncUserInfo(): User = withContext(CommonPool){
         api.getUserInfoById(id).await()
     }
 
-    private suspend fun getUserInfo(): NonUidUser{
+    private suspend fun getUserInfo(){
         try{
-            val userInfo = getAsyncUserInfo()
-            return userInfo
+            val user = getAsyncUserInfo()
+            activity.setUserInfo(user)
         } catch (t: HttpException){
             throw Exception("update failed.")
         }
     }
 
     override fun start() {
-        launch(this.job){ getUserInfo() }
+        launch(this.job + UI){ getUserInfo() }
     }
 }
 
-class GetMyInfo(private val Token: String): API(){
+class GetMyInfo(val activity: ChangeMyProfileActivity): API(){
 
-    val api = retrofit.create(UsersApi::class.java)
+    val api = retrofit.create(UserAPI::class.java)
 
-    private suspend fun getAsyncMyInfo(): NonUidUser = withContext(CommonPool){
-        api.getMyInfo(Token).await()
+    private suspend fun getAsyncMyInfo(token : String): User = withContext(CommonPool){
+        api.getMyInfo(token).await()
     }
 
-    private suspend fun getMyInfo(): NonUidUser {
+    private suspend fun getMyInfo() {
+
+        val token = FirebaseUtil().getIdToken()
+
         try {
-            val userInfo = getAsyncMyInfo()
-            return userInfo
+            if(token != null) {
+                val userInfo = getAsyncMyInfo(token)
+                activity.setUserInfo(userInfo)
+            }
+
         } catch (t: HttpException) {
             throw Exception("Update failed.")
         }
     }
 
     override fun start(){
-        launch(this.job){ getMyInfo() }
+        launch(this.job + UI){ getMyInfo() }
     }
 }
 
-class PutMyInfo(private val Token: String, private  val name: String): API(){
-    val api = retrofit.create(UsersApi::class.java)
+class PutMyInfo( private  val name: String): API(){
+    val api = retrofit.create(UserAPI::class.java)
 
-    private suspend fun putAsyncMyInfo(): NonUidUser = withContext(CommonPool){
-        api.changeUserInfo(Token, name).await()
+    private suspend fun putAsyncMyInfo(token:String): User = withContext(CommonPool){
+        api.changeUserInfo(token, name).await()
     }
 
-    private suspend fun putMyInfo(): NonUidUser{
+    private suspend fun putMyInfo(){
         try {
-            val userInfo = putAsyncMyInfo()
-            return userInfo
+            val token = FirebaseUtil().getIdToken()
+
+            if(token != null) {
+                val userInfo = putAsyncMyInfo(token)
+            }
         } catch (t: HttpException) {
             throw Exception("Update failed.")
         }
     }
 
     override fun start(){
-        launch(this.job){ putMyInfo() }
+        launch(this.job + UI){ putMyInfo() }
     }
 }

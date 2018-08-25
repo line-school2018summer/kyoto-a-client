@@ -6,15 +6,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ListView
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.lib.api.interfaces.UsersApi
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
-import rx.schedulers.Schedulers
-import java.sql.Timestamp
+import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.api.GetUserList
 
 class UserListActivity : AppCompatActivity() {
 
@@ -30,10 +24,11 @@ class UserListActivity : AppCompatActivity() {
         val list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<Button>(R.id.profile_button)
 
-
         adapter = UserListAdapter(this)
         list.adapter = adapter
 
+        //非同期でユーザー取得
+        GetUserList(this).start()
 
 
         button.setOnClickListener{
@@ -57,5 +52,10 @@ class UserListActivity : AppCompatActivity() {
             startActivityForResult(intent, 11)
             return@setOnItemLongClickListener true
         }
+    }
+
+
+    fun setUsers(users : List<User>){
+        adapter.setUsers(users)
     }
 }

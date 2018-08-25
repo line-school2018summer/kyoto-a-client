@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.widget.TextView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import intern.line.me.kyotoaclient.lib.api.interfaces.UsersApi
+import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.api.GetUserInfo
+import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
+import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -18,30 +21,15 @@ class GetUserProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_get_user_profile)
 
         val selectedId = intent.getLongExtra("longTapUserId", 1)
+        //非同期でユーザー情報を取ってくる
+        GetUserInfo(this,selectedId).start()
 
-        val showName = findViewById<TextView>(R.id.show_name)
-        val showId = findViewById<TextView>(R.id.show_id)
-        val showCreatedAt = findViewById<TextView>(R.id.item_created_at)
+    }
 
-        val gson = GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create()
-        val retrofit = Retrofit.Builder().baseUrl("http://localhost:8080")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .build()
-        val usersApi = retrofit.create(UsersApi::class.java)
 
-        usersApi.getUserInfoById(selectedId).subscribeOn(Schedulers.io()).subscribe{
-            val nonUidUser = it
-            showName.text = nonUidUser.name
-            showId.text = nonUidUser.id.toString()
-            showCreatedAt.text = nonUidUser.createdAt.toString()
-        }
+    fun setUserInfo(set_user : User){
 
-        /*
-        val timestamp = Timestamp(System.currentTimeMillis())
-        val nonUidUser = NonUidUser(1, "kot", timestamp, timestamp)
-        showName.text = nonUidUser.name
-        showId.text = nonUidUser.id.toString()
-        */
+        show_name.text = set_user.name
+        show_id.text = set_user.id.toString()
     }
 }

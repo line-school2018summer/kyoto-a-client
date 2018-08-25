@@ -24,7 +24,6 @@ import intern.line.me.kyotoaclient.lib.api.GetRooms
 class RoomListActivity : AppCompatActivity() {
 
     companion object {
-
         fun intent(context: Context): Intent =
                 Intent(context,RoomListActivity::class.java)
     }

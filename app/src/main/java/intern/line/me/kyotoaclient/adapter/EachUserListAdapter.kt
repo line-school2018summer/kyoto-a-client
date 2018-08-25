@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import intern.line.me.kyotoaclient.NonUidUser
 import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.lib.User
 
 class EachUserListAdapter(private val context: Context,
-                      private val nonUidUserList: Array<NonUidUser>): BaseAdapter() {
+                      private val nonUidUserList: Array<User>): BaseAdapter() {
     private val inflater = LayoutInflater.from(context)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
@@ -23,7 +23,7 @@ class EachUserListAdapter(private val context: Context,
         return view
     }
 
-    override fun getItem(position: Int): NonUidUser {
+    override fun getItem(position: Int): User {
         return nonUidUserList[position]
     }
 
