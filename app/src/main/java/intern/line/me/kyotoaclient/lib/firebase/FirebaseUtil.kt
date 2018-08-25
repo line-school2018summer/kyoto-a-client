@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 
 class FirebaseUtil{
+    var ret: Any? = null
     companion object {
         val auth = FirebaseAuth.getInstance()!!
         private var token : String? = null
@@ -32,7 +33,7 @@ class FirebaseUtil{
             if (it.isSuccessful) {
                 token = it.result.token
                 Log.d("Token", token)
-                body()
+                ret = body()
             }else{
                 throw Exception("can't get token.")
             }
