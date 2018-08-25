@@ -12,31 +12,3 @@ class Message(
     var updated_at: Timestamp
 )
 
-class MessageList(val messages: MutableList<Message>) {
-    var count: Int = messages.count()
-
-    fun messageAt(index: Int): Message {
-        return this.messages[index]
-    }
-
-    fun updateAt(index: Int, message: Message): Boolean {
-        this.messages[index] = message
-        return true
-    }
-
-    fun removeAt(index: Int): Boolean {
-        this.messages.removeAt(index)
-        this.updateCount()
-        return true
-    }
-
-    fun add(message: Message): Boolean {
-        messages.add(message)
-        this.updateCount()
-        return true
-    }
-
-    private fun updateCount() {
-        this.count = this.messages.count()
-    }
-}

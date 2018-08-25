@@ -1,19 +1,20 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
 import intern.line.me.kyotoaclient.lib.Message
 import kotlinx.coroutines.experimental.Deferred
+import retrofit2.Call
 import retrofit2.http.*
 
-interface RoomsAPI {
-    @GET("/rooms/{id}/messages")
-    fun getMessages(
-        @Header("Token") token : String,
-        @Path("id") id: Long
-    ): Deferred<List<Message>>
-
-    @POST("/rooms/{id}/messages")
-    fun createMessage(
+interface MessagesAPI {
+    @PUT("/messages/{id}")
+    fun updateMessage(
         @Header("Token") token : String,
         @Path("id") id: Long,
         @Body body: HashMap<String, String>
-    ): Deferred<Message>
+    ): Call<Message>
+
+    @DELETE("/messages/{id}")
+    fun deleteMessage(
+        @Header("Token") token : String,
+        @Path("id") id: Long
+    ): Call<HashMap<String, Boolean>>
 }
