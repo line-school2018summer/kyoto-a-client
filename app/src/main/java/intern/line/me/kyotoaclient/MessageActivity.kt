@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
@@ -15,6 +16,7 @@ import intern.line.me.kyotoaclient.lib.Room
 import intern.line.me.kyotoaclient.lib.User
 import intern.line.me.kyotoaclient.lib.api.GetMessages
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
+import kotlinx.coroutines.experimental.Job
 import java.sql.Time
 import java.sql.Timestamp
 import java.util.*
@@ -24,6 +26,8 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
     private var room: Room? = null
+    private var messagePool: MessagesAdapter? = null
+    private var listAdapter: MessageListAdapter? = null
 
     var messages: MessageList? = null
 
@@ -40,8 +44,18 @@ class MessageActivity : AppCompatActivity() {
             this.title = "Room"
         }
         val listView: ListView = this.findViewById(R.id.main_list)
+        listView.setOnScrollListener(object: AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+                if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
+                    val notifyView = findViewById<View>(R.id.message_new_notify)
+                    notifyView.visibility = View.INVISIBLE
+                }
+            }
+        })
         registerForContextMenu(listView)
-        MessagesAdapter(this).get(roomId)
+        messagePool = MessagesAdapter(this).getPool(roomId)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -154,7 +168,7 @@ class MessageActivity : AppCompatActivity() {
     }
 
     fun drawMessagesList(scrollAt: Int? = null) {
-        var messages = this.messages
+        val messages = this.messages
         val listView: ListView = this.findViewById(R.id.main_list)
         val progress: View = this.findViewById(R.id.message_loading)
         if (messages == null) {
@@ -162,25 +176,61 @@ class MessageActivity : AppCompatActivity() {
             progress.visibility = View.VISIBLE
             return
         }
-        val adapter = MessageListAdapter(this)
-        adapter.setMessages(messages)
-        var scrollTo = 0
-        if (scrollAt == null) {
+        val listAdapter = listAdapter
+        var scrollTo: Int? = null
+        if (listAdapter == null) {
+            val newListAdapter = MessageListAdapter(this)
+            newListAdapter.setMessages(messages)
+            listView.adapter = newListAdapter
+            this.listAdapter = newListAdapter
             scrollTo = listView.count - 1
         } else {
-            scrollTo = scrollAt
+            val oldMessages = listAdapter.getMessages()
+            if (oldMessages != null) {
+                if (messages.getLast().id > oldMessages.getLast().id) {
+                    val newMessageNotify: View = this.findViewById(R.id.message_new_notify)
+                    newMessageNotify.visibility = View.VISIBLE
+                }
+            }
+            listAdapter.setMessages(messages)
+            listAdapter.notifyDataSetChanged()
         }
-        listView.adapter = adapter
-        listView.setSelection(scrollTo)
+        if (scrollTo == null) {
+            if (scrollAt == null) {
+                scrollTo = null
+            } else if (scrollAt < 0) {
+                scrollTo = listView.count - 1
+            } else {
+                scrollTo = scrollAt
+            }
+        }
+        if (scrollTo != null) {
+            listView.setSelection(scrollTo)
+        }
         listView.visibility = View.VISIBLE
         progress.visibility = View.INVISIBLE
     }
 
     private fun getRoom(id: Long): Room{
-        return Room(1, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
+        return Room(2, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
     }
 
-    fun doMessagesAction() {
-        drawMessagesList()
+    fun doMessagesAction(scrollAt: Int? = null) {
+        drawMessagesList(scrollAt)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val messagePool = messagePool
+        messagePool ?: return
+        messagePool.stopMessagePool()
+    }
+
+    fun scrollToEnd(v: View) {
+        val listView: ListView = this.findViewById(R.id.main_list)
+        val messages = messages
+        messages ?: return
+        val last: Int = messages.count - 1
+        listView.setSelection(last)
     }
 }

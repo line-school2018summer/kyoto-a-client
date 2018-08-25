@@ -36,6 +36,10 @@ class MessageList(val messages: MutableList<Message>) {
         return true
     }
 
+    fun getLast(): Message {
+        return this.messages[this.messages.lastIndex]
+    }
+
     private fun updateCount() {
         this.count = this.messages.count()
     }

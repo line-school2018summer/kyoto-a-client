@@ -9,4 +9,5 @@
     <string name="api_forbidden">権限がありません</string>
     <string name="api_timeout">タイムアウトしました</string>
     <string name="api_failed">API接続に失敗しました</string>
+    <string name="message_new_available">新しいメッセージがあります</string>
 </resources>

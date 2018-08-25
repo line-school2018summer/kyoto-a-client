@@ -25,6 +25,10 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         this.messages = messages
     }
 
+    fun getMessages(): MessageList? {
+        return this.messages
+    }
+
     override fun getCount(): Int {
         return messages?.count ?: 0
     }
@@ -53,5 +57,4 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
     override fun getItemId(position: Int): Long {
         return messages?.messageAt(position)?.id ?: throw Exception("message not found")
     }
-
 }

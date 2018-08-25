@@ -18,15 +18,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ListView
-            android:id="@+id/main_list"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:divider="@null"
-            android:visibility="invisible">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
 
-        </ListView>
+            <ListView
+                android:id="@+id/main_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:divider="@null"
+                android:visibility="invisible">
+
+            </ListView>
+
+            <TextView
+                android:id="@+id/message_new_notify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:background="#bbbbbbaa"
+                android:gravity="center"
+                android:onClick="scrollToEnd"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
+                android:text="@string/message_new_available"
+                android:textSize="18sp"
+                android:visibility="visible" />
+
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/message_inputs_layout"
@@ -104,6 +125,7 @@
             style="@style/Widget.AppCompat.ProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

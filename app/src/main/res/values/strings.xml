@@ -13,4 +13,5 @@
     <string name="api_forbidden">You don\'t have permission</string>
     <string name="api_timeout">timeout error</string>
     <string name="api_failed">api connection failed</string>
+    <string name="message_new_available">New message are exists</string>
 </resources>
