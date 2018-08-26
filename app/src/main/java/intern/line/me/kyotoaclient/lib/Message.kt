@@ -1,28 +1,20 @@
 package intern.line.me.kyotoaclient.lib
 
-import intern.line.me.kyotoaclient.lib.api.Delete
-import intern.line.me.kyotoaclient.lib.api.MessageUpdate
 import java.sql.Timestamp
+import java.util.concurrent.atomic.AtomicInteger
 
 class Message(
     var id: Long,
     var room_id: Long,
     var user_id: Long,
     var text: String,
-    var createdAt: Timestamp,
-    var updatedAt: Timestamp
-) {
-    fun update(message: Message) {
-        MessageUpdate(this, message).start()
-    }
+    var user: User,
+    var created_at: Timestamp,
+    var updated_at: Timestamp
+)
 
-    fun delete() {
-        Delete(this).start()
-    }
-}
-
-class MessageList(private val messages: MutableList<Message>) {
-    var count: Int = messages.count()
+class MessageList(val messages: MutableList<Message>) {
+    var count: AtomicInteger = AtomicInteger(messages.count())
 
     fun messageAt(index: Int): Message {
         return this.messages[index]
@@ -45,7 +37,11 @@ class MessageList(private val messages: MutableList<Message>) {
         return true
     }
 
+    fun getLast(): Message {
+        return this.messages[this.messages.lastIndex]
+    }
+
     private fun updateCount() {
-        this.count = this.messages.count()
+        this.count.set(this.messages.count())
     }
 }

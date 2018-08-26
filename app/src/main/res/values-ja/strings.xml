@@ -8,4 +8,8 @@
     <string name="message_modified">編集済</string>
     <string name="retry">もう一度試す</string>
     <string name="failed_to_sign_in">ログインに失敗しました</string>
+    <string name="api_forbidden">権限がありません</string>
+    <string name="api_timeout">タイムアウトしました</string>
+    <string name="api_failed">API接続に失敗しました</string>
+    <string name="message_new_available">新しいメッセージがあります</string>
 </resources>

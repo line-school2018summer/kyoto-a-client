@@ -25,21 +25,25 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         this.messages = messages
     }
 
+    fun getMessages(): MessageList? {
+        return this.messages
+    }
+
     override fun getCount(): Int {
-        return messages?.count ?: 0
+        return messages?.count?.toInt() ?: 0
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.message_ballon, parent, false)
         val message: Message = messages?.messageAt(position) ?: throw Exception("message not found")
-        val created_at: Timestamp = (message.createdAt)
+        val created_at: Timestamp = (message.created_at)
         val format = SimpleDateFormat("HH:mm")
         val time = Date(created_at.time)
 
-        (convertView.findViewById(R.id.message_author) as TextView).setText(message.user_id.toString())
+        (convertView.findViewById(R.id.message_author) as TextView).setText(message.user.name)
         (convertView.findViewById(R.id.message_text) as TextView).setText((message.text))
         (convertView.findViewById(R.id.message_time) as TextView).setText(format.format(time))
-        if (message.createdAt != message.updatedAt){
+        if (message.created_at != message.updated_at){
             (convertView.findViewById(R.id.message_modified) as TextView).visibility = View.VISIBLE
         }
 
@@ -53,5 +57,4 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
     override fun getItemId(position: Int): Long {
         return messages?.messageAt(position)?.id ?: throw Exception("message not found")
     }
-
 }

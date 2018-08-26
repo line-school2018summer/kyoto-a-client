@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
+import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
@@ -12,6 +13,11 @@ import intern.line.me.kyotoaclient.adapter.MessageListAdapter
 import intern.line.me.kyotoaclient.lib.Message
 import intern.line.me.kyotoaclient.lib.MessageList
 import intern.line.me.kyotoaclient.lib.Room
+import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.api.GetMessages
+import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
+import kotlinx.coroutines.experimental.Job
+import java.sql.Time
 import java.sql.Timestamp
 import java.util.*
 
@@ -19,114 +25,37 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
+    private var room: Room? = null
+    private var messagePool: MessagesAdapter? = null
+    private var listAdapter: MessageListAdapter? = null
 
-    private var messages: MessageList = MessageList(mutableListOf(
-            Message(
-                    id = 1,
-                    room_id = 1,
-                    user_id = 1,
-                    text = "foundgfsauygfoeufiovbreyiaofgbysadrofvbywoabfvisobveiosbahgiovlsabuigpvp;bsauviprfbgeauvifbvuilaboggvuifdb",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 2,
-                    room_id = 1,
-                    user_id = 2,
-                    text = "hello 1!",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 3,
-                    room_id = 1,
-                    user_id = 1,
-                    text = "どうよ",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 4,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "わーい",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 5,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "たーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 6,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "かばんちゃん！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 7,
-                    room_id = 1,
-                    user_id = 5,
-                    text = "サーバルちゃん！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 8,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "たーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 9,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "すごくたーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 10,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "めっちゃたーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 11,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "やばたーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            ),
-            Message(
-                    id = 8,
-                    room_id = 1,
-                    user_id = 4,
-                    text = "たーのしー！",
-                    createdAt = Timestamp(439208349),
-                    updatedAt = Timestamp(439208349)
-            )
-    ))
+    var messages: MessageList? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         val roomId = intent.getLongExtra("roomId", -1)
-        val room: Room = getRoom(roomId)
-        this.title = room.name
-        this.drawMessagesList()
+        room = getRoom(roomId)
+        val room = room
+        if (room != null) {
+            this.title = room.name
+        } else {
+            this.title = "Room"
+        }
+        val listView: ListView = this.findViewById(R.id.main_list)
+        listView.setOnScrollListener(object: AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+
+            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+                if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
+                    val notifyView = findViewById<View>(R.id.message_new_notify)
+                    notifyView.visibility = View.INVISIBLE
+                }
+            }
+        })
+        registerForContextMenu(listView)
+        messagePool = MessagesAdapter(this).getPool(roomId)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -134,7 +63,8 @@ class MessageActivity : AppCompatActivity() {
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
-        val myId: Long = 4
+        // TODO("myIdをちゃんと取得する")
+        val myId: Long = 1
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -153,15 +83,20 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun onDeleteMessage(id: Int): Boolean {
-        this.messages.removeAt(id)
-        this.drawMessagesList()
+        val messages = this.messages ?: return false
+        MessagesAdapter(this).delete(id, messages.messageAt(id))
         return true
+    }
+
+    fun onUpdate(v: View) {
+        println(this.messages)
+        drawMessagesList()
     }
 
     private fun onUpdateMessage(id: Int): Boolean {
         this.toEditMode(id)
         val editInput: EditText = findViewById(R.id.message_edit_text)
-        val message: Message = this.messages.messageAt(id)
+        val message: Message = this.messages?.messageAt(id) ?: return false
         editInput.setText(message.text)
 
         return true
@@ -195,8 +130,13 @@ class MessageActivity : AppCompatActivity() {
             this.toSendMode()
             return
         }
+        val messages: MessageList? = this.messages
+        if (messages == null) {
+            this.toSendMode()
+            return
+        }
         val editText: EditText = findViewById(R.id.message_edit_text)
-        val originMessage: Message = this.messages.messageAt(editingMessagePosition)
+        val originMessage: Message = messages.messageAt(editingMessagePosition)
         if (originMessage.text == editText.text.toString()){
             this.toSendMode()
             return
@@ -206,10 +146,10 @@ class MessageActivity : AppCompatActivity() {
         }
         var message = originMessage
         message.text = editText.text.toString()
-        message.updatedAt = Timestamp(System.currentTimeMillis())
-        this.messages.updateAt(editingMessagePosition, message)
-        originMessage.update(message)
-        this.drawMessagesList()
+        message.updated_at = Timestamp(System.currentTimeMillis())
+        this.messages?.updateAt(editingMessagePosition, message)
+        doMessagesAction()
+        MessagesAdapter(this).update(editingMessagePosition, originMessage, message)
         this.toSendMode()
     }
 
@@ -218,37 +158,88 @@ class MessageActivity : AppCompatActivity() {
         if (sendText.text.isBlank()) {
             return
         }
-        val created_at = Timestamp(System.currentTimeMillis())
-        val newMessage = Message(
-                id = Random().nextLong(),
-                room_id = 1,
-                user_id = 4,
-                text = sendText.text.toString(),
-                createdAt = created_at,
-                updatedAt = created_at
-        )
-        this.messages.add(newMessage)
-        this.drawMessagesList()
+        val room = room
+        if (room == null) {
+            this.toSendMode()
+            return
+        }
+        MessagesAdapter(this).create(room.id, sendText.text.toString())
         this.toSendMode()
     }
 
-    private fun drawMessagesList(scrollAt: Int? = null) {
+    fun drawMessagesList(scrollAt: Int? = null) {
         val messages = this.messages
-        val adapter = MessageListAdapter(this)
-        adapter.setMessages(messages)
         val listView: ListView = this.findViewById(R.id.main_list)
-        var scrollTo: Int = 0
-        if (scrollAt == null) {
+        val progress: View = this.findViewById(R.id.message_loading)
+        if (messages == null) {
+            listView.visibility = View.INVISIBLE
+            progress.visibility = View.VISIBLE
+            return
+        }
+        val listAdapter = listAdapter
+        var scrollTo: Int? = null
+        if (listAdapter == null) {
+            val newListAdapter = MessageListAdapter(this)
+            newListAdapter.setMessages(messages)
+            listView.adapter = newListAdapter
+            this.listAdapter = newListAdapter
             scrollTo = listView.count - 1
         } else {
-            scrollTo = scrollAt
+            val oldMessages = listAdapter.getMessages()
+            if (oldMessages != null) {
+                if (messages.getLast().id > oldMessages.getLast().id) {
+                    val newMessageNotify: View = this.findViewById(R.id.message_new_notify)
+                    newMessageNotify.visibility = View.VISIBLE
+                }
+            }
+            listAdapter.setMessages(messages)
+            listAdapter.notifyDataSetChanged()
         }
-        listView.adapter = adapter
-        listView.setSelection(scrollTo)
-        registerForContextMenu(listView)
+        if (scrollTo == null) {
+            if (scrollAt == null) {
+                scrollTo = null
+            } else if (scrollAt < 0) {
+                scrollTo = listView.count - 1
+            } else {
+                scrollTo = scrollAt
+            }
+        }
+        if (scrollTo != null) {
+            listView.setSelection(scrollTo)
+        }
+        listView.visibility = View.VISIBLE
+        progress.visibility = View.INVISIBLE
     }
 
     private fun getRoom(id: Long): Room{
-        return Room(1, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
+        return Room(2, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
+    }
+
+    fun doMessagesAction(scrollAt: Int? = null) {
+        drawMessagesList(scrollAt)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val messagePool = messagePool
+        messagePool ?: return
+        messagePool.stopMessagePool()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        val room = room
+        val messagePool = messagePool
+        room ?: return
+        messagePool ?: return
+        messagePool.getPool(room.id)
+    }
+
+    fun scrollToEnd(v: View) {
+        val listView: ListView = this.findViewById(R.id.main_list)
+        val messages = messages
+        messages ?: return
+        val last: Int = messages.count.toInt() - 1
+        listView.setSelection(last)
     }
 }
