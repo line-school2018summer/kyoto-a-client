@@ -125,7 +125,7 @@ class RoomListActivity : AppCompatActivity() {
 
         listView.setOnItemClickListener { parent, view, position, id ->
             val intent = Intent(this@RoomListActivity, MessageActivity::class.java)
-            intent.putExtra("roomId",rooms.roomAt(position).id)
+            intent.putExtra("room",rooms.roomAt(position))
             startActivity(intent)
         }
     }

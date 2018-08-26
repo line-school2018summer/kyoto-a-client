@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.lib
 
 import java.sql.Timestamp
+import java.io.Serializable
 
 class Room(
         var id: Long,
@@ -9,7 +10,7 @@ class Room(
         var updatedAt: Timestamp,
         var latestMessage: String,
         var messageTime: Timestamp
-)
+): Serializable
 
 class RoomList(private val rooms: MutableList<Room>) {
     var count: Int = rooms.count()
