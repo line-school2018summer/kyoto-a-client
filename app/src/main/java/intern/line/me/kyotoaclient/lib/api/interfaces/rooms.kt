@@ -16,4 +16,15 @@ interface RoomsAPI {
         @Path("id") id: Long,
         @Body body: HashMap<String, String>
     ): Deferred<Message>
+
+    @GET("/rooms/")
+    fun getRooms(
+            @Header("Token") token : String
+    ): Deferred<List<Message>>
+
+    @POST("/rooms")
+    fun createRoom(
+            @Header("Token") token : String,
+            @Body body: HashMap<String, String>
+    ): Deferred<Message>
 }
