@@ -10,6 +10,7 @@ import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import intern.line.me.kyotoaclient.lib.api.CreateUserPresenter
 import kotlinx.android.synthetic.main.activity_auth.*
 import java.util.*
@@ -29,6 +30,9 @@ class AuthActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
+
+        //必ずログインするように変更(デバッグのしやすさから)
+        auth.signOut()
 
         if(auth.currentUser != null){
             onCompleteSignIn()
@@ -57,9 +61,11 @@ class AuthActivity : AppCompatActivity() {
             if(resultCode == Activity.RESULT_OK) {
 
                 val user = auth.currentUser
+                
                 if(user != null) {
                     CreateUserPresenter(user.displayName!!,this).start()
                 }
+
             }
             else {
                 //ログアウトした後にログインが必要な画面に戻ると発生する
