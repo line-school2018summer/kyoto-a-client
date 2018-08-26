@@ -36,8 +36,8 @@ class RoomListAdapter(private val context: Context): BaseAdapter() {
         val format = SimpleDateFormat("HH:mm")
         val time = Date(created_at.time)
         (convertView.findViewById(R.id.room_name_view) as TextView).setText((rooms?.roomAt(position)?.name ?: throw Exception("room not found")))
-        (convertView.findViewById(R.id.latest_message_view) as TextView).setText((rooms?.roomAt(position)?.latestMessage ?: throw Exception("room not found")))
-        (convertView.findViewById(R.id.message_time_view) as TextView).setText(format.format(time))
+//        (convertView.findViewById(R.id.latest_message_view) as TextView).setText((rooms?.roomAt(position)?.latestMessage ?: throw Exception("room not found")))
+//        (convertView.findViewById(R.id.message_time_view) as TextView).setText(format.format(time))
         return convertView
     }
 
