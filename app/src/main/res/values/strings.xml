@@ -2,14 +2,14 @@
     <string name="app_name">Kyotoaclient</string>
     <string name="room_create_input">Room Name</string>
     <string name="room_create_button">Create</string>
-    <string name="hello_login_text_View">ログイン方法を選択してください</string>
-    <string name="request_client_id">129455307189-1p8npv3edhllc5p9nrt3i7kif4irlvkp.apps.googleusercontent.com</string>
     <string name="message_input">Input text</string>
     <string name="message_send">Send</string>
     <string name="message_edit">Edit</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="message_modified">Modified</string>
+    <string name="retry">Retry</string>
+    <string name="failed_to_sign_in">Failed to sign in</string>
     <string name="api_forbidden">You don\'t have permission</string>
     <string name="api_timeout">timeout error</string>
     <string name="api_failed">api connection failed</string>
