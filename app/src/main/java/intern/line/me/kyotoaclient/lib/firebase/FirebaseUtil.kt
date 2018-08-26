@@ -10,7 +10,7 @@ class FirebaseUtil{
         val auth = FirebaseAuth.getInstance()!!
     }
 
-    private var token : String? = null
+    var token : String? = null
 
     //トークンを取得する際はこのメソッドを使用する。毎回tokenをnullにしてるので、startWithGettingTokenでラップしていない場合はnullが帰る。
     fun getIdToken(): String?{
@@ -32,7 +32,7 @@ class FirebaseUtil{
             Log.d("Token", "complete getIdToken")
 
             if (it.isSuccessful) {
-                token = it.result.token
+                this.token = it.result.token
                 Log.d("Token", token)
                 ret = body()
             }else{
