@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.lib
 
 import java.sql.Timestamp
+import java.util.concurrent.atomic.AtomicInteger
 
 class Message(
     var id: Long,
@@ -13,7 +14,7 @@ class Message(
 )
 
 class MessageList(val messages: MutableList<Message>) {
-    var count: Int = messages.count()
+    var count: AtomicInteger = AtomicInteger(messages.count())
 
     fun messageAt(index: Int): Message {
         return this.messages[index]
@@ -41,6 +42,6 @@ class MessageList(val messages: MutableList<Message>) {
     }
 
     private fun updateCount() {
-        this.count = this.messages.count()
+        this.count.set(this.messages.count())
     }
 }

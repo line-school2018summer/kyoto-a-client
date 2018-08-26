@@ -30,7 +30,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
     }
 
     override fun getCount(): Int {
-        return messages?.count ?: 0
+        return messages?.count?.toInt() ?: 0
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {

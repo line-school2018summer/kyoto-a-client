@@ -25,6 +25,7 @@ class MessagesAdapter(private var activity: MessageActivity) {
     }
 
     fun getPool(roomId: Long): MessagesAdapter {
+        running = true
         messagePool = GetMessages(this, roomId).startPool()
         return this
     }

@@ -226,11 +226,20 @@ class MessageActivity : AppCompatActivity() {
         messagePool.stopMessagePool()
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        val room = room
+        val messagePool = messagePool
+        room ?: return
+        messagePool ?: return
+        messagePool.getPool(room.id)
+    }
+
     fun scrollToEnd(v: View) {
         val listView: ListView = this.findViewById(R.id.main_list)
         val messages = messages
         messages ?: return
-        val last: Int = messages.count - 1
+        val last: Int = messages.count.toInt() - 1
         listView.setSelection(last)
     }
 }
