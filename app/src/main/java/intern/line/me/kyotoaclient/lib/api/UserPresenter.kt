@@ -21,8 +21,8 @@ class CreateUserPresenter(val name: String,private val activity: AuthActivity): 
     //FirebaseUtilのインスタンスを作成しないとトークンが共有できない
     private val firebase_cli = FirebaseUtil()
 
-    private suspend fun createASyncUser(name: String,token : String) : User = withContext(CommonPool) {
-            api.createUser(name, token).await()
+    private suspend fun createASyncUser(name: String,token : String) : Response<User> = withContext(CommonPool) {
+            api.createUser(name, token).awaitResponse()
     }
 
     private suspend fun createUser() {
