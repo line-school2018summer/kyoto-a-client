@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient.lib.api
 
+import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,6 +32,7 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
     private suspend fun getMessages(room_id: Long) {
         val token: String? = FirebaseUtil().getIdToken()
         if (token == null) {
+            Log.v("ROOM_MESSAGES_GETTER", "API failed: i have no token")
             context.responseCode = 500
             context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
             context.goBack()
@@ -45,18 +47,21 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
                 context.doMessagesAction()
             }
         } catch (t: HttpException) {
+            Log.v("ROOM_MESSAGES_GETTER", "API failed: 403 forbibdden")
             context.responseCode = t.response().code()
             context.handler.post {
                 context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: SocketTimeoutException) {
+            Log.v("ROOM_MESSAGES_GETTER", "API failed: timeout")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_timeout, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: IOException) {
+            Log.v("ROOM_MESSAGES_GETTER", "API failed: unknown reason")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
@@ -122,6 +127,7 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
     private suspend fun createMessage(room_id: Long, text: String) {
         val token: String? = FirebaseUtil().getIdToken()
         if (token == null) {
+            Log.v("ROOM_MESSAGES_CREATER", "API failed: i have no token")
             context.responseCode = 500
             context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
             context.goBack()
@@ -135,18 +141,21 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
                 context.doMessagesAction(-1)
             }
         } catch (t: HttpException) {
+            Log.v("ROOM_MESSAGES_CREATER", "API failed: 403 forbidden")
             context.responseCode = t.response().code()
             context.handler.post {
                 context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: SocketTimeoutException) {
+            Log.v("ROOM_MESSAGES_CREATER", "API failed: timeout")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_timeout, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: IOException) {
+            Log.v("ROOM_MESSAGES_CREATER", "API failed: unknown reason")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)

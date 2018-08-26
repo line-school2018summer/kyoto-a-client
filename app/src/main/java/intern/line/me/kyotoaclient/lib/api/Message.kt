@@ -27,6 +27,7 @@ class UpdateMessage(private val context: MessagesAdapter, private val position: 
     private suspend fun updateMessage(newMessage: Message) {
         val token: String? = FirebaseUtil().getIdToken()
         if (token == null) {
+            Log.v("MESSAGE_UPDATER", "API failed: i have no token")
             context.responseCode = 500
             context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
             context.goBack()
@@ -37,6 +38,7 @@ class UpdateMessage(private val context: MessagesAdapter, private val position: 
             context.responseCode = 200
             val messages = context.messages
             if (messages == null) {
+                Log.v("MESSAGE_UPDATER", "API failed: there are no messages for update")
                 context.handler.post {
                     context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
                     context.goBack()
@@ -50,18 +52,21 @@ class UpdateMessage(private val context: MessagesAdapter, private val position: 
                 context.doMessagesAction()
             }
         } catch (t: HttpException) {
+            Log.v("MESSAGE_UPDATER", "API failed: 403 forbidden")
             context.responseCode = t.response().code()
             context.handler.post {
                 context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: SocketTimeoutException) {
+            Log.v("MESSAGE_UPDATER", "API failed: timeout")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_timeout, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: IOException) {
+            Log.v("MESSAGE_UPDATER", "API failed: unknown reason")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
@@ -91,6 +96,7 @@ class DeleteMessage(private val context: MessagesAdapter, private val position: 
     private suspend fun deleteMessage(message: Message): Boolean {
         val token: String? = FirebaseUtil().getIdToken()
         if (token == null) {
+            Log.v("MESSAGE_DELETER", "API failed: i have no token")
             context.responseCode = 500
             context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
             context.goBack()
@@ -101,6 +107,7 @@ class DeleteMessage(private val context: MessagesAdapter, private val position: 
             context.responseCode = 200
             val messages = context.messages
             if (messages == null) {
+                Log.v("MESSAGE_DELETER", "API failed: there are no message to delete")
                 context.handler.post {
                     context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
                     context.goBack()
@@ -118,18 +125,21 @@ class DeleteMessage(private val context: MessagesAdapter, private val position: 
             }
             return true
         } catch (t: HttpException) {
+            Log.v("MESSAGE_DELETER", "API failed: 403 forbidden")
             context.responseCode = t.response().code()
             context.handler.post {
                 context.makeToast(R.string.api_forbidden, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: SocketTimeoutException) {
+            Log.v("MESSAGE_DELETER", "API failed: timeout")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_timeout, Toast.LENGTH_LONG)
                 context.goBack()
             }
         } catch (t: IOException) {
+            Log.v("MESSAGE_DELETER", "API failed: unknown reason")
             context.responseCode = 500
             context.handler.post {
                 context.makeToast(R.string.api_failed, Toast.LENGTH_LONG)
