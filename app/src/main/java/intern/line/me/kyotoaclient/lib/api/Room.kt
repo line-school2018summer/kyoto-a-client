@@ -25,12 +25,15 @@ import java.net.SocketTimeoutException
 class GetMessages (private val context: MessagesAdapter, private val room_id:Long): API() {
     val api = retrofit.create(RoomsAPI::class.java)
 
+    val util = FirebaseUtil()
+
+
     private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {
         api.getMessages(token, room_id).await()
     }
 
     private suspend fun getMessages(room_id: Long) {
-        val token: String? = FirebaseUtil().getIdToken()
+        val token: String? = util.getIdToken()
         if (token == null) {
             Log.v("ROOM_MESSAGES_GETTER", "API failed: i have no token")
             context.responseCode = 500
@@ -74,7 +77,7 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
         val auth = FirebaseAuth.getInstance()!!
         val user = auth.currentUser
         if(user != null) {
-            FirebaseUtil().startWithGettingToken(user) {
+            util.startWithGettingToken(user) {
                 launch(this.job + UI) { getMessages(room_id) }
             }
         }
@@ -82,7 +85,6 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
 
     private suspend fun poolMessages(user: FirebaseUser) {
         while (context.running) {
-            val util = FirebaseUtil()
             util.startWithGettingToken(user) {
                 launch(UI) {
                     getMessages(room_id)
@@ -119,13 +121,14 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
 
 class CreateMessage (private val context: MessagesAdapter, private val room_id:Long, private val text: String): API() {
     val api = retrofit.create(RoomsAPI::class.java)
+    val util = FirebaseUtil()
 
     private suspend fun createAsyncMessage(token: String, room_id: Long, text: String):Message = withContext(CommonPool) {
         api.createMessage(token, room_id, hashMapOf("text" to text)).await()
     }
 
     private suspend fun createMessage(room_id: Long, text: String) {
-        val token: String? = FirebaseUtil().getIdToken()
+        val token: String? = util.getIdToken()
         if (token == null) {
             Log.v("ROOM_MESSAGES_CREATER", "API failed: i have no token")
             context.responseCode = 500
@@ -168,7 +171,7 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
         val auth = FirebaseAuth.getInstance()!!
         val user = auth.currentUser
         if(user != null) {
-            FirebaseUtil().startWithGettingToken(user) {
+            util.startWithGettingToken(user) {
                 launch(this.job) { createMessage(room_id, text) }
             }
         }
