@@ -8,7 +8,7 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 
-class Update(private var message: Message, private val newMessage: Message): API() {
+class MessageUpdate(private var message: Message, private val newMessage: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
 
     private suspend fun updateAsyncMessage(newMessage: Message): Message = withContext(CommonPool) {
@@ -29,7 +29,7 @@ class Update(private var message: Message, private val newMessage: Message): API
     }
 }
 
-class Delete(private var message: Message): API() {
+class MessageDelete(private var message: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
 
     private suspend fun deleteAsyncMessage(message: Message): Boolean = withContext(CommonPool) {

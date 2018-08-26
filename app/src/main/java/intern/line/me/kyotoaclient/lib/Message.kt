@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.lib
 
 import intern.line.me.kyotoaclient.lib.api.Delete
-import intern.line.me.kyotoaclient.lib.api.Update
+import intern.line.me.kyotoaclient.lib.api.MessageUpdate
 import java.sql.Timestamp
 
 class Message(
@@ -13,7 +13,7 @@ class Message(
     var updatedAt: Timestamp
 ) {
     fun update(message: Message) {
-        Update(this, message).start()
+        MessageUpdate(this, message).start()
     }
 
     fun delete() {

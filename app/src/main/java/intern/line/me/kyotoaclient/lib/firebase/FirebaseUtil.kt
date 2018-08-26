@@ -7,8 +7,9 @@ import com.google.firebase.auth.FirebaseUser
 class FirebaseUtil{
     companion object {
         val auth = FirebaseAuth.getInstance()!!
-        private var token : String? = null
     }
+
+    private var token : String? = null
 
     //トークンを取得する際はこのメソッドを使用する。毎回tokenをnullにしてるので、startWithGettingTokenでラップしていない場合はnullが帰る。
     fun getIdToken(): String?{

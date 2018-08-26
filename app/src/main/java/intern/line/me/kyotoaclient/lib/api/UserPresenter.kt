@@ -15,6 +15,9 @@ import retrofit2.HttpException
 class CreateUserPresenter(val name: String): API(){
     private val api = retrofit.create(UserAPI::class.java)
 
+    //FirebaseUtilのインスタンスを作成しないとトークンが共有できない
+    private val firebase_cli = FirebaseUtil()
+
     private suspend fun createASyncUser(name: String,token : String) : User = withContext(CommonPool) {
             api.createUser(name, token).await()
     }
@@ -22,7 +25,7 @@ class CreateUserPresenter(val name: String): API(){
     private suspend fun createUser() {
 
         //トークンは以下のメソッドで取得できるが、FirebaseUtil.startWithGettingToken{}でラップしていないとnullが返ってくる
-        val token = FirebaseUtil().getIdToken()
+        val token = firebase_cli.getIdToken()
 
         try {
             if (token != null) {
@@ -40,7 +43,7 @@ class CreateUserPresenter(val name: String): API(){
         val auth = FirebaseAuth.getInstance()!!
         val user = auth.currentUser
         if(user != null) {
-            FirebaseUtil().startWithGettingToken(user) {
+            firebase_cli.startWithGettingToken(user) {
                 launch(this.job + UI) { createUser() }
             }
         }
