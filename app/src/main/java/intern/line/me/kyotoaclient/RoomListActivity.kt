@@ -47,7 +47,7 @@ class RoomListActivity : AppCompatActivity() {
         list.setOnItemClickListener{_, _, position, _ ->
             val selectedRoom = adapter.getItem(position)
             val result = Intent()
-            result.putExtra("selectedUserId", selectedRoom)
+            result.putExtra("Room", selectedRoom)
             setResult(Activity.RESULT_OK, result)
             finish()
         }
