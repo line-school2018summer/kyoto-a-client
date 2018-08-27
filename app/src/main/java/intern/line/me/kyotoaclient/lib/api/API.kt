@@ -52,7 +52,7 @@ open class API {
     }
 
     val retrofit = Retrofit.Builder()
-            .baseUrl("http://kyoto-a-api.pinfort.me/")
+            .baseUrl("https://kyoto-a-api.pinfort.me/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .addCallAdapterFactory(CoroutineCallAdapterFactory()) // Adapter を登録
             .client(client.build())
