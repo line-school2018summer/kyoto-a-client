@@ -36,21 +36,29 @@ class RoomListActivity : AppCompatActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-        val list = findViewById<ListView>(R.id.room_list)
-
-        adapter = RoomListAdapter(this)
-        list.adapter = adapter
+        val adapter = RoomListAdapter(this)
 
         //非同期でユーザー取得
         GetRooms(this).start()
 
-        list.setOnItemClickListener{_, _, position, _ ->
+        val listView: ListView = this.findViewById(R.id.room_list)
+
+        listView.adapter = adapter
+        registerForContextMenu(listView)
+        listView.setOnItemClickListener { parent, view, position, id ->
             val selectedRoom = adapter.getItem(position)
-            val result = Intent()
-            result.putExtra("Room", selectedRoom)
-            setResult(Activity.RESULT_OK, result)
-            finish()
+            val intent = Intent(this@RoomListActivity, MessageActivity::class.java)
+            intent.putExtra("room", selectedRoom)
+            startActivity(intent)
         }
+
+//        list.setOnItemClickListener{_, _, position, _ ->
+//            val selectedRoom = adapter.getItem(position)
+//            val result = Intent()
+//            result.putExtra("Room", selectedRoom)
+//            setResult(Activity.RESULT_OK, result)
+//            finish()
+//        }
 
         val createButton = findViewById(R.id.room_create_button) as FloatingActionButton
         createButton.setOnClickListener(View.OnClickListener {
@@ -58,16 +66,6 @@ class RoomListActivity : AppCompatActivity() {
             startActivity(intent)
         })
 
-//        val adapter = RoomListAdapter(this)
-//        adapter.setRooms(rooms)
-//        val listView: ListView = this.findViewById(R.id.room_list)
-//        listView.adapter = adapter
-//        registerForContextMenu(listView)
-//        listView.setOnItemClickListener { parent, view, position, id ->
-//            val intent = Intent(this@RoomListActivity, MessageActivity::class.java)
-//            intent.putExtra("room", rooms.roomAt(position))
-//            startActivity(intent)
-//        }
     }
 
     fun setRooms(rooms : List<Room>){

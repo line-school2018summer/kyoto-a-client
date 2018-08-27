@@ -33,12 +33,12 @@ class RoomListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.room_display, parent, false)
-        val created_at: Timestamp = (rooms[position].messageTime ?: throw Exception("room not found"))
+        val created_at: Timestamp = (rooms[position].message_time ?: throw Exception("room not found"))
         val format = SimpleDateFormat("HH:mm")
         val time = Date(created_at.time)
         (convertView.findViewById(R.id.room_name_view) as TextView).setText((rooms[position].name ?: throw Exception("room not found")))
-//        (convertView.findViewById(R.id.latest_message_view) as TextView).setText((rooms?.roomAt(position)?.latestMessage ?: throw Exception("room not found")))
-//        (convertView.findViewById(R.id.message_time_view) as TextView).setText(format.format(time))
+        (convertView.findViewById(R.id.latest_message_view) as TextView).setText((rooms[position].last_message ?: throw Exception("room not found")))
+        (convertView.findViewById(R.id.message_time_view) as TextView).setText(format.format(time))
         return convertView
     }
 
