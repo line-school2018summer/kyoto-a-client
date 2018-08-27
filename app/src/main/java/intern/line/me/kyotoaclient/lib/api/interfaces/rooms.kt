@@ -18,7 +18,7 @@ interface RoomsAPI {
         @Body body: HashMap<String, String>
     ): Deferred<Message>
 
-    @GET("/rooms/")
+    @GET("/rooms")
     fun getRooms(
             @Header("Token") token : String
     ): Deferred<List<Room>>
