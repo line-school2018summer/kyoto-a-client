@@ -6,10 +6,10 @@ import java.io.Serializable
 class Room(
         var id: Long,
         var name: String,
-        var createdAt: Timestamp,
-        var updatedAt: Timestamp,
-        var latestMessage: String,
-        var messageTime: Timestamp
+        var created_at: Timestamp,
+        var updated_at: Timestamp,
+        var last_message: String,
+        var message_time: Timestamp
 ): Serializable
 
 class RoomList(private val rooms: MutableList<Room>) {
