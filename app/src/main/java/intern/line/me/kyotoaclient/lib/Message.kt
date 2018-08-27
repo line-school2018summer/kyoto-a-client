@@ -16,7 +16,10 @@ class Message(
 class MessageList(val messages: MutableList<Message>) {
     var count: AtomicInteger = AtomicInteger(messages.count())
 
-    fun messageAt(index: Int): Message {
+    fun messageAt(index: Int): Message? {
+        if (index < 0) {
+            return null
+        }
         return this.messages[index]
     }
 

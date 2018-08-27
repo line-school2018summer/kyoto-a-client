@@ -64,7 +64,7 @@ class MessageActivity : AppCompatActivity() {
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
         // TODO("myIdをちゃんと取得する")
-        val myId: Long = 1
+        val myId: Long = 4
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -84,7 +84,7 @@ class MessageActivity : AppCompatActivity() {
 
     private fun onDeleteMessage(id: Int): Boolean {
         val messages = this.messages ?: return false
-        MessagesAdapter(this).delete(id, messages.messageAt(id))
+        MessagesAdapter(this).delete(id, messages.messageAt(id) ?: throw Exception("no message found"))
         return true
     }
 
@@ -136,7 +136,7 @@ class MessageActivity : AppCompatActivity() {
             return
         }
         val editText: EditText = findViewById(R.id.message_edit_text)
-        val originMessage: Message = messages.messageAt(editingMessagePosition)
+        val originMessage: Message = messages.messageAt(editingMessagePosition) ?: throw Exception("no message found")
         if (originMessage.text == editText.text.toString()){
             this.toSendMode()
             return
