@@ -6,6 +6,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
@@ -50,6 +51,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -92,6 +94,7 @@ class AuthActivity : AppCompatActivity() {
     fun onCompleteSignIn(){
         auth_progress_bar.visibility = View.GONE
         RoomListActivity.intent(this).let { startActivity(it) }
+        finish()
 
     }
 
