@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.widget.TextView
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.GetUserInfo
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import rx.schedulers.Schedulers
 
 class GetUserProfileActivity : AppCompatActivity() {
 

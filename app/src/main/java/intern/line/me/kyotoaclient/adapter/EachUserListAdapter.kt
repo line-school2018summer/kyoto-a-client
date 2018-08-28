@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.model.User
 
 class EachUserListAdapter(private val context: Context,
                       private val nonUidUserList: Array<User>): BaseAdapter() {

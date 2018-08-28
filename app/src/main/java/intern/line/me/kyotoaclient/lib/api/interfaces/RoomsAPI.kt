@@ -1,6 +1,6 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
-import intern.line.me.kyotoaclient.lib.Message
-import intern.line.me.kyotoaclient.lib.Room
+import intern.line.me.kyotoaclient.lib.model.Message
+import intern.line.me.kyotoaclient.lib.model.Room
 import kotlinx.coroutines.experimental.Deferred
 import retrofit2.http.*
 

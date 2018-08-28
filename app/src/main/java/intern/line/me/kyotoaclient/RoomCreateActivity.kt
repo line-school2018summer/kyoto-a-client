@@ -2,17 +2,11 @@ package intern.line.me.kyotoaclient
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.ContextMenu
-import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
-import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.lib.User
-import intern.line.me.kyotoaclient.lib.UserList
+import intern.line.me.kyotoaclient.lib.model.User
+import intern.line.me.kyotoaclient.lib.model.UserList
 import java.sql.Timestamp
-import java.util.*
 
 class RoomCreateActivity : AppCompatActivity() {
 
