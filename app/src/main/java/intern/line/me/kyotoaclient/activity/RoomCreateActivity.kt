@@ -2,6 +2,8 @@ package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.CheckedTextView
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
@@ -82,5 +84,14 @@ class RoomCreateActivity : AppCompatActivity() {
         val listView: ListView = this.findViewById(R.id.user_select_list)
         listView.adapter = adapter
         registerForContextMenu(listView)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        outState?.putBoolean("checked", (findViewById(R.id.user_name_view) as CheckedTextView).isChecked)
+        super.onSaveInstanceState(outState)
+    }
+
+    fun onClick(v: View) {
+        (v as CheckedTextView).toggle()
     }
 }

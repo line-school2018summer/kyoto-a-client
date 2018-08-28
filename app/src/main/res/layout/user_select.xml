@@ -15,5 +15,7 @@
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-        tools:text="User Name" />
+        tools:text="User Name"
+        android:onClick="onClick"
+        />
 </RelativeLayout>
