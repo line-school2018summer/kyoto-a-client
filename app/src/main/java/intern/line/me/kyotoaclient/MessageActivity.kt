@@ -10,16 +10,11 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.lib.Message
-import intern.line.me.kyotoaclient.lib.MessageList
-import intern.line.me.kyotoaclient.lib.Room
-import intern.line.me.kyotoaclient.lib.User
-import intern.line.me.kyotoaclient.lib.api.GetMessages
+import intern.line.me.kyotoaclient.lib.model.Message
+import intern.line.me.kyotoaclient.lib.model.MessageList
+import intern.line.me.kyotoaclient.lib.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
-import kotlinx.coroutines.experimental.Job
-import java.sql.Time
 import java.sql.Timestamp
-import java.util.*
 
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0

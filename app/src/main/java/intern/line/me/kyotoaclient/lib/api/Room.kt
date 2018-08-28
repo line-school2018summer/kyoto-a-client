@@ -6,11 +6,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import intern.line.me.kyotoaclient.RoomListActivity
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.Message
-import intern.line.me.kyotoaclient.lib.Room
-import intern.line.me.kyotoaclient.lib.RoomList
+import intern.line.me.kyotoaclient.lib.model.Message
+import intern.line.me.kyotoaclient.lib.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
-import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.withContext
@@ -21,7 +19,6 @@ import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.lang.Thread.sleep
-import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 
@@ -126,7 +123,7 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
     val api = retrofit.create(RoomsAPI::class.java)
     val util = FirebaseUtil()
 
-    private suspend fun createAsyncMessage(token: String, room_id: Long, text: String):Message = withContext(CommonPool) {
+    private suspend fun createAsyncMessage(token: String, room_id: Long, text: String): Message = withContext(CommonPool) {
         api.createMessage(token, room_id, hashMapOf("text" to text)).await()
     }
 

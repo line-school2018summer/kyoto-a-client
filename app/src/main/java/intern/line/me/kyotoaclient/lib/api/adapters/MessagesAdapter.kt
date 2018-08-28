@@ -4,8 +4,8 @@ import android.os.Handler
 import android.view.KeyEvent
 import android.widget.Toast
 import intern.line.me.kyotoaclient.MessageActivity
-import intern.line.me.kyotoaclient.lib.Message
-import intern.line.me.kyotoaclient.lib.MessageList
+import intern.line.me.kyotoaclient.lib.model.Message
+import intern.line.me.kyotoaclient.lib.model.MessageList
 import intern.line.me.kyotoaclient.lib.api.CreateMessage
 import intern.line.me.kyotoaclient.lib.api.DeleteMessage
 import intern.line.me.kyotoaclient.lib.api.GetMessages

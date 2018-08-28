@@ -3,7 +3,7 @@ package intern.line.me.kyotoaclient.lib.api
 import intern.line.me.kyotoaclient.ChangeMyProfileActivity
 import intern.line.me.kyotoaclient.GetUserProfileActivity
 import intern.line.me.kyotoaclient.UserListActivity
-import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.CommonPool

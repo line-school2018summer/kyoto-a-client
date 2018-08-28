@@ -10,7 +10,6 @@ import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.UserProfileChangeRequest
 import intern.line.me.kyotoaclient.lib.api.CreateUserPresenter
 import kotlinx.android.synthetic.main.activity_auth.*
 import java.util.*
@@ -48,6 +47,7 @@ class AuthActivity : AppCompatActivity() {
             startFirebaseLoginActivity()
         }
     }
+
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -92,6 +92,7 @@ class AuthActivity : AppCompatActivity() {
     fun onCompleteSignIn(){
         auth_progress_bar.visibility = View.GONE
         RoomListActivity.intent(this).let { startActivity(it) }
+        finish()
 
     }
 

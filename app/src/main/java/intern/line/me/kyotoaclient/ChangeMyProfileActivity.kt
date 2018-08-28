@@ -3,7 +3,7 @@ package intern.line.me.kyotoaclient
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.auth.FirebaseAuth
-import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.GetMyInfo
 import intern.line.me.kyotoaclient.lib.api.PutMyInfo
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil

@@ -4,14 +4,12 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.Message
-import intern.line.me.kyotoaclient.lib.MessageList
+import intern.line.me.kyotoaclient.lib.model.Message
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import java.io.IOException
