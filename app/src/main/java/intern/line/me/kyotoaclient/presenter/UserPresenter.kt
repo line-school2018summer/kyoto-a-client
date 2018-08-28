@@ -1,7 +1,7 @@
-package intern.line.me.kyotoaclient.lib.api.presenter
+package intern.line.me.kyotoaclient.presenter
 
 import com.google.firebase.auth.FirebaseAuth
-import intern.line.me.kyotoaclient.lib.model.User
+import intern.line.me.kyotoaclient.model.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.CommonPool

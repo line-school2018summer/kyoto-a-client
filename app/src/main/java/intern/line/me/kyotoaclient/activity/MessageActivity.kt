@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,13 +9,14 @@ import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
+import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.lib.api.presenter.GetMyInfo
-import intern.line.me.kyotoaclient.lib.model.Message
-import intern.line.me.kyotoaclient.lib.model.MessageList
-import intern.line.me.kyotoaclient.lib.model.Room
+import intern.line.me.kyotoaclient.presenter.GetMyInfo
+import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.MessageList
+import intern.line.me.kyotoaclient.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
-import intern.line.me.kyotoaclient.lib.model.User
+import intern.line.me.kyotoaclient.model.User
 import java.sql.Timestamp
 
 class MessageActivity : AppCompatActivity() {

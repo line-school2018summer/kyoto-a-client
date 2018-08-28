@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
@@ -7,10 +7,11 @@ import android.view.View
 import android.widget.ListView
 import android.support.design.widget.FloatingActionButton
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
-import intern.line.me.kyotoaclient.lib.model.Room
+import intern.line.me.kyotoaclient.model.Room
 import android.app.Activity
 import android.content.Intent
-import intern.line.me.kyotoaclient.lib.api.presenter.GetRooms
+import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.presenter.GetRooms
 
 
 
@@ -18,7 +19,7 @@ class RoomListActivity : AppCompatActivity() {
 
     companion object {
         fun intent(context: Context): Intent =
-                Intent(context,RoomListActivity::class.java)
+                Intent(context, RoomListActivity::class.java)
     }
 
     lateinit var adapter: RoomListAdapter

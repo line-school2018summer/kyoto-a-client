@@ -1,13 +1,13 @@
-package intern.line.me.kyotoaclient.lib.api.presenter
+package intern.line.me.kyotoaclient.presenter
 
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import intern.line.me.kyotoaclient.RoomListActivity
+import intern.line.me.kyotoaclient.activity.RoomListActivity
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.model.Message
-import intern.line.me.kyotoaclient.lib.model.Room
+import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil

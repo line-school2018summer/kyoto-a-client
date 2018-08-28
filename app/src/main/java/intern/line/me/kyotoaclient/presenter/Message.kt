@@ -1,10 +1,10 @@
-package intern.line.me.kyotoaclient.lib.api.presenter
+package intern.line.me.kyotoaclient.presenter
 
 import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.model.Message
+import intern.line.me.kyotoaclient.model.Message
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil

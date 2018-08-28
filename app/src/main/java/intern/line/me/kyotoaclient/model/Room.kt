@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient.lib.model
+package intern.line.me.kyotoaclient.model
 
 import java.sql.Timestamp
 import java.io.Serializable

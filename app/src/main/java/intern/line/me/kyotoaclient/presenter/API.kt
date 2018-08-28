@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient.lib.api.presenter
+package intern.line.me.kyotoaclient.presenter
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder

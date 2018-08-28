@@ -1,9 +1,10 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.api.presenter.GetUserInfo
+import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.model.User
+import intern.line.me.kyotoaclient.presenter.GetUserInfo
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
 
 class GetUserProfileActivity : AppCompatActivity() {
