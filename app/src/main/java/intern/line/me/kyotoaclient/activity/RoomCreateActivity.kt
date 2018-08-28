@@ -85,13 +85,4 @@ class RoomCreateActivity : AppCompatActivity() {
         listView.adapter = adapter
         registerForContextMenu(listView)
     }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        outState?.putBoolean("checked", (findViewById(R.id.user_name_view) as CheckedTextView).isChecked)
-        super.onSaveInstanceState(outState)
-    }
-
-    fun onClick(v: View) {
-        (v as CheckedTextView).toggle()
-    }
 }

@@ -8,11 +8,13 @@ import android.content.Context
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.User
+import android.widget.CheckedTextView
 
 class UserSelectListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
     private var users: List<User> = emptyList()
+    private var checkList = mutableListOf<Boolean>()
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -25,7 +27,17 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.user_select, parent, false)
-        (convertView.findViewById(R.id.user_name_view) as TextView).setText(users[position].name)
+        val checkView: CheckedTextView = convertView.findViewById(R.id.user_name_view)
+        checkView.setText(users[position].name)
+        checkView.isChecked = checkList[position]
+        checkView.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                val view = v as CheckedTextView?
+                view ?: return
+                view.toggle()
+                checkList[position] = view.isChecked
+            }
+        })
         return convertView
     }
 
@@ -40,6 +52,8 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
 
     fun setUsers(set_users: List<User>){
         users = set_users
+        // 初期化
+        checkList = MutableList(count, { false })
         notifyDataSetChanged()
     }
 }

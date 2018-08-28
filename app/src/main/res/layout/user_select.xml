@@ -10,12 +10,10 @@
         android:id="@+id/user_name_view"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/listPreferredItemHeightSmall"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:gravity="center_vertical"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:gravity="center_vertical"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
-        tools:text="User Name"
-        android:onClick="onClick"
-        />
+        android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        tools:text="User Name" />
 </RelativeLayout>
