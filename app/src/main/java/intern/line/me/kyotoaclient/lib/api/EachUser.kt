@@ -1,7 +1,9 @@
 package intern.line.me.kyotoaclient.lib.api
 
+import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.ChangeMyProfileActivity
 import intern.line.me.kyotoaclient.GetUserProfileActivity
+import intern.line.me.kyotoaclient.MessageActivity
 import intern.line.me.kyotoaclient.UserListActivity
 import intern.line.me.kyotoaclient.lib.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
@@ -82,6 +84,44 @@ class GetMyInfo(val activity: ChangeMyProfileActivity): API(){
 
     override fun start(){
         launch(this.job + UI){ getMyInfo() }
+    }
+}
+
+class GetMyInfoMessage(val activity: MessageActivity): API(){
+
+    val api = retrofit.create(UserAPI::class.java)
+    val util = FirebaseUtil()
+
+    private suspend fun getAsyncMyInfo(token : String): User = withContext(CommonPool){
+        api.getMyInfo(token).await()
+    }
+
+    private suspend fun getMyInfo() {
+
+        val token = FirebaseUtil().getIdToken()
+
+        try {
+            if(token != null) {
+                val userInfo = getAsyncMyInfo(token)
+                activity.setUserInfo(userInfo)
+            } else {
+                throw Exception("token is null")
+            }
+
+        } catch (t: HttpException) {
+            throw Exception("Update failed.")
+        }
+    }
+
+    override fun start(){
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            println("start getting!!!!!!!!!!")
+            util.startWithGettingToken(user) {
+                launch(this.job + UI) { getMyInfo() }
+            }
+        }
     }
 }
 

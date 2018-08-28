@@ -15,6 +15,7 @@ import intern.line.me.kyotoaclient.lib.MessageList
 import intern.line.me.kyotoaclient.lib.Room
 import intern.line.me.kyotoaclient.lib.User
 import intern.line.me.kyotoaclient.lib.api.GetMessages
+import intern.line.me.kyotoaclient.lib.api.GetMyInfoMessage
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import kotlinx.coroutines.experimental.Job
 import java.sql.Time
@@ -30,12 +31,16 @@ class MessageActivity : AppCompatActivity() {
     private var listAdapter: MessageListAdapter? = null
 
     var messages: MessageList? = null
+    var myId: Long? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         room = intent.getSerializableExtra("room") as Room
+        println("stget")
+        GetMyInfoMessage(this).start()
+        println("edget")
 
 
         if(room.name.isBlank()){
@@ -66,7 +71,8 @@ class MessageActivity : AppCompatActivity() {
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
         // TODO("myIdをちゃんと取得する")
-        val myId: Long = 4
+        val myId: Long = myId ?: 400
+        println(myId)
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -239,5 +245,10 @@ class MessageActivity : AppCompatActivity() {
         messages ?: return
         val last: Int = messages.count.toInt() - 1
         listView.setSelection(last)
+    }
+
+    fun setUserInfo(user: User) {
+        println("get user!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        myId = user.id
     }
 }
