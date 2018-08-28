@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient.lib
 
+import java.io.Serializable
 import java.sql.Timestamp
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -11,7 +12,7 @@ class Message(
     var user: User,
     var created_at: Timestamp,
     var updated_at: Timestamp
-)
+): Serializable
 
 class MessageList(val messages: MutableList<Message>) {
     var count: AtomicInteger = AtomicInteger(messages.count())

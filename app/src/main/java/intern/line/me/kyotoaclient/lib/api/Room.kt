@@ -4,8 +4,11 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import intern.line.me.kyotoaclient.RoomListActivity
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.Message
+import intern.line.me.kyotoaclient.lib.Room
+import intern.line.me.kyotoaclient.lib.RoomList
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
@@ -173,6 +176,42 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
         if(user != null) {
             util.startWithGettingToken(user) {
                 launch(this.job) { createMessage(room_id, text) }
+            }
+        }
+    }
+}
+
+class GetRooms(val activity: RoomListActivity): API(){
+
+    val api = retrofit.create(RoomsAPI::class.java)
+
+    val util = FirebaseUtil()
+
+    private suspend fun getAsyncRooms(token: String): List<Room> = withContext(CommonPool){
+        api.getRooms(token).await()
+    }
+
+    private suspend fun getRooms(){
+        val token: String? = util.getIdToken()
+        if (token == null) {
+            Log.v("ROOMS_GETTER", "API failed: i have no token")
+            return
+        }
+        try {
+            val rooms = getAsyncRooms(token)
+            activity.setRooms(rooms)
+
+        } catch (t: HttpException) {
+            throw Exception("update failed.")
+        }
+    }
+
+    override fun start() {
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            util.startWithGettingToken(user) {
+                launch(this.job + UI) { getRooms() }
             }
         }
     }
