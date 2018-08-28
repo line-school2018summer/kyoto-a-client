@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.GetMyInfo
 import intern.line.me.kyotoaclient.lib.api.PutMyInfo
-import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
 
 class ChangeMyProfileActivity : AppCompatActivity() {
@@ -21,11 +20,11 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         val sign_in_user = FirebaseAuth.getInstance().currentUser
 
         //非同期でユーザー情報を取ってくる
-        if(sign_in_user != null){
-            FirebaseUtil().startWithGettingToken(sign_in_user) {
-                GetMyInfo(this).start()
-            }
-        }
+        GetMyInfo{
+            setUserInfo(it)
+        }.start()
+
+
 
 
         //ボタンを押したときの処理
@@ -35,7 +34,8 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             var isValid = regex.matches(inputText)
 
             if(isValid){
-                PutMyInfo(inputText).start()
+                PutMyInfo(inputText) {
+                }.start()
                 }
             else{
                 changed_name.error = "不正な文字が使われています"
