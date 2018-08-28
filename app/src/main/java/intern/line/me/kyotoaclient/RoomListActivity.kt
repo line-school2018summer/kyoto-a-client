@@ -50,7 +50,7 @@ class RoomListActivity : AppCompatActivity() {
 
         val userListButton = findViewById(R.id.user_list_button) as FloatingActionButton
         userListButton.setOnClickListener(View.OnClickListener {
-//            val intent = Intent(application, UserListActivity::class.java)
+            val intent = Intent(application, UserListActivity::class.java)
             startActivity(intent)
         })
 
