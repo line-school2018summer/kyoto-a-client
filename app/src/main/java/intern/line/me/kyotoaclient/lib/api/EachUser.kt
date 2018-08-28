@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.lib.api
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.ChangeMyProfileActivity
 import intern.line.me.kyotoaclient.GetUserProfileActivity
+import intern.line.me.kyotoaclient.MessageActivity
 import intern.line.me.kyotoaclient.UserListActivity
 import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
@@ -103,6 +104,7 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
 }
 
 class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
+
     val api = retrofit.create(UserAPI::class.java)
     val util = FirebaseUtil()
 
