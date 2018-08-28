@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
+import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
 import intern.line.me.kyotoaclient.model.User
 import java.sql.Timestamp
 
