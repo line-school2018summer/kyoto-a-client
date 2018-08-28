@@ -10,11 +10,12 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
+import intern.line.me.kyotoaclient.lib.api.GetMyInfo
 import intern.line.me.kyotoaclient.lib.model.Message
 import intern.line.me.kyotoaclient.lib.model.MessageList
 import intern.line.me.kyotoaclient.lib.model.Room
-import intern.line.me.kyotoaclient.lib.api.GetMyInfoMessage
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
+import intern.line.me.kyotoaclient.lib.model.User
 import java.sql.Timestamp
 
 class MessageActivity : AppCompatActivity() {
@@ -33,7 +34,11 @@ class MessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         room = intent.getSerializableExtra("room") as Room
-        GetMyInfoMessage(this).start()
+
+        //ユーザー情報を取得できたらビューにセット
+        GetMyInfo{
+            setUserInfo(it)
+        }.start()
 
 
         if(room.name.isBlank()){
@@ -55,7 +60,7 @@ class MessageActivity : AppCompatActivity() {
         })
         registerForContextMenu(listView)
 
-        if(room != null) messagePool = MessagesAdapter(this).getPool(room.id)
+        messagePool = MessagesAdapter(this).getPool(room.id)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -158,10 +163,7 @@ class MessageActivity : AppCompatActivity() {
             return
         }
         val room = room
-        if (room == null) {
-            this.toSendMode()
-            return
-        }
+
         MessagesAdapter(this).create(room.id, sendText.text.toString())
         this.toSendMode()
     }
@@ -225,7 +227,6 @@ class MessageActivity : AppCompatActivity() {
         super.onRestart()
         val room = room
         val messagePool = messagePool
-        room ?: return
         messagePool ?: return
         messagePool.getPool(room.id)
     }
