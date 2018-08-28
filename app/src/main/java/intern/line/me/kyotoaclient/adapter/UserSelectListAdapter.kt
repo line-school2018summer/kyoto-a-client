@@ -25,7 +25,7 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.user_select, parent, false)
-        (convertView.findViewById(R.id.name_text) as TextView).setText(users[position].name)
+        (convertView.findViewById(R.id.user_name_view) as TextView).setText(users[position].name)
         return convertView
     }
 
