@@ -76,7 +76,7 @@ class RoomCreateActivity : AppCompatActivity() {
 
     private fun drawUsersList() {
         val users = this.users
-        val adapter = UserListAdapter(this)
+        val adapter = UserSelectListAdapter(this)
         adapter.setUsers(users)
         val listView: ListView = this.findViewById(R.id.user_select_list)
         listView.adapter = adapter
