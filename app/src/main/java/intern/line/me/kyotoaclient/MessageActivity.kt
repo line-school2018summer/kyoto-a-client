@@ -38,9 +38,7 @@ class MessageActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         room = intent.getSerializableExtra("room") as Room
-        println("stget")
         GetMyInfoMessage(this).start()
-        println("edget")
 
 
         if(room.name.isBlank()){
@@ -70,9 +68,7 @@ class MessageActivity : AppCompatActivity() {
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
-        // TODO("myIdをちゃんと取得する")
-        val myId: Long = myId ?: 400
-        println(myId)
+        val myId: Long = myId ?: 0
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -248,7 +244,6 @@ class MessageActivity : AppCompatActivity() {
     }
 
     fun setUserInfo(user: User) {
-        println("get user!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         myId = user.id
     }
 }

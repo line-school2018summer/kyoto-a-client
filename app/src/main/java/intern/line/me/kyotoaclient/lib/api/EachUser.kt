@@ -98,14 +98,12 @@ class GetMyInfoMessage(val activity: MessageActivity): API(){
 
     private suspend fun getMyInfo() {
 
-        val token = FirebaseUtil().getIdToken()
+        val token = util.getIdToken()
 
         try {
             if(token != null) {
                 val userInfo = getAsyncMyInfo(token)
                 activity.setUserInfo(userInfo)
-            } else {
-                throw Exception("token is null")
             }
 
         } catch (t: HttpException) {
@@ -117,7 +115,6 @@ class GetMyInfoMessage(val activity: MessageActivity): API(){
         val auth = FirebaseAuth.getInstance()!!
         val user = auth.currentUser
         if(user != null) {
-            println("start getting!!!!!!!!!!")
             util.startWithGettingToken(user) {
                 launch(this.job + UI) { getMyInfo() }
             }
