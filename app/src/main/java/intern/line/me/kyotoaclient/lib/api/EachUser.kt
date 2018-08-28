@@ -14,18 +14,19 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 
-class GetUserList(val activity: UserListActivity): API(){
+class GetUserList(val callback: (List<User>) -> Unit): API() {
 
     val api = retrofit.create(UserAPI::class.java)
 
-    private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool){
+    private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool) {
         api.getUsers().await()
     }
 
-    private suspend fun getUsersList(){
+    private suspend fun getUsersList() {
         try {
-            val usersList = getAsyncUsersList()
-            activity.setUsers(usersList)
+            getAsyncUsersList().let{
+                callback(it)
+            }
 
         } catch (t: HttpException) {
             throw Exception("update failed.")
@@ -33,11 +34,13 @@ class GetUserList(val activity: UserListActivity): API(){
     }
 
     override fun start() {
-        launch(this.job + UI) { getUsersList() }
+        launch(this.job + UI) {
+            getUsersList()
+        }
     }
 }
 
-class GetUserInfo(val activity: GetUserProfileActivity, val id: Long): API(){
+class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
 
     val api = retrofit.create(UserAPI::class.java)
 
@@ -47,47 +50,22 @@ class GetUserInfo(val activity: GetUserProfileActivity, val id: Long): API(){
 
     private suspend fun getUserInfo(){
         try{
-            val user = getAsyncUserInfo()
-            activity.setUserInfo(user)
+            getAsyncUserInfo().let {
+                callback(it)
+            }
         } catch (t: HttpException){
             throw Exception("update failed.")
         }
     }
 
     override fun start() {
-        launch(this.job + UI){ getUserInfo() }
-    }
-}
-
-class GetMyInfo(val activity: ChangeMyProfileActivity): API(){
-
-    val api = retrofit.create(UserAPI::class.java)
-
-    private suspend fun getAsyncMyInfo(token : String): User = withContext(CommonPool){
-        api.getMyInfo(token).await()
-    }
-
-    private suspend fun getMyInfo() {
-
-        val token = FirebaseUtil().getIdToken()
-
-        try {
-            if(token != null) {
-                val userInfo = getAsyncMyInfo(token)
-                activity.setUserInfo(userInfo)
-            }
-
-        } catch (t: HttpException) {
-            throw Exception("Update failed.")
+        launch(this.job + UI) {
+            val user = getUserInfo()
         }
     }
-
-    override fun start(){
-        launch(this.job + UI){ getMyInfo() }
-    }
 }
 
-class GetMyInfoMessage(val activity: MessageActivity): API(){
+class GetMyInfo(val callback:(User) -> Unit): API(){
 
     val api = retrofit.create(UserAPI::class.java)
     val util = FirebaseUtil()
@@ -102,8 +80,9 @@ class GetMyInfoMessage(val activity: MessageActivity): API(){
 
         try {
             if(token != null) {
-                val userInfo = getAsyncMyInfo(token)
-                activity.setUserInfo(userInfo)
+                getAsyncMyInfo(token).let{
+                    callback(it)
+                }
             }
 
         } catch (t: HttpException) {
@@ -111,19 +90,23 @@ class GetMyInfoMessage(val activity: MessageActivity): API(){
         }
     }
 
-    override fun start(){
+    override fun start() {
         val auth = FirebaseAuth.getInstance()!!
         val user = auth.currentUser
         if(user != null) {
             util.startWithGettingToken(user) {
-                launch(this.job + UI) { getMyInfo() }
+                launch(this.job + UI) {
+                    getMyInfo()
+                }
             }
         }
     }
 }
 
-class PutMyInfo( private  val name: String): API(){
+class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
+
     val api = retrofit.create(UserAPI::class.java)
+    val util = FirebaseUtil()
 
     private suspend fun putAsyncMyInfo(token:String): User = withContext(CommonPool){
         api.changeUserInfo(token, name).await()
@@ -131,17 +114,27 @@ class PutMyInfo( private  val name: String): API(){
 
     private suspend fun putMyInfo(){
         try {
-            val token = FirebaseUtil().getIdToken()
+            val token = util.getIdToken()
 
             if(token != null) {
-                val userInfo = putAsyncMyInfo(token)
+                putAsyncMyInfo(token).let{
+                    callback(it)
+                }
             }
         } catch (t: HttpException) {
             throw Exception("Update failed.")
         }
     }
 
-    override fun start(){
-        launch(this.job + UI){ putMyInfo() }
+    override fun start() {
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            util.startWithGettingToken(user) {
+                launch(this.job + UI) {
+                    putMyInfo()
+                }
+            }
+        }
     }
 }

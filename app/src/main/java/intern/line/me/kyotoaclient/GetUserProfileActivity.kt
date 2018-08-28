@@ -20,12 +20,12 @@ class GetUserProfileActivity : AppCompatActivity() {
 
         val selectedId = intent.getLongExtra("longTapUserId", 1)
         //非同期でユーザー情報を取ってくる
-        GetUserInfo(this,selectedId).start()
-
+        GetUserInfo(selectedId) {
+            setUserInfo(it)
+        }.start()
     }
 
-
-    fun setUserInfo(set_user : User){
+    fun setUserInfo(set_user: User) {
 
         show_name.text = set_user.name
         show_id.text = set_user.id.toString()

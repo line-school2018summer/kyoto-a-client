@@ -11,7 +11,9 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.lib.api.CreateUserPresenter
+import intern.line.me.kyotoaclient.lib.model.User
 import kotlinx.android.synthetic.main.activity_auth.*
+import retrofit2.Response
 import java.util.*
 
 
@@ -63,9 +65,16 @@ class AuthActivity : AppCompatActivity() {
                 val user = auth.currentUser
                 
                 if(user != null) {
-                    CreateUserPresenter(user.displayName!!,this).start()
-                }
 
+                    //ここでcallbackを受け取れる
+                    CreateUserPresenter(user.displayName!!) {
+                        if (it.isSuccessful) {
+                            onCompleteSignIn()
+                        } else {
+                            showFaildToSignIn()
+                        }
+                    }.start()
+                }
             }
             else {
                 //ログアウトした後にログインが必要な画面に戻ると発生する
@@ -75,6 +84,7 @@ class AuthActivity : AppCompatActivity() {
             }
         }
     }
+
 
     //FirebaseUIのログインページに飛ぶ
     fun startFirebaseLoginActivity() {
@@ -103,4 +113,7 @@ class AuthActivity : AppCompatActivity() {
         auth_progress_bar.visibility = View.GONE
 
     }
+
+
+
 }

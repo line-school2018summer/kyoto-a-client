@@ -15,7 +15,7 @@ import retrofit2.Response
 import ru.gildor.coroutines.retrofit.awaitResponse
 
 //一つのメソッドに対して一つのクラスを作成。引数はクラスのコンストラクタを利用
-class CreateUserPresenter(val name: String,private val activity: AuthActivity): API(){
+class CreateUserPresenter(val name: String, val callback:(Response<User>) -> Unit): API(){
     private val api = retrofit.create(UserAPI::class.java)
 
     //FirebaseUtilのインスタンスを作成しないとトークンが共有できない
@@ -32,17 +32,8 @@ class CreateUserPresenter(val name: String,private val activity: AuthActivity): 
 
         try {
             if (token != null) {
-                val res = createASyncUser(name, token)
-
-                if(res.isSuccessful) {
-                    //res.body()でUserオブジェクトを取得できる(今回は使わない)
-                    activity.onCompleteSignIn()
-
-                }else{
-                    //res.code()でレスポンスコードを取得できる
-                    Log.d("createUser",res.code().toString())
-
-                    activity.showFaildToSignIn()
+                createASyncUser(name, token).let{
+                    callback(it)
                 }
 
             } else {
