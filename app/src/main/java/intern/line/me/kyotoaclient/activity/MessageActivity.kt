@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,11 +9,14 @@ import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
+import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.lib.model.Message
-import intern.line.me.kyotoaclient.lib.model.MessageList
-import intern.line.me.kyotoaclient.lib.model.Room
+import intern.line.me.kyotoaclient.presenter.GetMyInfo
+import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.MessageList
+import intern.line.me.kyotoaclient.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
+import intern.line.me.kyotoaclient.model.User
 import java.sql.Timestamp
 
 class MessageActivity : AppCompatActivity() {
@@ -25,12 +28,18 @@ class MessageActivity : AppCompatActivity() {
     private var listAdapter: MessageListAdapter? = null
 
     var messages: MessageList? = null
+    var myId: Long? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
         room = intent.getSerializableExtra("room") as Room
+
+        //ユーザー情報を取得できたらビューにセット
+        GetMyInfo {
+            setUserInfo(it)
+        }.start()
 
 
         if(room.name.isBlank()){
@@ -52,7 +61,7 @@ class MessageActivity : AppCompatActivity() {
         })
         registerForContextMenu(listView)
 
-        if(room != null) messagePool = MessagesAdapter(this).getPool(room.id)
+        messagePool = MessagesAdapter(this).getPool(room.id)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -60,8 +69,7 @@ class MessageActivity : AppCompatActivity() {
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView: ListView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
-        // TODO("myIdをちゃんと取得する")
-        val myId: Long = 4
+        val myId: Long = myId ?: 0
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -156,10 +164,7 @@ class MessageActivity : AppCompatActivity() {
             return
         }
         val room = room
-        if (room == null) {
-            this.toSendMode()
-            return
-        }
+
         MessagesAdapter(this).create(room.id, sendText.text.toString())
         this.toSendMode()
     }
@@ -223,7 +228,6 @@ class MessageActivity : AppCompatActivity() {
         super.onRestart()
         val room = room
         val messagePool = messagePool
-        room ?: return
         messagePool ?: return
         messagePool.getPool(room.id)
     }
@@ -234,5 +238,9 @@ class MessageActivity : AppCompatActivity() {
         messages ?: return
         val last: Int = messages.count.toInt() - 1
         listView.setSelection(last)
+    }
+
+    fun setUserInfo(user: User) {
+        myId = user.id
     }
 }

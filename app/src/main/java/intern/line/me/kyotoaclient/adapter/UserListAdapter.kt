@@ -7,8 +7,7 @@ import android.widget.BaseAdapter
 import android.content.Context
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.model.UserList
+import intern.line.me.kyotoaclient.model.User
 
 class UserListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater

@@ -1,11 +1,11 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ListView
+import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.model.UserList
+import intern.line.me.kyotoaclient.model.User
 import java.sql.Timestamp
 
 class RoomCreateActivity : AppCompatActivity() {

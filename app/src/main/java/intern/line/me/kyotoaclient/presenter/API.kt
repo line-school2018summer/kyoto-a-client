@@ -1,6 +1,5 @@
-package intern.line.me.kyotoaclient.lib.api
+package intern.line.me.kyotoaclient.presenter
 
-import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.experimental.*

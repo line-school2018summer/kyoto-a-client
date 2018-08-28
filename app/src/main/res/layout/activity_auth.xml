@@ -5,7 +5,7 @@
     android:id="@+id/sign_in_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="intern.line.me.kyotoaclient.AuthActivity">
+    tools:context="intern.line.me.kyotoaclient.activity.AuthActivity">
 
     <ProgressBar
         android:id="@+id/auth_progress_bar"

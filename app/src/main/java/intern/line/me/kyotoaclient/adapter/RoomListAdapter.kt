@@ -7,7 +7,7 @@ import android.widget.BaseAdapter
 import android.content.Context
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.model.Room
+import intern.line.me.kyotoaclient.model.Room
 import java.sql.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat

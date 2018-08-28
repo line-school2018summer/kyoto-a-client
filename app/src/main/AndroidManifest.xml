@@ -11,27 +11,27 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".AuthActivity">
+        <activity android:name=".activity.AuthActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RoomListActivity">
+        <activity android:name=".activity.RoomListActivity">
         </activity>
         <activity android:name=".MessageActivity"
             android:parentActivityName=".RoomListActivity">
         </activity>
-        <activity android:name=".RoomCreateActivity">
+        <activity android:name=".activity.RoomCreateActivity">
         </activity>
-        <activity android:name=".LoginedActivity">
+        <activity android:name=".activity.LoginedActivity">
         </activity>
-        <activity android:name=".UserListActivity">
+        <activity android:name=".activity.UserListActivity">
 
         </activity>
-        <activity android:name=".ChangeMyProfileActivity">
+        <activity android:name=".activity.ChangeMyProfileActivity">
         </activity>
-        <activity android:name=".GetUserProfileActivity">
+        <activity android:name=".activity.GetUserProfileActivity">
         </activity>
     </application>
 

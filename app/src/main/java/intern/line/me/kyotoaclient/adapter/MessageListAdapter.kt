@@ -9,8 +9,8 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.*
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.lib.model.Message
-import intern.line.me.kyotoaclient.lib.model.MessageList
+import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.MessageList
 import java.sql.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat

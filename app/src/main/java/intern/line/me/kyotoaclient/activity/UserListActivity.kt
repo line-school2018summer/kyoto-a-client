@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -6,16 +6,16 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ListView
+import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.api.GetUserList
+import intern.line.me.kyotoaclient.presenter.GetUserList
 
 class UserListActivity : AppCompatActivity() {
 
     lateinit var adapter: UserListAdapter
 
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_list)
 
@@ -28,15 +28,17 @@ class UserListActivity : AppCompatActivity() {
         list.adapter = adapter
 
         //非同期でユーザー取得
-        GetUserList(this).start()
+        GetUserList {
+            adapter.setUsers(it)
+        }.start()
 
 
-        button.setOnClickListener{
+        button.setOnClickListener {
             val intent = Intent(this, ChangeMyProfileActivity::class.java)
             startActivity(intent)
         }
 
-        list.setOnItemClickListener{_, _, position, _ ->
+        list.setOnItemClickListener { _, _, position, _ ->
             val selectedUserId = adapter.getItemId(position)
             val result = Intent()
             result.putExtra("selectedUserId", selectedUserId)
@@ -52,10 +54,5 @@ class UserListActivity : AppCompatActivity() {
             startActivityForResult(intent, 11)
             return@setOnItemLongClickListener true
         }
-    }
-
-
-    fun setUsers(users : List<User>){
-        adapter.setUsers(users)
     }
 }

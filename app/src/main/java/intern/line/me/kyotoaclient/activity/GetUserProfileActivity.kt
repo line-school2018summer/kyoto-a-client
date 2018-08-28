@@ -1,16 +1,11 @@
-package intern.line.me.kyotoaclient
+package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.GsonBuilder
-import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.api.GetUserInfo
-import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
+import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.model.User
+import intern.line.me.kyotoaclient.presenter.GetUserInfo
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class GetUserProfileActivity : AppCompatActivity() {
 
@@ -20,12 +15,12 @@ class GetUserProfileActivity : AppCompatActivity() {
 
         val selectedId = intent.getLongExtra("longTapUserId", 1)
         //非同期でユーザー情報を取ってくる
-        GetUserInfo(this,selectedId).start()
-
+        GetUserInfo(selectedId) {
+            setUserInfo(it)
+        }.start()
     }
 
-
-    fun setUserInfo(set_user : User){
+    fun setUserInfo(set_user: User) {
 
         show_name.text = set_user.name
         show_id.text = set_user.id.toString()

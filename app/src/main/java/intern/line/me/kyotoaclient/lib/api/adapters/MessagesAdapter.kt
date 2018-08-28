@@ -3,13 +3,13 @@ package intern.line.me.kyotoaclient.lib.api.adapters
 import android.os.Handler
 import android.view.KeyEvent
 import android.widget.Toast
-import intern.line.me.kyotoaclient.MessageActivity
-import intern.line.me.kyotoaclient.lib.model.Message
-import intern.line.me.kyotoaclient.lib.model.MessageList
-import intern.line.me.kyotoaclient.lib.api.CreateMessage
-import intern.line.me.kyotoaclient.lib.api.DeleteMessage
-import intern.line.me.kyotoaclient.lib.api.GetMessages
-import intern.line.me.kyotoaclient.lib.api.UpdateMessage
+import intern.line.me.kyotoaclient.activity.MessageActivity
+import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.MessageList
+import intern.line.me.kyotoaclient.presenter.CreateMessage
+import intern.line.me.kyotoaclient.presenter.DeleteMessage
+import intern.line.me.kyotoaclient.presenter.GetMessages
+import intern.line.me.kyotoaclient.presenter.UpdateMessage
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 
