@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Kyotoaclient</string>
+    <string name="room_create_input">Room名</string>
+    <string name="room_create_button">作成</string>
     <string name="message_input">テキストを入力</string>
     <string name="message_send">送信</string>
     <string name="message_edit">編集</string>
@@ -12,4 +14,6 @@
     <string name="api_timeout">タイムアウトしました</string>
     <string name="api_failed">API接続に失敗しました</string>
     <string name="message_new_available">新しいメッセージがあります</string>
+    <string name="apply">更新</string>
+    <string name="apply_button">適用</string>
 </resources>

@@ -30,6 +30,7 @@ class RoomListActivity : AppCompatActivity() {
 
     lateinit var adapter: RoomListAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_list)

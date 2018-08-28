@@ -16,7 +16,7 @@ import java.util.*
 
 class RoomCreateActivity : AppCompatActivity() {
 
-    private var users: UserList = UserList(mutableListOf(
+    private var users = listOf<User>(
             User(
                     id = 1,
                     name = "User1",
@@ -71,7 +71,7 @@ class RoomCreateActivity : AppCompatActivity() {
                     created_at = Timestamp(439208349),
                     updated_at = Timestamp(439208349)
             )
-    ))
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
