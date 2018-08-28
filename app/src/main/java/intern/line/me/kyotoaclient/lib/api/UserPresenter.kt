@@ -3,7 +3,7 @@ package intern.line.me.kyotoaclient.lib.api
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.AuthActivity
-import intern.line.me.kyotoaclient.lib.User
+import intern.line.me.kyotoaclient.lib.model.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.CommonPool
