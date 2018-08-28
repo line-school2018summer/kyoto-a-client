@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.lib.api.interfaces
 import intern.line.me.kyotoaclient.lib.User
 
 import kotlinx.coroutines.experimental.Deferred
+import retrofit2.Call
 import retrofit2.http.*
 
 

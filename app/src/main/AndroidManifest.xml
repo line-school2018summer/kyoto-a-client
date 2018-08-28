@@ -14,6 +14,10 @@
         </activity>
 
         <activity android:name=".AuthActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".RoomListActivity">
         </activity>
@@ -24,10 +28,7 @@
         <activity android:name=".LoginedActivity">
         </activity>
         <activity android:name=".UserListActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+
         </activity>
         <activity android:name=".ChangeMyProfileActivity">
         </activity>
