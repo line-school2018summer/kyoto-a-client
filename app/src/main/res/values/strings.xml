@@ -15,10 +15,10 @@
     <string name="api_failed">api connection failed</string>
     <string name="message_new_available">New message are exists</string>
     <string name="title_activity_user_list">user_list</string>
-    <string name="item_name">名前 :</string>
+    <string name="item_name">Name :</string>
     <string name="item_id">ID :</string>
-    <string name="my_profile">プロフィール</string>
-    <string name="show_created_at">アカウント作成日時 :</string>
-    <string name="apply">apply</string>
-    <string name="apply_button">apply</string>
+    <string name="my_profile">Profile</string>
+    <string name="show_created_at">Created At :</string>
+    <string name="apply">Apply</string>
+    <string name="apply_button">Apply</string>
 </resources>
