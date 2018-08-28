@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient.lib
 
+import java.io.Serializable
 import java.sql.Timestamp
 
 data class User(
@@ -7,7 +8,7 @@ data class User(
         var name: String,
         var created_at: Timestamp,
         var updated_at: Timestamp
-)
+): Serializable
 
 class UserList(private val users: MutableList<User>) {
     var count: Int = users.count()
