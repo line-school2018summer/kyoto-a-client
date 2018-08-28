@@ -36,7 +36,7 @@ class RoomListActivity : AppCompatActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-        val adapter = RoomListAdapter(this)
+        adapter = RoomListAdapter(this)
 
         //非同期でユーザー取得
         GetRooms(this).start()
@@ -45,6 +45,7 @@ class RoomListActivity : AppCompatActivity() {
 
         listView.adapter = adapter
         registerForContextMenu(listView)
+
         listView.setOnItemClickListener { parent, view, position, id ->
             val selectedRoom = adapter.getItem(position)
             val intent = Intent(this@RoomListActivity, MessageActivity::class.java)

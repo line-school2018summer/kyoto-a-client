@@ -207,6 +207,12 @@ class GetRooms(val activity: RoomListActivity): API(){
     }
 
     override fun start() {
-        launch(this.job + UI) { getRooms() }
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if(user != null) {
+            util.startWithGettingToken(user) {
+                launch(this.job + UI) { getRooms() }
+            }
+        }
     }
 }

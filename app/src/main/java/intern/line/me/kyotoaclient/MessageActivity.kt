@@ -25,7 +25,7 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
     private var editingMessagePosition: Int? = null
-    private var room: Room? = null
+    lateinit var room: Room
     private var messagePool: MessagesAdapter? = null
     private var listAdapter: MessageListAdapter? = null
 
@@ -35,14 +35,15 @@ class MessageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
-        val roomId = intent.getLongExtra("roomId", -1)
-        room = getRoom(roomId)
-        val room = room
-        if (room != null) {
-            this.title = room.name
-        } else {
+        room = intent.getSerializableExtra("room") as Room
+
+
+        if(room.name.isBlank()){
             this.title = "Room"
+        } else {
+            this.title = room.name
         }
+        
         val listView: ListView = this.findViewById(R.id.main_list)
         listView.setOnScrollListener(object: AbsListView.OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
@@ -55,7 +56,8 @@ class MessageActivity : AppCompatActivity() {
             }
         })
         registerForContextMenu(listView)
-        messagePool = MessagesAdapter(this).getPool(roomId)
+
+        if(room != null) messagePool = MessagesAdapter(this).getPool(room.id)
     }
 
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -210,11 +212,7 @@ class MessageActivity : AppCompatActivity() {
         listView.visibility = View.VISIBLE
         progress.visibility = View.INVISIBLE
     }
-
-    private fun getRoom(id: Long): Room{
-        return Room(2, "my group", Timestamp(47389732489), Timestamp(47389732489), "message", Timestamp(47989732489))
-    }
-
+    
     fun doMessagesAction(scrollAt: Int? = null) {
         drawMessagesList(scrollAt)
     }

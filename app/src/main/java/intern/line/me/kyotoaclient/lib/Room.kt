@@ -4,12 +4,13 @@ import java.sql.Timestamp
 import java.io.Serializable
 
 class Room(
+
         var id: Long,
         var name: String,
         var created_at: Timestamp,
         var updated_at: Timestamp,
-        var last_message: String,
-        var message_time: Timestamp
+        
+        var last_message: Message
 ): Serializable
 
 class RoomList(private val rooms: MutableList<Room>) {
