@@ -10,7 +10,7 @@ import intern.line.me.kyotoaclient.adapter.RoomListAdapter
 import intern.line.me.kyotoaclient.lib.model.Room
 import android.app.Activity
 import android.content.Intent
-import intern.line.me.kyotoaclient.lib.api.GetRooms
+import intern.line.me.kyotoaclient.lib.api.presenter.GetRooms
 
 
 

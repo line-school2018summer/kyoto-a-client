@@ -10,10 +10,8 @@ import android.view.View
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
-import intern.line.me.kyotoaclient.lib.api.CreateUserPresenter
-import intern.line.me.kyotoaclient.lib.model.User
+import intern.line.me.kyotoaclient.lib.api.presenter.CreateUserPresenter
 import kotlinx.android.synthetic.main.activity_auth.*
-import retrofit2.Response
 import java.util.*
 
 

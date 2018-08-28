@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.lib.api.GetUserList
+import intern.line.me.kyotoaclient.lib.api.presenter.GetUserList
 
 class UserListActivity : AppCompatActivity() {
 

@@ -4,8 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.lib.model.User
-import intern.line.me.kyotoaclient.lib.api.GetMyInfo
-import intern.line.me.kyotoaclient.lib.api.PutMyInfo
+import intern.line.me.kyotoaclient.lib.api.presenter.GetMyInfo
+import intern.line.me.kyotoaclient.lib.api.presenter.PutMyInfo
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
 
 class ChangeMyProfileActivity : AppCompatActivity() {
@@ -20,7 +20,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         val sign_in_user = FirebaseAuth.getInstance().currentUser
 
         //非同期でユーザー情報を取ってくる
-        GetMyInfo{
+        GetMyInfo {
             setUserInfo(it)
         }.start()
 

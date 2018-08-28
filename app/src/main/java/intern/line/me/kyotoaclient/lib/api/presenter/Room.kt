@@ -1,4 +1,4 @@
-package intern.line.me.kyotoaclient.lib.api
+package intern.line.me.kyotoaclient.lib.api.presenter
 
 import android.util.Log
 import android.widget.Toast

@@ -10,7 +10,7 @@ import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.lib.api.GetMyInfo
+import intern.line.me.kyotoaclient.lib.api.presenter.GetMyInfo
 import intern.line.me.kyotoaclient.lib.model.Message
 import intern.line.me.kyotoaclient.lib.model.MessageList
 import intern.line.me.kyotoaclient.lib.model.Room
@@ -36,7 +36,7 @@ class MessageActivity : AppCompatActivity() {
         room = intent.getSerializableExtra("room") as Room
 
         //ユーザー情報を取得できたらビューにセット
-        GetMyInfo{
+        GetMyInfo {
             setUserInfo(it)
         }.start()
 
