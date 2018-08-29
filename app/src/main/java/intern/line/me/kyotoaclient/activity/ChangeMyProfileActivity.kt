@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
@@ -19,6 +20,8 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_my_profile)
+
+        my_profile_progress_bar.visibility = View.VISIBLE
 
         my_profile_progress_bar.visibility = View.VISIBLE
 
