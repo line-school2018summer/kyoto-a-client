@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.User
 import intern.line.me.kyotoaclient.presenter.GetUserInfo
@@ -14,6 +15,9 @@ class GetUserProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_get_user_profile)
 
         val selectedId = intent.getLongExtra("longTapUserId", 1)
+
+        user_profile_progress_bar.visibility = View.VISIBLE
+
         //非同期でユーザー情報を取ってくる
         GetUserInfo(selectedId) {
             setUserInfo(it)
@@ -22,7 +26,8 @@ class GetUserProfileActivity : AppCompatActivity() {
 
     fun setUserInfo(set_user: User) {
 
-        show_name.text = set_user.name
-        show_id.text = set_user.id.toString()
+        user_name.text = set_user.name
+        user_profile_progress_bar.visibility = View.INVISIBLE
+
     }
 }
