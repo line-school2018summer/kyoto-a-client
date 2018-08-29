@@ -26,6 +26,6 @@ interface RoomsAPI {
     @POST("/rooms")
     fun createRoom(
             @Header("Token") token : String,
-            @Body body: HashMap<String, String>
+            @Body body: HashMap<String, Any>
     ): Deferred<Room>
 }

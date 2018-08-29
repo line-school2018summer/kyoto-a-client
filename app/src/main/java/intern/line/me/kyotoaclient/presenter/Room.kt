@@ -11,12 +11,15 @@ import intern.line.me.kyotoaclient.model.Room
 import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
+import intern.line.me.kyotoaclient.model.User
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
+import retrofit2.Response
+import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.IOException
 import java.lang.Thread.sleep
 import java.net.SocketTimeoutException
@@ -209,6 +212,47 @@ class GetRooms(val activity: RoomListActivity): API(){
         if(user != null) {
             util.startWithGettingToken(user) {
                 launch(this.job + UI) { getRooms() }
+            }
+        }
+    }
+}
+
+class CreateRoom(val name: String, val users: List<User>, val callback:(Room) -> Unit): API(){
+    private val api = retrofit.create(RoomsAPI::class.java)
+    private val firebase_cli = FirebaseUtil()
+
+    private suspend fun createAsyncRoom(name: String, userIds: List<Long>, token: String): Room = withContext(CommonPool) {
+        api.createRoom(token, hashMapOf("name" to name, "userIds" to userIds)).await()
+    }
+
+    private suspend fun createRoom() {
+        val token = firebase_cli.getIdToken()
+
+        val userIds = mutableListOf<Long>()
+
+        users.forEach({
+            userIds.add(it.id)
+        })
+
+        try {
+            if (token != null){
+                createAsyncRoom(name, userIds, token).let {
+                    callback(it)
+                }
+            } else {
+                throw Exception("can't get token.")
+            }
+        } catch (t: HttpException) {
+            throw Exception("can't access server.")
+        }
+    }
+
+    override fun start() {
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser
+        if (user != null) {
+            firebase_cli.startWithGettingToken(user) {
+                launch (this.job + UI) { createRoom() }
             }
         }
     }

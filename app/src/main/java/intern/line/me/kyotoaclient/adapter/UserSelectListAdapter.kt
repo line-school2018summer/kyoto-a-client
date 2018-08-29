@@ -56,4 +56,17 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
         checkList = MutableList(count, { false })
         notifyDataSetChanged()
     }
+
+    fun getCheckedUserList(): List<User> {
+        if (users.count() != checkList.count()) {
+            throw Exception("invailed data")
+        }
+        val selectedUsers = mutableListOf<User>()
+        for (i in 0..(users.count() - 1)){
+            if (checkList[i]){
+                selectedUsers.add(users[i])
+            }
+        }
+        return selectedUsers
+    }
 }

@@ -65,5 +65,11 @@ class RoomListActivity : AppCompatActivity() {
 
     fun setRooms(rooms : List<Room>){
         adapter.setRooms(rooms)
+        adapter.notifyDataSetChanged()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        GetRooms(this).start()
     }
 }

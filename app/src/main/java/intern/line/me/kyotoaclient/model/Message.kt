@@ -41,7 +41,10 @@ class MessageList(val messages: MutableList<Message>) {
         return true
     }
 
-    fun getLast(): Message {
+    fun getLast(): Message? {
+        if (this.messages.lastIndex < 0) {
+            return null
+        }
         return this.messages[this.messages.lastIndex]
     }
 
