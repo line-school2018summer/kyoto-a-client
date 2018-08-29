@@ -10,6 +10,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 import retrofit2.Response
+import ru.gildor.coroutines.retrofit.await
 import ru.gildor.coroutines.retrofit.awaitResponse
 
 //一つのメソッドに対して一つのクラスを作成。引数はクラスのコンストラクタを利用

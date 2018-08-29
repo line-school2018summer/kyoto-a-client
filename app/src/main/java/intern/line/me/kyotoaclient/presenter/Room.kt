@@ -19,6 +19,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import retrofit2.Response
+import ru.gildor.coroutines.retrofit.await
 import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.IOException
 import java.lang.Thread.sleep

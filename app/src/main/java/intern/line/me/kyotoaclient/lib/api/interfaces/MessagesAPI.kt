@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
 import intern.line.me.kyotoaclient.model.Message
 import kotlinx.coroutines.experimental.Deferred
+import retrofit2.Call
 import retrofit2.http.*
 
 interface MessagesAPI {
@@ -9,11 +10,11 @@ interface MessagesAPI {
         @Header("Token") token : String,
         @Path("id") id: Long,
         @Body body: HashMap<String, String>
-    ): Deferred<Message>
+    ): Call<Message>
 
     @DELETE("/messages/{id}")
     fun deleteMessage(
         @Header("Token") token : String,
         @Path("id") id: Long
-    ): Deferred<HashMap<String, Boolean>>
+    ): Call<HashMap<String, Boolean>>
 }

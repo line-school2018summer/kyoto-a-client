@@ -12,6 +12,7 @@ import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
+import ru.gildor.coroutines.retrofit.await
 import java.io.IOException
 import java.net.SocketTimeoutException
 

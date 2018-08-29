@@ -17,13 +17,13 @@ interface UserAPI{
     ) : Call<User>
 
     @GET("/users")
-    fun getUsers(): Deferred<List<User>>
+    fun getUsers(): Call<List<User>>
 
     @GET("/users/{id}")
-    fun getUserInfoById(@Path("id")id: Long): Deferred<User>
+    fun getUserInfoById(@Path("id")id: Long): Call<User>
 
     @GET("/users/me")
-    fun getMyInfo(@Header("Token") Token: String): Deferred<User>
+    fun getMyInfo(@Header("Token") Token: String): Call<User>
 
     @PUT("/users/me")
     fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Deferred<User>
