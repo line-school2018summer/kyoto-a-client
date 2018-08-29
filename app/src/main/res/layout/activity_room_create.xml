@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.RoomListActivity">
+    tools:context=".activity.RoomCreateActivity">
 
 
     <LinearLayout
@@ -18,26 +18,28 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/message_send_layout"
+            android:id="@+id/room_create_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#ffffff"
             android:orientation="horizontal"
             android:visibility="visible">
+
             <EditText
-                android:id="@+id/message_send_text"
+                android:id="@+id/room_name_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="@string/room_create_input"
                 android:inputType="textPersonName" />
+
             <Button
-                android:id="@+id/message_send_button"
+                android:id="@+id/room_create_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:onClick="onSend"
+                android:onClick="onCreateRoom"
                 android:text="@string/room_create_button" />
         </LinearLayout>
 
