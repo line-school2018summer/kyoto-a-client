@@ -56,9 +56,4 @@ open class API {
             .addCallAdapterFactory(CoroutineCallAdapterFactory()) // Adapter を登録
             .client(client.build())
             .build()
-
-    open fun start() {
-        throw NotImplementedError("start function must be overridden")
-    }
-
 }

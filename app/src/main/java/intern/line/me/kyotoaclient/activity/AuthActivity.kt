@@ -61,20 +61,17 @@ class AuthActivity : AppCompatActivity() {
 
             if(resultCode == Activity.RESULT_OK) {
 
-                val user = auth.currentUser
-                
-                if(user != null) {
+                val user = auth.currentUser!!
 
-                    //ここでcallbackを受け取れる
-                    CreateUserPresenter(user.displayName!!) {
-                        if (it.isSuccessful) {
-                            onCompleteSignIn()
-                        } else {
-                            showFaildToSignIn()
-                        }
-                    }.start()
+                CreateUserPresenter().start(user.displayName!!){
+                    if (it.isSuccessful) {
+                        onCompleteSignIn()
+                    } else {
+                        showFaildToSignIn()
+                    }
                 }
             }
+
             else {
                 //ログアウトした後にログインが必要な画面に戻ると発生する
                 if(response == null){
