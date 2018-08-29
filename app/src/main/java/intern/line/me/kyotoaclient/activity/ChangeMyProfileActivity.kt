@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.User
@@ -19,6 +20,8 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
         val sign_in_user = FirebaseAuth.getInstance().currentUser
+
+        my_profile_progress_bar.visibility = View.VISIBLE
 
         //非同期でユーザー情報を取ってくる
         GetMyInfo {
@@ -47,7 +50,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     //ユーザー情報をセットする
     fun setUserInfo(user: User){
-        show_name.text = user.name
-        show_id.text = user.id.toString()
+        my_profile_progress_bar.visibility = View.INVISIBLE
+        my_name.text = user.name
     }
 }
