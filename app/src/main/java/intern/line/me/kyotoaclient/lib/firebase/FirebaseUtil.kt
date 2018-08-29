@@ -6,7 +6,9 @@ import com.google.firebase.auth.FirebaseUser
 import kotlin.coroutines.experimental.suspendCoroutine
 
 class FirebaseUtil{
-    suspend fun getToken(user: FirebaseUser) : String? = suspendCoroutine{ cont ->
+    suspend fun getToken() : String? = suspendCoroutine{ cont ->
+        val auth = FirebaseAuth.getInstance()!!
+        val user = auth.currentUser ?: throw Exception("Can't get current user.")
 
         user.getIdToken(true)
                 .addOnCompleteListener {

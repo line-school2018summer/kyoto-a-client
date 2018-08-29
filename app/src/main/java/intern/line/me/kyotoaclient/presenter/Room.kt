@@ -33,7 +33,9 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
         api.getMessages(token, room_id).await()
     }
 
-    private suspend fun getMessages(room_id: Long,token: String?) {
+    private suspend fun getMessages(room_id: Long) {
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOM_MESSAGES_GETTER", "API failed: i have no token")
             context.responseCode = 500
@@ -74,24 +76,19 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch(this.job + UI) {
-            val token = FirebaseUtil().getToken(user)
-            getMessages(room_id,token)
+            getMessages(room_id)
         }
 
     }
 
-    private suspend fun poolMessages(user: FirebaseUser) {
+    private suspend fun poolMessages() {
 
         withContext(CommonPool){
 
             //裏で常に取得してる
             while (context.running) {
-                val token = FirebaseUtil().getToken(user)
-                getMessages(room_id, token)
+                getMessages(room_id)
 
                 // 0.2秒ごとに終了指示がないか調べる
                 for (i in 1..5) {
@@ -116,7 +113,7 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
             return null
         }
 
-        return launch { poolMessages(user) }
+        return launch { poolMessages() }
     }
 }
 
@@ -127,7 +124,9 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
         api.createMessage(token, room_id, hashMapOf("text" to text)).await()
     }
 
-    private suspend fun createMessage(room_id: Long, text: String,token: String?) {
+    private suspend fun createMessage(room_id: Long, text: String) {
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOM_MESSAGES_CREATER", "API failed: i have no token")
             context.responseCode = 500
@@ -167,12 +166,8 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch(this.job) {
-            val token = FirebaseUtil().getToken(user)
-            createMessage(room_id, text,token)
+            createMessage(room_id, text)
         }
 
     }
@@ -186,7 +181,9 @@ class GetRooms(val activity: RoomListActivity): API(){
         api.getRooms(token).await()
     }
 
-    private suspend fun getRooms(token: String?){
+    private suspend fun getRooms(){
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOMS_GETTER", "API failed: i have no token")
             return
@@ -201,12 +198,8 @@ class GetRooms(val activity: RoomListActivity): API(){
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch(this.job + UI) {
-            val token = FirebaseUtil().getToken(user)
-            getRooms(token)
+            getRooms()
         }
 
     }
@@ -219,7 +212,8 @@ class CreateRoom(val name: String, val users: List<User>, val callback:(Room) ->
         api.createRoom(token, hashMapOf("name" to name, "userIds" to userIds)).await()
     }
 
-    private suspend fun createRoom(token: String?) {
+    private suspend fun createRoom() {
+        val token = FirebaseUtil().getToken()
 
         val userIds = mutableListOf<Long>()
 
@@ -241,12 +235,8 @@ class CreateRoom(val name: String, val users: List<User>, val callback:(Room) ->
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch (this.job + UI) {
-            val token = FirebaseUtil().getToken(user)
-            createRoom(token)
+            createRoom()
         }
     }
 }

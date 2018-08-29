@@ -17,22 +17,19 @@ class CreateUserPresenter: API(){
     private val api = retrofit.create(UserAPI::class.java)
 
 
-    private suspend fun createASyncUser(name: String,token : String) : Response<User> = withContext(CommonPool) {
-            api.createUser(name, token).awaitResponse()
+    private suspend fun createASyncUser(name: String) : Response<User> = withContext(CommonPool) {
+        val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
+
+        api.createUser(name, token).awaitResponse()
     }
 
 
     fun start(name: String, callback:(Response<User>) -> Unit) {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("Can't get current user.")
 
         //この中では同期的に処理をかける！！！！
         launch(this.job + UI) {
-
-            val token = FirebaseUtil().getToken(user) ?: throw Exception("can't get token.")
-
             try {
-                createASyncUser(name, token).let {
+                createASyncUser(name).let {
                     callback(it)
                 }
             } catch (t: HttpException) {
@@ -89,7 +86,7 @@ class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
 
     fun start() {
         launch(this.job + UI) {
-            val user = getUserInfo()
+            getUserInfo()
         }
     }
 }
@@ -102,7 +99,8 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
         api.getMyInfo(token).await()
     }
 
-    private suspend fun getMyInfo(token: String?) {
+    private suspend fun getMyInfo() {
+        val token = FirebaseUtil().getToken()
 
         try {
             if(token != null) {
@@ -117,12 +115,8 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser  ?: throw Exception("can't find current user.")
-
         launch(this.job + UI) {
-            val token = FirebaseUtil().getToken(user)
-            getMyInfo(token)
+            getMyInfo()
         }
     }
 }
@@ -135,7 +129,9 @@ class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
         api.changeUserInfo(token, name).await()
     }
 
-    private suspend fun putMyInfo(token: String?){
+    private suspend fun putMyInfo(){
+        val token = FirebaseUtil().getToken()
+
         try {
             if(token != null) {
                 putAsyncMyInfo(token).let{
@@ -148,12 +144,8 @@ class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch(this.job + UI) {
-            val token = FirebaseUtil().getToken(user)
-            putMyInfo(token)
+            putMyInfo()
         }
     }
 }

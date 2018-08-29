@@ -17,13 +17,14 @@ import java.net.SocketTimeoutException
 
 class UpdateMessage(private val context: MessagesAdapter, private val position: Int, private var message: Message, private val newMessage: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun updateAsyncMessage(token: String, newMessage: Message): Message = withContext(CommonPool) {
         api.updateMessage(token, message.id, hashMapOf("text" to newMessage.text)).await()
     }
 
-    private suspend fun updateMessage(newMessage: Message,token: String?) {
+    private suspend fun updateMessage(newMessage: Message) {
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("MESSAGE_UPDATER", "API failed: i have no token")
             context.responseCode = 500
@@ -74,25 +75,21 @@ class UpdateMessage(private val context: MessagesAdapter, private val position: 
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
-
         launch(this.job) {
-            val token = FirebaseUtil().getToken(user)
-            updateMessage(newMessage,token)
+            updateMessage(newMessage)
         }
     }
 }
 
 class DeleteMessage(private val context: MessagesAdapter, private val position: Int, private var message: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun deleteAsyncMessage(token: String, message: Message): HashMap<String, Boolean> = withContext(CommonPool) {
         api.deleteMessage(token, message.id).await()
     }
 
-    private suspend fun deleteMessage(message: Message,token : String?): Boolean {
+    private suspend fun deleteMessage(message: Message): Boolean {
+        val token = FirebaseUtil().getToken()
         if (token == null) {
             Log.v("MESSAGE_DELETER", "API failed: i have no token")
             context.responseCode = 500
@@ -148,12 +145,9 @@ class DeleteMessage(private val context: MessagesAdapter, private val position: 
     }
 
     fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser ?: throw Exception("can't find current user.")
 
         launch(this.job) {
-            val token = FirebaseUtil().getToken(user)
-            deleteMessage(message,token)
+            deleteMessage(message)
         }
     }
 }
