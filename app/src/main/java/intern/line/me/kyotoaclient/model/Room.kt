@@ -10,7 +10,7 @@ class Room(
         var created_at: Timestamp,
         var updated_at: Timestamp,
         
-        var last_message: Message
+        var last_message: Message?
 ): Serializable
 
 class RoomList(private val rooms: MutableList<Room>) {

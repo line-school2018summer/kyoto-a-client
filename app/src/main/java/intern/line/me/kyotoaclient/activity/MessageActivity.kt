@@ -188,8 +188,14 @@ class MessageActivity : AppCompatActivity() {
             scrollTo = listView.count - 1
         } else {
             val oldMessages = listAdapter.getMessages()
-            if (oldMessages != null) {
-                if (messages.getLast().id > oldMessages.getLast().id) {
+            val newMessageLastId = messages.getLast()?.id
+            var oldMessageLastId: Long? = null
+            if (oldMessages != null){
+                val oldMessageLast = oldMessages.getLast()
+                oldMessageLastId = oldMessageLast?.id
+            }
+            if ((newMessageLastId != null) && (oldMessageLastId != null)) {
+                if (newMessageLastId > oldMessageLastId) {
                     val newMessageNotify: View = this.findViewById(R.id.message_new_notify)
                     newMessageNotify.visibility = View.VISIBLE
                 }
