@@ -55,4 +55,13 @@ class UserListActivity : AppCompatActivity() {
             return@setOnItemLongClickListener true
         }
     }
+
+    override fun onRestart() {
+        super.onRestart()
+        
+        //非同期でユーザー取得
+        GetUserList {
+            adapter.setUsers(it)
+        }.start()
+    }
 }
