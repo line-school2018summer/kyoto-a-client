@@ -19,6 +19,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
 import retrofit2.Response
+import ru.gildor.coroutines.retrofit.await
 import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.IOException
 import java.lang.Thread.sleep
@@ -28,15 +29,14 @@ import java.net.SocketTimeoutException
 class GetMessages (private val context: MessagesAdapter, private val room_id:Long): API() {
     val api = retrofit.create(RoomsAPI::class.java)
 
-    val util = FirebaseUtil()
-
 
     private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {
         api.getMessages(token, room_id).await()
     }
 
     private suspend fun getMessages(room_id: Long) {
-        val token: String? = util.getIdToken()
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOM_MESSAGES_GETTER", "API failed: i have no token")
             context.responseCode = 500
@@ -76,33 +76,28 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job + UI) { getMessages(room_id) }
-            }
+    fun start() {
+        launch(this.job + UI) {
+            getMessages(room_id)
         }
+
     }
 
-    private suspend fun poolMessages(user: FirebaseUser) {
-        while (context.running) {
-            util.startWithGettingToken(user) {
-                launch(UI) {
-                    getMessages(room_id)
+    private suspend fun poolMessages() {
+
+        withContext(CommonPool){
+
+            //裏で常に取得してる
+            while (context.running) {
+                getMessages(room_id)
+
+                // 0.2秒ごとに終了指示がないか調べる
+                for (i in 1..5) {
+                    if (!context.running) {
+                        return@withContext
+                    }
+                    sleep(200)
                 }
-            }
-            while (util.ret == null) {
-                sleep(10)
-            }
-            (util.ret as Job).join()
-            // 0.2秒ごとに終了指示がないか調べる
-            for (i in 1..5) {
-                if (!context.running) {
-                    return
-                }
-                sleep(200)
             }
         }
     }
@@ -118,20 +113,21 @@ class GetMessages (private val context: MessagesAdapter, private val room_id:Lon
             }
             return null
         }
-        return launch { poolMessages(user) }
+
+        return launch { poolMessages() }
     }
 }
 
 class CreateMessage (private val context: MessagesAdapter, private val room_id:Long, private val text: String): API() {
     val api = retrofit.create(RoomsAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun createAsyncMessage(token: String, room_id: Long, text: String): Message = withContext(CommonPool) {
         api.createMessage(token, room_id, hashMapOf("text" to text)).await()
     }
 
     private suspend fun createMessage(room_id: Long, text: String) {
-        val token: String? = util.getIdToken()
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOM_MESSAGES_CREATER", "API failed: i have no token")
             context.responseCode = 500
@@ -170,14 +166,11 @@ class CreateMessage (private val context: MessagesAdapter, private val room_id:L
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job) { createMessage(room_id, text) }
-            }
+    fun start() {
+        launch(this.job) {
+            createMessage(room_id, text)
         }
+
     }
 }
 
@@ -185,14 +178,13 @@ class GetRooms(val activity: RoomListActivity): API(){
 
     val api = retrofit.create(RoomsAPI::class.java)
 
-    val util = FirebaseUtil()
-
     private suspend fun getAsyncRooms(token: String): List<Room> = withContext(CommonPool){
         api.getRooms(token).await()
     }
 
     private suspend fun getRooms(){
-        val token: String? = util.getIdToken()
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("ROOMS_GETTER", "API failed: i have no token")
             return
@@ -206,27 +198,23 @@ class GetRooms(val activity: RoomListActivity): API(){
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job + UI) { getRooms() }
-            }
+    fun start() {
+        launch(this.job + UI) {
+            getRooms()
         }
+
     }
 }
 
 class CreateRoom(val name: String, val users: List<User>, val callback:(Room) -> Unit): API(){
     private val api = retrofit.create(RoomsAPI::class.java)
-    private val firebase_cli = FirebaseUtil()
 
     private suspend fun createAsyncRoom(name: String, userIds: List<Long>, token: String): Room = withContext(CommonPool) {
         api.createRoom(token, hashMapOf("name" to name, "userIds" to userIds)).await()
     }
 
     private suspend fun createRoom() {
-        val token = firebase_cli.getIdToken()
+        val token = FirebaseUtil().getToken()
 
         val userIds = mutableListOf<Long>()
 
@@ -247,13 +235,9 @@ class CreateRoom(val name: String, val users: List<User>, val callback:(Room) ->
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if (user != null) {
-            firebase_cli.startWithGettingToken(user) {
-                launch (this.job + UI) { createRoom() }
-            }
+    fun start() {
+        launch (this.job + UI) {
+            createRoom()
         }
     }
 }

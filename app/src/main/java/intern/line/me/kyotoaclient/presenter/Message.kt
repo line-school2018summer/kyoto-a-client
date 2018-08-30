@@ -12,19 +12,20 @@ import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
 import retrofit2.HttpException
+import ru.gildor.coroutines.retrofit.await
 import java.io.IOException
 import java.net.SocketTimeoutException
 
 class UpdateMessage(private val context: MessagesAdapter, private val position: Int, private var message: Message, private val newMessage: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun updateAsyncMessage(token: String, newMessage: Message): Message = withContext(CommonPool) {
         api.updateMessage(token, message.id, hashMapOf("text" to newMessage.text)).await()
     }
 
     private suspend fun updateMessage(newMessage: Message) {
-        val token: String? = util.getIdToken()
+        val token = FirebaseUtil().getToken()
+
         if (token == null) {
             Log.v("MESSAGE_UPDATER", "API failed: i have no token")
             context.responseCode = 500
@@ -74,27 +75,22 @@ class UpdateMessage(private val context: MessagesAdapter, private val position: 
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job) { updateMessage(newMessage) }
-            }
+    fun start() {
+        launch(this.job) {
+            updateMessage(newMessage)
         }
     }
 }
 
 class DeleteMessage(private val context: MessagesAdapter, private val position: Int, private var message: Message): API() {
     val api = retrofit.create(MessagesAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun deleteAsyncMessage(token: String, message: Message): HashMap<String, Boolean> = withContext(CommonPool) {
         api.deleteMessage(token, message.id).await()
     }
 
     private suspend fun deleteMessage(message: Message): Boolean {
-        val token: String? = util.getIdToken()
+        val token = FirebaseUtil().getToken()
         if (token == null) {
             Log.v("MESSAGE_DELETER", "API failed: i have no token")
             context.responseCode = 500
@@ -149,13 +145,10 @@ class DeleteMessage(private val context: MessagesAdapter, private val position: 
         return false
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job) { deleteMessage(message) }
-            }
+    fun start() {
+
+        launch(this.job) {
+            deleteMessage(message)
         }
     }
 }

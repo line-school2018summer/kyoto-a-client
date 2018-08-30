@@ -3,41 +3,23 @@ package intern.line.me.kyotoaclient.lib.firebase
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlin.coroutines.experimental.suspendCoroutine
 
 class FirebaseUtil{
-    var ret: Any? = null
-    companion object {
+    suspend fun getToken() : String? = suspendCoroutine{ cont ->
         val auth = FirebaseAuth.getInstance()!!
-    }
-
-    var token : String? = null
-
-    //トークンを取得する際はこのメソッドを使用する。毎回tokenをnullにしてるので、startWithGettingTokenでラップしていない場合はnullが帰る。
-    fun getIdToken(): String?{
-        val return_token = token
-        token =null
-        return return_token
-    }
-
-    /*高階関数を使ったメソッド。テクい。なんでこんなことをしたかというと、
-    user.getIdToken(true)は内部的には非同期処理が行われてるっぽく、.addOnCompleteListener以下でしかトークンを使った処理がかけない。
-    (普通に書くと、非同期処理のせいでトークンを取得する前にトークンを使った処理が実行されてしまう)
-    使い方はAuthActivityのonActivityResultを参照
-     */
-    fun <T> startWithGettingToken(user: FirebaseUser,body : () -> T){
-        Log.d("Token", "start getIdToken")
+        val user = auth.currentUser ?: throw Exception("Can't get current user.")
 
         user.getIdToken(true)
-        .addOnCompleteListener {
-            Log.d("Token", "complete getIdToken")
+                .addOnCompleteListener {
+                    Log.d("Token", "complete getIdToken")
 
-            if (it.isSuccessful) {
-                this.token = it.result.token
-                Log.d("Token", token)
-                ret = body()
-            }else{
-                throw Exception("can't get token.")
-            }
-        }
+                    if (it.isSuccessful) {
+                        cont.resume( it.result.token)
+                    } else {
+                        throw Exception("can't get token.")
+                    }
+                }
     }
+
 }

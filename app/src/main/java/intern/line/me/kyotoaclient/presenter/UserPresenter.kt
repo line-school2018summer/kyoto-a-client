@@ -10,48 +10,33 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 import retrofit2.Response
+import ru.gildor.coroutines.retrofit.await
 import ru.gildor.coroutines.retrofit.awaitResponse
 
 //一つのメソッドに対して一つのクラスを作成。引数はクラスのコンストラクタを利用
-class CreateUserPresenter(val name: String, val callback:(Response<User>) -> Unit): API(){
+class CreateUserPresenter: API(){
     private val api = retrofit.create(UserAPI::class.java)
 
-    //FirebaseUtilのインスタンスを作成しないとトークンが共有できない
-    private val firebase_cli = FirebaseUtil()
 
-    private suspend fun createASyncUser(name: String,token : String) : Response<User> = withContext(CommonPool) {
-            api.createUser(name, token).awaitResponse()
+    private suspend fun createASyncUser(name: String) : Response<User> = withContext(CommonPool) {
+        val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
+
+        api.createUser(name, token).awaitResponse()
     }
 
-    private suspend fun createUser() {
 
-        //トークンは以下のメソッドで取得できるが、FirebaseUtil.startWithGettingToken{}でラップしていないとnullが返ってくる
-        val token = firebase_cli.getIdToken()
+    fun start(name: String, callback:(Response<User>) -> Unit) {
 
-        try {
-            if (token != null) {
-                createASyncUser(name, token).let{
+        //この中では同期的に処理をかける！！！！
+        launch(this.job + UI) {
+            try {
+                createASyncUser(name).let {
                     callback(it)
                 }
-
-            } else {
-                throw Exception("can't get token.")
-            }
-
-        } catch (t: HttpException) {
-            throw Exception("can't access server.")
-        }
-    }
-
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            firebase_cli.startWithGettingToken(user) {
-                launch(this.job + UI) { createUser() }
+            } catch (t: HttpException) {
+                throw Exception("can't access server.")
             }
         }
-
     }
 }
 
@@ -75,7 +60,7 @@ class GetUserList(val callback: (List<User>) -> Unit): API() {
         }
     }
 
-    override fun start() {
+    fun start() {
         launch(this.job + UI) {
             getUsersList()
         }
@@ -100,9 +85,9 @@ class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
         }
     }
 
-    override fun start() {
+    fun start() {
         launch(this.job + UI) {
-            val user = getUserInfo()
+            getUserInfo()
         }
     }
 }
@@ -110,15 +95,13 @@ class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
 class GetMyInfo(val callback:(User) -> Unit): API(){
 
     val api = retrofit.create(UserAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun getAsyncMyInfo(token : String): User = withContext(CommonPool){
         api.getMyInfo(token).await()
     }
 
     private suspend fun getMyInfo() {
-
-        val token = util.getIdToken()
+        val token = FirebaseUtil().getToken()
 
         try {
             if(token != null) {
@@ -132,15 +115,9 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job + UI) {
-                    getMyInfo()
-                }
-            }
+    fun start() {
+        launch(this.job + UI) {
+            getMyInfo()
         }
     }
 }
@@ -148,16 +125,15 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
 class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
 
     val api = retrofit.create(UserAPI::class.java)
-    val util = FirebaseUtil()
 
     private suspend fun putAsyncMyInfo(token:String): User = withContext(CommonPool){
         api.changeUserInfo(token, name).await()
     }
 
     private suspend fun putMyInfo(){
-        try {
-            val token = util.getIdToken()
+        val token = FirebaseUtil().getToken()
 
+        try {
             if(token != null) {
                 putAsyncMyInfo(token).let{
                     callback(it)
@@ -168,15 +144,9 @@ class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
         }
     }
 
-    override fun start() {
-        val auth = FirebaseAuth.getInstance()!!
-        val user = auth.currentUser
-        if(user != null) {
-            util.startWithGettingToken(user) {
-                launch(this.job + UI) {
-                    putMyInfo()
-                }
-            }
+    fun start() {
+        launch(this.job + UI) {
+            putMyInfo()
         }
     }
 }
