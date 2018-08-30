@@ -26,5 +26,5 @@ interface UserAPI{
     fun getMyInfo(@Header("Token") Token: String): Call<User>
 
     @PUT("/users/me")
-    fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Deferred<User>
+    fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Call<User>
 }

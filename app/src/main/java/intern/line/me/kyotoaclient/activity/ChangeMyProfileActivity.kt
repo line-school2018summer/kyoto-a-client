@@ -39,6 +39,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
             if(isValid){
                 PutMyInfo(inputText) {
+                    setUserInfo(it)
                 }.start()
                 }
             else{
