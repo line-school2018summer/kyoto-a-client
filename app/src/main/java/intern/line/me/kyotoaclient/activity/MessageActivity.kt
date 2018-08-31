@@ -11,65 +11,101 @@ import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.presenter.GetMyInfo
 import intern.line.me.kyotoaclient.model.Message
 import intern.line.me.kyotoaclient.model.MessageList
 import intern.line.me.kyotoaclient.model.Room
-import intern.line.me.kyotoaclient.lib.api.adapters.MessagesAdapter
-import intern.line.me.kyotoaclient.model.User
+import intern.line.me.kyotoaclient.presenter.*
+import kotlinx.android.synthetic.main.activity_message.*
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.withContext
 import java.sql.Timestamp
 
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
+
     private var editingMessagePosition: Int? = null
-    lateinit var room: Room
-    private var messagePool: MessagesAdapter? = null
-    private var listAdapter: MessageListAdapter? = null
+    private lateinit var room: Room
+    private lateinit var listAdapter: MessageListAdapter
 
     var messages: MessageList? = null
-    var myId: Long? = null
+    private var myId: Long? = null
+
+    private val job = Job()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
+
         room = intent.getSerializableExtra("room") as Room
 
+		listAdapter = MessageListAdapter(this)
+		main_list.adapter = listAdapter
+
         //ユーザー情報を取得できたらビューにセット
-        GetMyInfo {
-            setUserInfo(it)
-        }.start()
+        launch(job+UI) {
+            GetMyInfo().getMyInfo().let{ myId = it.id }
+			val messages  = GetMessages().getMessages(room.id)
+
+			listAdapter.messages = messages as MutableList<Message>
+			drawMessagesList()
+        }
 
 
+		//ルームの名前がない場合はデフォルトを指定
         if(room.name.isBlank()){
             this.title = "Room"
         } else {
             this.title = room.name
         }
-        
-        val listView: ListView = this.findViewById(R.id.main_list)
-        listView.setOnScrollListener(object: AbsListView.OnScrollListener {
+
+		main_list.setOnScrollListener(object: AbsListView.OnScrollListener {
             override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
 
             override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
                 if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
-                    val notifyView = findViewById<View>(R.id.message_new_notify)
-                    notifyView.visibility = View.INVISIBLE
+					message_new_notify.visibility = View.INVISIBLE
                 }
             }
         })
-        registerForContextMenu(listView)
+        registerForContextMenu(main_list)
 
-        messagePool = MessagesAdapter(this).getPool(room.id)
-    }
 
+		//ここでポーリングを開始
+		startPool(job,room.id)
+	}
+
+
+	//送信ボタンを押した時
+	fun onSend(v: View) {
+		val sendText: EditText = findViewById(R.id.message_send_text)
+		if (sendText.text.isBlank()) {
+			return
+		}
+		val room = room
+
+		launch(job + UI) {
+			CreateMessage().createMessage(room.id, sendText.text.toString())
+			drawMessagesList(-1)
+			toSendMode()
+		}
+
+	}
+
+
+	//アイテムを長押しした時の処理
     override fun onCreateContextMenu(menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
         super.onCreateContextMenu(menu, v, menuInfo)
+
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
-        val listView: ListView = v as ListView
+        val listView = v as ListView
         val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
         val myId: Long = myId ?: 0
+
         if (messageObj.user_id == myId){
             menu?.setHeaderTitle(messageObj.text)
             menu?.add(0, MESSAGE_EDIT_EVENT, 0, getString(R.string.edit))
@@ -77,8 +113,10 @@ class MessageActivity : AppCompatActivity() {
         }
     }
 
+
+	//選んだ選択肢によって処理を分岐
     override fun onContextItemSelected(item: MenuItem?): Boolean {
-        val info: AdapterView.AdapterContextMenuInfo = item?.getMenuInfo() as AdapterView.AdapterContextMenuInfo
+        val info: AdapterView.AdapterContextMenuInfo = item?.menuInfo as AdapterView.AdapterContextMenuInfo
 
         when(item.itemId){
             MESSAGE_EDIT_EVENT -> onUpdateMessage(info.position)
@@ -87,166 +125,162 @@ class MessageActivity : AppCompatActivity() {
         return super.onContextItemSelected(item)
     }
 
-    private fun onDeleteMessage(id: Int): Boolean {
+
+	//削除を選んたとき
+    private fun onDeleteMessage(position: Int): Boolean {
         val messages = this.messages ?: return false
-        MessagesAdapter(this).delete(id, messages.messageAt(id) ?: throw Exception("no message found"))
+
+		launch(UI) {
+
+			//positionはクリックした場所を表すので存在が保証されていると考える
+			val result = DeleteMessage().deleteMessage(listAdapter.messages!![position])
+
+			if(result) {
+				listAdapter.messages!!.removeAt(position)
+			}else{
+				//TODO(削除に失敗した時)
+			}
+		}
+		return true
+    }
+
+
+	//編集を選んだ時
+    private fun onUpdateMessage(position: Int): Boolean {
+        toEditMode(position)
+
+		//positionはクリックした場所を表すので存在が保証されていると考える
+        val message: Message = listAdapter.messages!![position]
+		message_edit_text.setText(message.text)
+
         return true
     }
 
-    fun onUpdate(v: View) {
-        println(this.messages)
-        drawMessagesList()
+
+    private fun toEditMode(position: Int){
+        editingMessagePosition = position
+
+		message_edit_layout.visibility = View.VISIBLE
+		message_send_layout.visibility = View.INVISIBLE
     }
 
-    private fun onUpdateMessage(id: Int): Boolean {
-        this.toEditMode(id)
-        val editInput: EditText = findViewById(R.id.message_edit_text)
-        val message: Message = this.messages?.messageAt(id) ?: return false
-        editInput.setText(message.text)
 
-        return true
+    private fun toSendMode() {
+		this.editingMessagePosition = null
+
+		message_edit_layout.visibility = View.INVISIBLE
+		message_send_layout.visibility = View.VISIBLE
+		message_edit_text.setText("")
+		message_send_text.setText("")
     }
 
-    private fun toEditMode(messagePosition: Int): Boolean {
-        this.editingMessagePosition = messagePosition
-        val editView: View = findViewById(R.id.message_edit_layout)
-        editView.visibility = View.VISIBLE
-        val sendView: View = findViewById(R.id.message_send_layout)
-        sendView.visibility = View.INVISIBLE
-        return true
-    }
 
-    private fun toSendMode(): Boolean {
-        val editView: View = findViewById(R.id.message_edit_layout)
-        editView.visibility = View.INVISIBLE
-        val sendView: View = findViewById(R.id.message_send_layout)
-        sendView.visibility = View.VISIBLE
-        val editText: EditText = findViewById(R.id.message_edit_text)
-        editText.setText("")
-        val sendText: EditText = findViewById(R.id.message_send_text)
-        sendText.setText("")
-        this.editingMessagePosition = null
-        return true
-    }
-
+	//編集を実行したとき
     fun onEdit(v: View) {
-        val editingMessagePosition = this.editingMessagePosition
+
+		val position = editingMessagePosition ?:throw Exception("no message found")
+
         if (editingMessagePosition == null) {
             this.toSendMode()
             return
         }
-        val messages: MessageList? = this.messages
-        if (messages == null) {
+
+        if (listAdapter.messages == null) {
             this.toSendMode()
             return
         }
-        val editText: EditText = findViewById(R.id.message_edit_text)
-        val originMessage: Message = messages.messageAt(editingMessagePosition) ?: throw Exception("no message found")
-        if (originMessage.text == editText.text.toString()){
+
+		//positionはクリックした場所を表すので存在が保証されていると考える
+		val message: Message = listAdapter.messages!![position]
+
+		//何も編集されてなかった時
+        if (message.text == message_edit_text.text.toString()){
             this.toSendMode()
             return
         }
-        if (editText.text.isBlank()) {
+		//編集して空欄にした時
+        if (message_edit_text.text.isBlank()) {
             return
         }
-        var message = originMessage
-        message.text = editText.text.toString()
-        message.updated_at = Timestamp(System.currentTimeMillis())
-        this.messages?.updateAt(editingMessagePosition, message)
-        doMessagesAction()
-        MessagesAdapter(this).update(editingMessagePosition, originMessage, message)
-        this.toSendMode()
+
+		message.text = message_edit_text.text.toString()
+		message.updated_at = Timestamp(System.currentTimeMillis())
+
+
+		//非同期で更新
+		launch(job + UI) {
+			val res = UpdateMessage().updateMessage(message)
+
+			if(res.isSuccessful) {
+				toSendMode()
+
+				//positionはタップした場所を表すので存在が保証されていると考える
+				listAdapter.messages!![position] = message
+				drawMessagesList()
+			}else{
+				//TODO(200以外が返ってきた時)
+			}
+		}
     }
 
-    fun onSend(v: View) {
-        val sendText: EditText = findViewById(R.id.message_send_text)
-        if (sendText.text.isBlank()) {
-            return
-        }
-        val room = room
 
-        MessagesAdapter(this).create(room.id, sendText.text.toString())
-        this.toSendMode()
+
+    private fun drawMessagesList(scrollAt: Int? = null) {
+
+		if (listAdapter.messages == null) {
+			main_list.visibility = View.INVISIBLE
+			message_loading.visibility = View.VISIBLE
+			return
+		}
+
+		listAdapter.notifyDataSetChanged()
+
+		//最新のメッセージまでスクロール
+		scrollToEnd()
+
+		main_list.visibility = View.VISIBLE
+		message_loading.visibility = View.INVISIBLE
     }
 
-    fun drawMessagesList(scrollAt: Int? = null) {
-        val messages = this.messages
-        val listView: ListView = this.findViewById(R.id.main_list)
-        val progress: View = this.findViewById(R.id.message_loading)
-        if (messages == null) {
-            listView.visibility = View.INVISIBLE
-            progress.visibility = View.VISIBLE
-            return
-        }
-        val listAdapter = listAdapter
-        var scrollTo: Int? = null
-        if (listAdapter == null) {
-            val newListAdapter = MessageListAdapter(this)
-            newListAdapter.setMessages(messages)
-            listView.adapter = newListAdapter
-            this.listAdapter = newListAdapter
-            scrollTo = listView.count - 1
-        } else {
-            val oldMessages = listAdapter.getMessages()
-            val newMessageLastId = messages.getLast()?.id
-            var oldMessageLastId: Long? = null
-            if (oldMessages != null){
-                val oldMessageLast = oldMessages.getLast()
-                oldMessageLastId = oldMessageLast?.id
-            }
-            if ((newMessageLastId != null) && (oldMessageLastId != null)) {
-                if (newMessageLastId > oldMessageLastId) {
-                    val newMessageNotify: View = this.findViewById(R.id.message_new_notify)
-                    newMessageNotify.visibility = View.VISIBLE
-                }
-            }
-            listAdapter.setMessages(messages)
-            listAdapter.notifyDataSetChanged()
-        }
-        if (scrollTo == null) {
-            if (scrollAt == null) {
-                scrollTo = null
-            } else if (scrollAt < 0) {
-                scrollTo = listView.count - 1
-            } else {
-                scrollTo = scrollAt
-            }
-        }
-        if (scrollTo != null) {
-            listView.setSelection(scrollTo)
-        }
-        listView.visibility = View.VISIBLE
-        progress.visibility = View.INVISIBLE
-    }
-    
-    fun doMessagesAction(scrollAt: Int? = null) {
-        drawMessagesList(scrollAt)
-    }
 
+	//アクティビティが終わるときにポーリングを辞める
     override fun onStop() {
         super.onStop()
-        val messagePool = messagePool
-        messagePool ?: return
-        messagePool.stopMessagePool()
+		job.cancel()
     }
 
     override fun onRestart() {
         super.onRestart()
-        val room = room
-        val messagePool = messagePool
-        messagePool ?: return
-        messagePool.getPool(room.id)
-    }
+		startPool(job,room.id)
+	}
 
-    fun scrollToEnd(v: View) {
-        val listView: ListView = this.findViewById(R.id.main_list)
-        val messages = messages
-        messages ?: return
-        val last: Int = messages.count.toInt() - 1
-        listView.setSelection(last)
-    }
 
-    fun setUserInfo(user: User) {
-        myId = user.id
-    }
+	fun startPool(job: Job,room_id: Long) {
+
+		val client = GetMessages()
+		val pool_job = Job()
+
+		//結果をUIスレッドで受け取れるように
+		launch(job + UI) {
+
+			while (true) {
+				//別スレッドで常に取得してる
+				val messages = withContext(pool_job + CommonPool) {
+					// 1秒ごとに取得
+					Thread.sleep(1000)
+					return@withContext client.getMessages(room_id)
+				}
+
+				listAdapter.messages = messages as MutableList<Message>
+				drawMessagesList()
+			}
+		}
+	}
+
+
+	//最後までスクロール
+    fun scrollToEnd() {
+		val last = (listAdapter.messages?.size ?:  1 ) - 1
+		main_list.setSelection(last)
+	}
 }

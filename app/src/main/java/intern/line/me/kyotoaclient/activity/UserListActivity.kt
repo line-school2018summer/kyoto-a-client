@@ -9,11 +9,16 @@ import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.presenter.GetUserList
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 class UserListActivity : AppCompatActivity() {
 
     lateinit var adapter: UserListAdapter
 
+    //非同期処理管理用
+    private val job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,9 +33,7 @@ class UserListActivity : AppCompatActivity() {
         list.adapter = adapter
 
         //非同期でユーザー取得
-        GetUserList {
-            adapter.setUsers(it)
-        }.start()
+        updateUserList()
 
 
         button.setOnClickListener {
@@ -58,10 +61,22 @@ class UserListActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        
-        //非同期でユーザー取得
-        GetUserList {
-            adapter.setUsers(it)
-        }.start()
+
+        updateUserList()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
+
+    //非同期でユーザー取得
+    fun updateUserList(){
+        launch(job + UI) {
+            GetUserList().getUsersList().let{
+                adapter.setUsers(it)
+            }
+        }
     }
 }
