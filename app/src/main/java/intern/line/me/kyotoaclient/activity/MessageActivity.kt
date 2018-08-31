@@ -31,7 +31,6 @@ class MessageActivity : AppCompatActivity() {
     private lateinit var room: Room
     private lateinit var listAdapter: MessageListAdapter
 
-    var messages: MessageList? = null
     private var myId: Long? = null
 
     private val job = Job()
@@ -128,15 +127,15 @@ class MessageActivity : AppCompatActivity() {
 
 	//削除を選んたとき
     private fun onDeleteMessage(position: Int): Boolean {
-        val messages = this.messages ?: return false
 
-		launch(UI) {
+		launch(job  + UI) {
 
 			//positionはクリックした場所を表すので存在が保証されていると考える
 			val result = DeleteMessage().deleteMessage(listAdapter.messages!![position])
 
 			if(result) {
 				listAdapter.messages!!.removeAt(position)
+				drawMessagesList()
 			}else{
 				//TODO(削除に失敗した時)
 			}
