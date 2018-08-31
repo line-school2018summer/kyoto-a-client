@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Kyotoaclient</string>
+    <string name="app_name">SHABEL</string>
     <string name="room_create_input">Room Name</string>
     <string name="room_create_button">Create</string>
     <string name="message_input">Input text</string>

@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Kyotoaclient</string>
     <string name="room_create_input">Room名</string>
     <string name="room_create_button">作成</string>
     <string name="message_input">テキストを入力</string>
