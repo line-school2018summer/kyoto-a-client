@@ -150,3 +150,29 @@ class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
         }
     }
 }
+
+class SearchUsers(val name: String, val callback: (List<User>) -> Unit): API() {
+
+    val api = retrofit.create(UserAPI::class.java)
+
+    private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool) {
+        api.searchUsers(name).await()
+    }
+
+    private suspend fun getUsersList() {
+        try {
+            getAsyncUsersList().let{
+                callback(it)
+            }
+
+        } catch (t: HttpException) {
+            throw Exception("update failed.")
+        }
+    }
+
+    fun start() {
+        launch(this.job + UI) {
+            getUsersList()
+        }
+    }
+}

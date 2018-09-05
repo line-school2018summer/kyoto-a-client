@@ -5,10 +5,12 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.presenter.GetUserList
+import intern.line.me.kyotoaclient.presenter.SearchUsers
 
 class UserListActivity : AppCompatActivity() {
 
@@ -23,6 +25,8 @@ class UserListActivity : AppCompatActivity() {
 
         val list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<Button>(R.id.profile_button)
+        val searchButton = findViewById<Button>(R.id.top)
+        val searchBox = findViewById<EditText>(R.id.search_box)
 
         adapter = UserListAdapter(this)
         list.adapter = adapter
@@ -53,6 +57,13 @@ class UserListActivity : AppCompatActivity() {
             intent.putExtra("longTapUserId", longTapUserId)
             startActivityForResult(intent, 11)
             return@setOnItemLongClickListener true
+        }
+
+        searchButton.setOnClickListener{
+            val name = searchBox.text.toString()
+            SearchUsers(name){
+                adapter.setUsers(it)
+            }
         }
     }
 
