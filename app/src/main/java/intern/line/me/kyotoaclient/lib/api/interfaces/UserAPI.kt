@@ -27,4 +27,7 @@ interface UserAPI{
 
     @PUT("/users/me")
     fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Call<User>
+
+    @GET("/users/search")
+    fun searchUsers(@Query("name")name: String): Call<List<User>>
 }

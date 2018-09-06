@@ -105,3 +105,21 @@ class PutMyInfo(private  val name: String): API(){
         }
     }
 }
+
+class SearchUsers(val name: String): API() {
+
+    val api = retrofit.create(UserAPI::class.java)
+
+    private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool) {
+        api.searchUsers(name).await()
+    }
+
+    suspend fun getUsersList(): List<User> {
+        try {
+            return getAsyncUsersList()
+
+        } catch (t: HttpException) {
+            throw Exception("update failed.")
+        }
+    }
+}
