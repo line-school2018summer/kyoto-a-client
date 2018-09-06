@@ -12,7 +12,10 @@ import android.app.Activity
 import android.content.Intent
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.presenter.GetRooms
-
+import kotlinx.android.synthetic.main.activity_room_list.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 
 class RoomListActivity : AppCompatActivity() {
@@ -22,54 +25,66 @@ class RoomListActivity : AppCompatActivity() {
                 Intent(context, RoomListActivity::class.java)
     }
 
+
+    private val job = Job()
+
     lateinit var adapter: RoomListAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_list)
-
         setResult(Activity.RESULT_CANCELED)
 
+        //ルーム一覧を非同期で取得
+        setAsyncRooms()
+
         adapter = RoomListAdapter(this)
-
-        //非同期でユーザー取得
-        GetRooms(this).start()
-
         val listView: ListView = this.findViewById(R.id.room_list)
-
         listView.adapter = adapter
         registerForContextMenu(listView)
 
+        //ルームをクリックしたらトークに飛ぶ
         listView.setOnItemClickListener { parent, view, position, id ->
             val selectedRoom = adapter.getItem(position)
-            val intent = Intent(this@RoomListActivity, MessageActivity::class.java)
+            val intent = Intent(this, MessageActivity::class.java)
             intent.putExtra("room", selectedRoom)
             startActivity(intent)
         }
 
-
-        val userListButton = findViewById(R.id.user_list_button) as FloatingActionButton
-        userListButton.setOnClickListener(View.OnClickListener {
+        user_list_button.setOnClickListener{
             val intent = Intent(application, UserListActivity::class.java)
             startActivity(intent)
-        })
+        }
 
-        val createButton = findViewById(R.id.room_create_button) as FloatingActionButton
-        createButton.setOnClickListener(View.OnClickListener {
+        room_create_button.setOnClickListener{
             val intent = Intent(application, RoomCreateActivity::class.java)
             startActivity(intent)
-        })
+        }
 
     }
 
-    fun setRooms(rooms : List<Room>){
-        adapter.setRooms(rooms)
-        adapter.notifyDataSetChanged()
-    }
 
     override fun onRestart() {
         super.onRestart()
-        GetRooms(this).start()
+        setAsyncRooms()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
+    }
+
+    private fun setAsyncRooms(){
+        //非同期でルーム取得
+        launch(job + UI) {
+            val rooms = GetRooms().getRooms()
+            setRooms(rooms)
+        }
+    }
+
+    private fun setRooms(rooms : List<Room>){
+        adapter.setRooms(rooms)
+        adapter.notifyDataSetChanged()
     }
 }

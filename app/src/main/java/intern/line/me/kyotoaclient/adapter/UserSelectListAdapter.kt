@@ -28,16 +28,14 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.user_select, parent, false)
         val checkView: CheckedTextView = convertView.findViewById(R.id.user_name_view)
-        checkView.setText(users[position].name)
+        checkView.text = users[position].name
+
         checkView.isChecked = checkList[position]
-        checkView.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(v: View?) {
-                val view = v as CheckedTextView?
-                view ?: return
-                view.toggle()
-                checkList[position] = view.isChecked
-            }
-        })
+        checkView.setOnClickListener {
+            val view = it as CheckedTextView
+            view.toggle()
+            checkList[position] = view.isChecked
+        }
         return convertView
     }
 

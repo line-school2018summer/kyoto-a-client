@@ -24,8 +24,6 @@
         </activity>
         <activity android:name=".activity.RoomCreateActivity">
         </activity>
-        <activity android:name=".activity.LoginedActivity">
-        </activity>
         <activity android:name=".activity.UserListActivity">
 
         </activity>

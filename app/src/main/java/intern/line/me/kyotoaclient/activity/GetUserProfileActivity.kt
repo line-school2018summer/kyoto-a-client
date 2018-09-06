@@ -7,8 +7,14 @@ import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.User
 import intern.line.me.kyotoaclient.presenter.GetUserInfo
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 class GetUserProfileActivity : AppCompatActivity() {
+
+    private val job = Job()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,16 +24,20 @@ class GetUserProfileActivity : AppCompatActivity() {
 
         user_profile_progress_bar.visibility = View.VISIBLE
 
-        //非同期でユーザー情報を取ってくる
-        GetUserInfo(selectedId) {
-            setUserInfo(it)
-        }.start()
+        launch(job + UI) {
+            GetUserInfo(selectedId).getUserInfo().let{ setUserInfo(it) }
+        }
     }
 
-    fun setUserInfo(set_user: User) {
 
+    fun setUserInfo(set_user: User) {
         user_name.text = set_user.name
         user_profile_progress_bar.visibility = View.INVISIBLE
+    }
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 }

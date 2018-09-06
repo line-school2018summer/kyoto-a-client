@@ -1,12 +1,9 @@
 package intern.line.me.kyotoaclient.presenter
 
-import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.model.User
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 import retrofit2.Response
@@ -25,23 +22,17 @@ class CreateUserPresenter: API(){
     }
 
 
-    fun start(name: String, callback:(Response<User>) -> Unit) {
-
-        //この中では同期的に処理をかける！！！！
-        launch(this.job + UI) {
-            try {
-                createASyncUser(name).let {
-                    callback(it)
-                }
-            } catch (t: HttpException) {
-                throw Exception("can't access server.")
-            }
+    suspend fun createUser(name: String): Response<User>{
+        try {
+            return createASyncUser(name)
+        } catch (t: HttpException) {
+            throw Exception("can't access server.")
         }
     }
 }
 
 
-class GetUserList(val callback: (List<User>) -> Unit): API() {
+class GetUserList: API() {
 
     val api = retrofit.create(UserAPI::class.java)
 
@@ -49,25 +40,17 @@ class GetUserList(val callback: (List<User>) -> Unit): API() {
         api.getUsers().await()
     }
 
-    private suspend fun getUsersList() {
+    suspend fun getUsersList(): List<User> {
         try {
-            getAsyncUsersList().let{
-                callback(it)
-            }
+            return getAsyncUsersList()
 
         } catch (t: HttpException) {
             throw Exception("update failed.")
         }
     }
-
-    fun start() {
-        launch(this.job + UI) {
-            getUsersList()
-        }
-    }
 }
 
-class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
+class GetUserInfo(val id: Long): API(){
 
     val api = retrofit.create(UserAPI::class.java)
 
@@ -75,24 +58,16 @@ class GetUserInfo(val id: Long,val callback:(User) -> Unit): API(){
         api.getUserInfoById(id).await()
     }
 
-    private suspend fun getUserInfo(){
+    suspend fun getUserInfo(): User{
         try{
-            getAsyncUserInfo().let {
-                callback(it)
-            }
+            return getAsyncUserInfo()
         } catch (t: HttpException){
             throw Exception("update failed.")
         }
     }
-
-    fun start() {
-        launch(this.job + UI) {
-            getUserInfo()
-        }
-    }
 }
 
-class GetMyInfo(val callback:(User) -> Unit): API(){
+class GetMyInfo: API(){
 
     val api = retrofit.create(UserAPI::class.java)
 
@@ -100,29 +75,19 @@ class GetMyInfo(val callback:(User) -> Unit): API(){
         api.getMyInfo(token).await()
     }
 
-    private suspend fun getMyInfo() {
-        val token = FirebaseUtil().getToken()
+    suspend fun getMyInfo(): User{
+        val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
         try {
-            if(token != null) {
-                getAsyncMyInfo(token).let{
-                    callback(it)
-                }
-            }
+            return getAsyncMyInfo(token)
 
         } catch (t: HttpException) {
             throw Exception("Update failed.")
         }
     }
-
-    fun start() {
-        launch(this.job + UI) {
-            getMyInfo()
-        }
-    }
 }
 
-class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
+class PutMyInfo(private  val name: String): API(){
 
     val api = retrofit.create(UserAPI::class.java)
 
@@ -130,23 +95,13 @@ class PutMyInfo(private  val name: String, val callback:(User) -> Unit): API(){
         api.changeUserInfo(token, name).await()
     }
 
-    private suspend fun putMyInfo(){
-        val token = FirebaseUtil().getToken()
+    suspend fun putMyInfo(): User{
+        val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
         try {
-            if(token != null) {
-                putAsyncMyInfo(token).let{
-                    callback(it)
-                }
-            }
+            return putAsyncMyInfo(token)
         } catch (t: HttpException) {
             throw Exception("Update failed.")
-        }
-    }
-
-    fun start() {
-        launch(this.job + UI) {
-            putMyInfo()
         }
     }
 }

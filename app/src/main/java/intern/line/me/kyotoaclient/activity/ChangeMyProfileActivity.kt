@@ -3,49 +3,47 @@ package intern.line.me.kyotoaclient.activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.User
 import intern.line.me.kyotoaclient.presenter.GetMyInfo
 import intern.line.me.kyotoaclient.presenter.PutMyInfo
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 class ChangeMyProfileActivity : AppCompatActivity() {
+
+    private val job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_my_profile)
 
-
-        val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
-
-        val sign_in_user = FirebaseAuth.getInstance().currentUser
-
         my_profile_progress_bar.visibility = View.VISIBLE
 
         //非同期でユーザー情報を取ってくる
-        GetMyInfo {
-            setUserInfo(it)
-        }.start()
-
-
-
+        launch(job + UI) {
+            GetMyInfo().getMyInfo().let { setUserInfo(it) }
+        }
 
         //ボタンを押したときの処理
-        apply_button.setOnClickListener{
+        apply_button.setOnClickListener {
 
             val inputText = changed_name.text.toString()
-            var isValid = regex.matches(inputText)
 
-            if(isValid){
-                PutMyInfo(inputText) {
-                    setUserInfo(it)
-                }.start()
-                }
-            else{
-                changed_name.error = "不正な文字が使われています"
+            launch(job + UI) {
+                PutMyInfo(inputText).putMyInfo().let{ setUserInfo(it) }
             }
         }
+    }
+
+
+
+    //Activityを閉じたときに非同期処理をキャンセルさせる
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 
 

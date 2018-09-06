@@ -13,6 +13,9 @@ import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.presenter.CreateUserPresenter
 import kotlinx.android.synthetic.main.activity_auth.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import java.util.*
 
 
@@ -25,6 +28,9 @@ class AuthActivity : AppCompatActivity() {
         fun intent(context: Context): Intent =
                 Intent(context, AuthActivity::class.java)
     }
+
+
+    private val job = Job()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +51,7 @@ class AuthActivity : AppCompatActivity() {
             faild_to_sign_in_textview.visibility = View.GONE
             retry_sign_in_button.visibility = View.GONE
             auth_progress_bar.visibility = View.VISIBLE
+
             startFirebaseLoginActivity()
         }
     }
@@ -63,8 +70,9 @@ class AuthActivity : AppCompatActivity() {
 
                 val user = auth.currentUser!!
 
-                CreateUserPresenter().start(user.displayName!!){
-                    if (it.isSuccessful) {
+                launch(job + UI) {
+                    val res = CreateUserPresenter().createUser(user.displayName!!)
+                    if (res.isSuccessful) {
                         onCompleteSignIn()
                     } else {
                         showFaildToSignIn()
@@ -79,6 +87,12 @@ class AuthActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 
 
@@ -109,7 +123,4 @@ class AuthActivity : AppCompatActivity() {
         auth_progress_bar.visibility = View.GONE
 
     }
-
-
-
 }
