@@ -11,10 +11,15 @@ import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.presenter.GetUserList
 import intern.line.me.kyotoaclient.presenter.SearchUsers
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 class UserListActivity : AppCompatActivity() {
 
     lateinit var adapter: UserListAdapter
+
+    private val job = Job()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,9 +66,11 @@ class UserListActivity : AppCompatActivity() {
 
         searchButton.setOnClickListener{
             val name = searchBox.text.toString()
-            SearchUsers(name){
+            launch(job + UI) {
+                SearchUsers(name).getUsersList().let {
                 adapter.setUsers(it)
-            }
+                }
+            }.start()
         }
     }
 
