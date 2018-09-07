@@ -11,10 +11,14 @@ import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.model.Message
-import intern.line.me.kyotoaclient.model.MessageList
-import intern.line.me.kyotoaclient.model.Room
-import intern.line.me.kyotoaclient.presenter.*
+import intern.line.me.kyotoaclient.model.entity.MessageRealm
+import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.repository.RoomRepository
+import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
+import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
+import intern.line.me.kyotoaclient.presenter.room.CreateMessage
+import intern.line.me.kyotoaclient.presenter.room.GetMessages
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -28,36 +32,48 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_DELETE_EVENT = 1
 
     private var editingMessagePosition: Int? = null
-    private lateinit var room: Room
+    private lateinit var room: RoomRealm
     private lateinit var listAdapter: MessageListAdapter
 
     private var myId: Long? = null
 
     private val job = Job()
+	
+	private val presenter = GetMessages()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
 
-        room = intent.getSerializableExtra("room") as Room
+        val room_id = intent.getSerializableExtra("room_id") as Long
+		room = RoomRepository().getById(room_id)!!
 
 		listAdapter = MessageListAdapter(this)
 		main_list.adapter = listAdapter
 
-        //ユーザー情報を取得できたらビューにセット
+        //先にDBから情報を読み込む
         launch(job+UI) {
-            GetMyInfo().getMyInfo().let{ myId = it.id }
-			val messages  = GetMessages().getMessages(room.id)
-
-			listAdapter.messages = messages as MutableList<Message>
+			val messages  = presenter.getMessagesFromDb(room.id)
+			listAdapter.messages = messages as MutableList<MessageRealm>
 			drawMessagesList()
-        }
+
+			GetMyInfo().getMyInfo().let{ myId = it.id }
+		}
+
+
+		//その後APIから取得
+		launch(job + UI) {
+			val messages  = presenter.getMessages(room.id)
+			listAdapter.messages = messages as MutableList<MessageRealm>
+			drawMessagesList()
+
+		}
 
 
 		//ルームの名前がない場合はデフォルトを指定
         if(room.name.isBlank()){
-            this.title = "Room"
+            this.title = "RoomRealm"
         } else {
             this.title = room.name
         }
@@ -102,7 +118,7 @@ class MessageActivity : AppCompatActivity() {
 
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView = v as ListView
-        val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
+        val messageObj = listView.getItemAtPosition(adapterInfo.position) as MessageRealm
         val myId: Long = myId ?: 0
 
         if (messageObj.user_id == myId){
@@ -149,7 +165,7 @@ class MessageActivity : AppCompatActivity() {
         toEditMode(position)
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-        val message: Message = listAdapter.messages!![position]
+        val message: MessageRealm = listAdapter.messages!![position]
 		message_edit_text.setText(message.text)
 
         return true
@@ -190,7 +206,7 @@ class MessageActivity : AppCompatActivity() {
         }
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-		val message: Message = listAdapter.messages!![position]
+		val message: MessageRealm = listAdapter.messages!![position]
 
 		//何も編集されてなかった時
         if (message.text == message_edit_text.text.toString()){
@@ -256,7 +272,7 @@ class MessageActivity : AppCompatActivity() {
 
 	fun startPool(job: Job,room_id: Long) {
 
-		val client = GetMessages()
+		val client = presenter
 		val pool_job = Job()
 
 		//結果をUIスレッドで受け取れるように
@@ -269,8 +285,7 @@ class MessageActivity : AppCompatActivity() {
 					Thread.sleep(1000)
 					return@withContext client.getMessages(room_id)
 				}
-
-				listAdapter.messages = messages as MutableList<Message>
+				listAdapter.messages = messages as MutableList<MessageRealm>
 				drawMessagesList()
 			}
 		}

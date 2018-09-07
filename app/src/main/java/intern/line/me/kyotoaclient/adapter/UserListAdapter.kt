@@ -5,14 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.content.Context
+import android.util.Log
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.User
+import intern.line.me.kyotoaclient.model.entity.UserRealm
 
 class UserListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    private var users: List<User> = emptyList()
+    private var users: List<UserRealm> = emptyList()
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -25,12 +26,16 @@ class UserListAdapter(private val context: Context): BaseAdapter() {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.user_list_row, parent, false)
-        (convertView.findViewById(R.id.name_text) as TextView).setText(users[position].name)
-        (convertView.findViewById(R.id.name_icon) as TextView).setText(users[position].name.substring(0,1))
+        try {
+            (convertView.findViewById(R.id.name_text) as TextView).setText(users[position].name)
+            (convertView.findViewById(R.id.name_icon) as TextView).setText(users[position].name.substring(0, 1))
+        }catch(t : Throwable){
+            Log.d("UserListAdapter",t.toString())
+        }
         return convertView
     }
 
-    override fun getItem(position: Int): User {
+    override fun getItem(position: Int): UserRealm {
         return users[position]
     }
 
@@ -39,7 +44,7 @@ class UserListAdapter(private val context: Context): BaseAdapter() {
     }
 
 
-    fun setUsers(set_users: List<User>){
+    fun setUsers(set_users: List<UserRealm>){
         users = set_users
         notifyDataSetChanged()
     }

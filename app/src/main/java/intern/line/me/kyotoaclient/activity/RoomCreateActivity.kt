@@ -4,26 +4,21 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.CheckedTextView
-import android.widget.ListView
-import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
-import intern.line.me.kyotoaclient.model.User
-import intern.line.me.kyotoaclient.presenter.CreateRoom
-import intern.line.me.kyotoaclient.presenter.GetMyInfo
-import intern.line.me.kyotoaclient.presenter.GetUserList
+import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.presenter.room.CreateRoom
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import intern.line.me.kyotoaclient.presenter.user.GetUserList
 import kotlinx.android.synthetic.main.activity_room_create.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import java.sql.Timestamp
 
 class RoomCreateActivity : AppCompatActivity() {
 
     lateinit var adapter: UserSelectListAdapter
-    lateinit var me: User
+    lateinit var me: UserRealm
 
     private val job = Job()
 
@@ -37,13 +32,14 @@ class RoomCreateActivity : AppCompatActivity() {
         user_select_list.adapter = adapter
         registerForContextMenu(user_select_list)
 
-        //非同期処理
+        //先にDBから取得
         launch(job + UI) {
-            //自分のユーザーを取得
+            //TODO(ここボトルネック自分の情報をローカルに取りに行きたい)
             me = GetMyInfo().getMyInfo()
 
-            val users = GetUserList().getUsersList()
-            val filteredUserList = mutableListOf<User>()
+            val users = GetUserList().getUsersListFromDb()
+
+            val filteredUserList = mutableListOf<UserRealm>()
             //自分を除外する
             users.forEach {
                 if (it.id != me.id) {
@@ -66,13 +62,13 @@ class RoomCreateActivity : AppCompatActivity() {
         val roomName = room_name_text.text.toString()
         var selectedUsers = adapter.getCheckedUserList()
 
-        selectedUsers = (selectedUsers as MutableList<User>)
+        selectedUsers = (selectedUsers as MutableList<UserRealm>)
         selectedUsers.add(me)
 
         println(selectedUsers)
 
         launch (this.job + UI) {
-            CreateRoom (roomName, selectedUsers).createRoom()
+            CreateRoom(roomName, selectedUsers).createRoom()
             goBack()
         }
     }

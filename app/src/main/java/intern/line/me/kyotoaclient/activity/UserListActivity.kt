@@ -9,10 +9,11 @@ import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
-import intern.line.me.kyotoaclient.presenter.GetUserList
-import intern.line.me.kyotoaclient.presenter.SearchUsers
+import intern.line.me.kyotoaclient.presenter.user.SearchUsers
+import intern.line.me.kyotoaclient.presenter.user.GetUserList
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 
 class UserListActivity : AppCompatActivity() {
@@ -88,6 +89,12 @@ class UserListActivity : AppCompatActivity() {
     //非同期でユーザー取得
     fun updateUserList(){
         launch(job + UI) {
+            val cli = GetUserList()
+
+            cli.getUsersListFromDb().let {
+                adapter.setUsers(it)
+            }
+
             GetUserList().getUsersList().let{
                 adapter.setUsers(it)
             }

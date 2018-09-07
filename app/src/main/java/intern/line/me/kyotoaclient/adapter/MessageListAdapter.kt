@@ -9,7 +9,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.*
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.entity.MessageRealm
 import java.lang.Math.max
 import java.sql.Date
 import java.sql.Timestamp
@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 class MessageListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    var messages : MutableList<Message>? = null
+    var messages : MutableList<MessageRealm>? = null
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -35,14 +35,14 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
 						 parent: ViewGroup?): View{
         val view = convertView ?: layoutInflater.inflate(R.layout.message_ballon, parent, false)
 
-        val message: Message = messages!![position] //選択されたメッセージは必ず存在すると考える
+        val message: MessageRealm = messages!![position] //選択されたメッセージは必ず存在すると考える
 
-		val oldMessage: Message? = messages!![max(0,position - 1)]
+		val oldMessage: MessageRealm? = messages!![max(0,position - 1)]
         val oldTime = oldMessage?.created_at?.time
         var oldYear: String? = null
         var oldDate: String? = null
 
-        val created_at: Timestamp = (message.created_at)
+        val created_at: Timestamp = (Timestamp(message.created_at.time))
         val format = SimpleDateFormat("HH:mm")
         val formatForDateChk = SimpleDateFormat("MM/dd")
         val formatForYearChk = SimpleDateFormat("yyyy")
@@ -71,7 +71,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
             dateView.visibility = View.GONE
         }
 
-        (view.findViewById(R.id.message_author) as TextView).text = message.user.name
+        (view.findViewById(R.id.message_author) as TextView).text = message.user?.name
         (view.findViewById(R.id.message_text) as TextView).text = (message.text)
         (view.findViewById(R.id.message_time) as TextView).text = format.format(time)
 
@@ -84,7 +84,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         return view
     }
 
-    override fun getItem(position: Int): Message {
+    override fun getItem(position: Int): MessageRealm {
         return messages!![position]
     }
 

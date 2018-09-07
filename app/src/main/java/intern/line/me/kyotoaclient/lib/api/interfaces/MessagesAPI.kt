@@ -1,6 +1,5 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
-import intern.line.me.kyotoaclient.model.Message
-import kotlinx.coroutines.experimental.Deferred
+import intern.line.me.kyotoaclient.model.entity.MessageRealm
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -10,7 +9,7 @@ interface MessagesAPI {
         @Header("Token") token : String,
         @Path("id") id: Long,
         @Body body: HashMap<String, String>
-    ): Call<Message>
+    ): Call<MessageRealm>
 
     @DELETE("/messages/{id}")
     fun deleteMessage(
