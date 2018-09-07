@@ -7,12 +7,12 @@ import android.widget.BaseAdapter
 import android.content.Context
 import intern.line.me.kyotoaclient.R
 import android.widget.CheckedTextView
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 
 class UserSelectListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    private var users: List<UserRealm> = emptyList()
+    private var users: List<User> = emptyList()
     private var checkList = mutableListOf<Boolean>()
 
     init {
@@ -38,7 +38,7 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
         return convertView
     }
 
-    override fun getItem(position: Int): UserRealm {
+    override fun getItem(position: Int): User {
         return users[position]
     }
 
@@ -47,18 +47,18 @@ class UserSelectListAdapter(private val context: Context): BaseAdapter() {
     }
 
 
-    fun setUsers(set_users: List<UserRealm>){
+    fun setUsers(set_users: List<User>){
         users = set_users
         // 初期化
         checkList = MutableList(count, { false })
         notifyDataSetChanged()
     }
 
-    fun getCheckedUserList(): List<UserRealm> {
+    fun getCheckedUserList(): List<User> {
         if (users.count() != checkList.count()) {
             throw Exception("invailed data")
         }
-        val selectedUsers = mutableListOf<UserRealm>()
+        val selectedUsers = mutableListOf<User>()
         for (i in 0..(users.count() - 1)){
             if (checkList[i]){
                 selectedUsers.add(users[i])

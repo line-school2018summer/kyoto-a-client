@@ -1,6 +1,6 @@
 package intern.line.me.kyotoaclient.model.repository
 
-import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.entity.Room
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.Sort
@@ -12,14 +12,14 @@ class RoomRepository {
 			.build()
 	val mRealm = Realm.getInstance(realmConfig)
 
-	fun getById(id: Long): RoomRealm? {
-		val r_room = mRealm.where(RoomRealm::class.java).equalTo("id", id).findFirst()
+	fun getById(id: Long): Room? {
+		val r_room = mRealm.where(Room::class.java).equalTo("id", id).findFirst()
 		return r_room
 	}
 
-	fun getAll(): List<RoomRealm> {
-		val rooms: MutableList<RoomRealm> = mutableListOf<RoomRealm>()
-		val db_rooms = mRealm.where(RoomRealm::class.java).findAll().sort("created_at", Sort.ASCENDING)
+	fun getAll(): List<Room> {
+		val rooms: MutableList<Room> = mutableListOf<Room>()
+		val db_rooms = mRealm.where(Room::class.java).findAll().sort("created_at", Sort.ASCENDING)
 
 		db_rooms.forEach {
 			rooms.add(it)!!
@@ -28,7 +28,7 @@ class RoomRepository {
 	}
 
 
-	fun create(room: RoomRealm) {
+	fun create(room: Room) {
 		mRealm.executeTransaction {
 			var create_room = mRealm.copyToRealmOrUpdate(room)
 
@@ -39,7 +39,7 @@ class RoomRepository {
 		}
 	}
 
-	fun update(room: RoomRealm) {
+	fun update(room: Room) {
 		mRealm.executeTransaction {
 			var update_room = mRealm.copyToRealmOrUpdate(room)
 
@@ -50,15 +50,15 @@ class RoomRepository {
 		}
 	}
 
-	fun updateAll(rooms: List<RoomRealm>) {
+	fun updateAll(rooms: List<Room>) {
 		for (room in rooms) {
 			update(room)
 		}
 	}
 
-	fun delete(room: RoomRealm) {
+	fun delete(room: Room) {
 		mRealm.executeTransaction {
-			var delete_room = mRealm.where(RoomRealm::class.java).equalTo("id", room.id).findAll()
+			var delete_room = mRealm.where(Room::class.java).equalTo("id", room.id).findAll()
 			delete_room.deleteFromRealm(0)
 		}
 	}

@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.presenter.message
 
 import android.util.Log
-import intern.line.me.kyotoaclient.model.entity.MessageRealm
+import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
@@ -19,11 +19,11 @@ class UpdateMessage: API() {
     val api = retrofit.create(MessagesAPI::class.java)
     private val repo = MessageRepository()
 
-    private suspend fun updateAsyncMessage(token: String, newMessage: MessageRealm): Response<MessageRealm> = withContext(CommonPool) {
+    private suspend fun updateAsyncMessage(token: String, newMessage: Message): Response<Message> = withContext(CommonPool) {
         api.updateMessage(token, newMessage.id, hashMapOf("text" to newMessage.text)).awaitResponse()
     }
 
-    suspend fun updateMessage(newMessage: MessageRealm): Response<MessageRealm> {
+    suspend fun updateMessage(newMessage: Message): Response<Message> {
         val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
         try {

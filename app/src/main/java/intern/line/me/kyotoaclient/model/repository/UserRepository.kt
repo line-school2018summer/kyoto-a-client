@@ -1,6 +1,6 @@
 package intern.line.me.kyotoaclient.model.repository
 
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.Sort
@@ -12,18 +12,18 @@ class UserRepository {
 			.build()
 	val mRealm = Realm.getInstance(realmConfig)
 
-	fun getById(id: Long): UserRealm? {
-		val r_user = mRealm.where(UserRealm::class.java).equalTo("id", id).findFirst()
+	fun getById(id: Long): User? {
+		val r_user = mRealm.where(User::class.java).equalTo("id", id).findFirst()
 		return r_user
 	}
 
-	fun getUserRealmById(id: Long): UserRealm? {
-		return  mRealm.where(UserRealm::class.java).equalTo("id", id).findFirst()
+	fun getUserRealmById(id: Long): User? {
+		return  mRealm.where(User::class.java).equalTo("id", id).findFirst()
 	}
 
-	fun getAll() : List<UserRealm> {
-		val users: MutableList<UserRealm> = mutableListOf<UserRealm>()
-		val db_users = mRealm.where(UserRealm::class.java).findAll().sort("id", Sort.ASCENDING)
+	fun getAll() : List<User> {
+		val users: MutableList<User> = mutableListOf<User>()
+		val db_users = mRealm.where(User::class.java).findAll().sort("id", Sort.ASCENDING)
 
 		db_users.forEach{
 			users.add(it)
@@ -32,7 +32,7 @@ class UserRepository {
 	}
 
 
-	fun create(user: UserRealm) {
+	fun create(user: User) {
 		mRealm.executeTransaction {
 			var create_user = mRealm.copyToRealmOrUpdate(user)
 			create_user.name = user.name
@@ -42,7 +42,7 @@ class UserRepository {
 		}
 	}
 
-	fun update(user: UserRealm) {
+	fun update(user: User) {
 		mRealm.executeTransaction {
 			var update_user = mRealm.copyToRealmOrUpdate(user)
 
@@ -53,15 +53,15 @@ class UserRepository {
 		}
 	}
 
-	fun updateAll(users: List<UserRealm>) {
+	fun updateAll(users: List<User>) {
 		for (user in users) {
 			update(user)
 		}
 	}
 
-	fun delete(user: UserRealm) {
+	fun delete(user: User) {
 		mRealm.executeTransaction {
-			var delete_user = mRealm.where(UserRealm::class.java).equalTo("id", user.id).findAll()
+			var delete_user = mRealm.where(User::class.java).equalTo("id", user.id).findAll()
 			delete_user.deleteFromRealm(0)
 		}
 	}

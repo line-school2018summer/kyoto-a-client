@@ -2,7 +2,7 @@ package intern.line.me.kyotoaclient.presenter.user
 
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.CommonPool
@@ -15,11 +15,11 @@ class PutMyInfo(private  val name: String): API(){
 	val api = retrofit.create(UserAPI::class.java)
 	private val repo = UserRepository()
 
-	private suspend fun putAsyncMyInfo(token:String): UserRealm = withContext(CommonPool){
+	private suspend fun putAsyncMyInfo(token:String): User = withContext(CommonPool){
 		api.changeUserInfo(token, name).await()
 	}
 
-	suspend fun putMyInfo(): UserRealm {
+	suspend fun putMyInfo(): User {
 		val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
 		try {

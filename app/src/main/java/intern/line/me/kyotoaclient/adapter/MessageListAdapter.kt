@@ -9,7 +9,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.*
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.entity.MessageRealm
+import intern.line.me.kyotoaclient.model.entity.Message
 import java.lang.Math.max
 import java.sql.Date
 import java.sql.Timestamp
@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat
 class MessageListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    var messages : MutableList<MessageRealm>? = null
+    var messages : MutableList<Message>? = null
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -35,9 +35,9 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
 						 parent: ViewGroup?): View{
         val view = convertView ?: layoutInflater.inflate(R.layout.message_ballon, parent, false)
 
-        val message: MessageRealm = messages!![position] //選択されたメッセージは必ず存在すると考える
+        val message: Message = messages!![position] //選択されたメッセージは必ず存在すると考える
 
-		val oldMessage: MessageRealm? = messages!![max(0,position - 1)]
+		val oldMessage: Message? = messages!![max(0,position - 1)]
         val oldTime = oldMessage?.created_at?.time
         var oldYear: String? = null
         var oldDate: String? = null
@@ -84,7 +84,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         return view
     }
 
-    override fun getItem(position: Int): MessageRealm {
+    override fun getItem(position: Int): Message {
         return messages!![position]
     }
 

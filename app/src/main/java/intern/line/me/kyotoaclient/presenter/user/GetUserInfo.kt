@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.presenter.user
 
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.CommonPool
@@ -14,11 +14,11 @@ class GetUserInfo(val id: Long): API(){
 	val api = retrofit.create(UserAPI::class.java)
 	private val repo = UserRepository()
 
-	private suspend fun getAsyncUserInfo(): UserRealm = withContext(CommonPool){
+	private suspend fun getAsyncUserInfo(): User = withContext(CommonPool){
 		api.getUserInfoById(id).await()
 	}
 
-	suspend fun getUserInfo(): UserRealm {
+	suspend fun getUserInfo(): User {
 		try{
 			val user =  getAsyncUserInfo()
 			//TODO(ローカル参照する前にRESTを叩かないと行けない糞仕様)

@@ -1,6 +1,6 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
-import intern.line.me.kyotoaclient.model.entity.MessageRealm
-import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.entity.Message
+import intern.line.me.kyotoaclient.model.entity.Room
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -9,23 +9,23 @@ interface RoomsAPI {
     fun getMessages(
         @Header("Token") token : String,
         @Path("id") id: Long
-    ): Call<List<MessageRealm>>
+    ): Call<List<Message>>
 
     @POST("/rooms/{id}/messages")
     fun createMessage(
         @Header("Token") token : String,
         @Path("id") id: Long,
         @Body body: HashMap<String, String>
-    ): Call<MessageRealm>
+    ): Call<Message>
 
     @GET("/rooms")
     fun getRooms(
             @Header("Token") token : String
-    ): Call<List<RoomRealm>>
+    ): Call<List<Room>>
 
     @POST("/rooms")
     fun createRoom(
             @Header("Token") token : String,
             @Body body: HashMap<String, Any>
-    ): Call<RoomRealm>
+    ): Call<Room>
 }

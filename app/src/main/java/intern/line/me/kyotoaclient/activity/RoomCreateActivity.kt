@@ -6,7 +6,7 @@ import android.view.KeyEvent
 import android.view.View
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.room.CreateRoom
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import intern.line.me.kyotoaclient.presenter.user.GetUserList
@@ -18,7 +18,7 @@ import kotlinx.coroutines.experimental.launch
 class RoomCreateActivity : AppCompatActivity() {
 
     lateinit var adapter: UserSelectListAdapter
-    lateinit var me: UserRealm
+    lateinit var me: User
 
     private val job = Job()
 
@@ -39,7 +39,7 @@ class RoomCreateActivity : AppCompatActivity() {
 
             val users = GetUserList().getUsersListFromDb()
 
-            val filteredUserList = mutableListOf<UserRealm>()
+            val filteredUserList = mutableListOf<User>()
             //自分を除外する
             users.forEach {
                 if (it.id != me.id) {
@@ -62,7 +62,7 @@ class RoomCreateActivity : AppCompatActivity() {
         val roomName = room_name_text.text.toString()
         var selectedUsers = adapter.getCheckedUserList()
 
-        selectedUsers = (selectedUsers as MutableList<UserRealm>)
+        selectedUsers = (selectedUsers as MutableList<User>)
         selectedUsers.add(me)
 
         println(selectedUsers)

@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
-import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.entity.Room
 import android.app.Activity
 import android.content.Intent
 import intern.line.me.kyotoaclient.R
@@ -90,7 +90,7 @@ class RoomListActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRooms(rooms : List<RoomRealm>){
+    private fun setRooms(rooms : List<Room>){
         adapter.setRooms(rooms)
         adapter.notifyDataSetChanged()
     }

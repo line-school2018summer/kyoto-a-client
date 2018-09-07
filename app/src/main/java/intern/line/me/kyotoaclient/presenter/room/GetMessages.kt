@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.presenter.room
 
 import android.util.Log
-import intern.line.me.kyotoaclient.model.entity.MessageRealm
+import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
@@ -18,11 +18,11 @@ class GetMessages: API() {
     val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = MessageRepository()
 
-    private suspend fun getAsyncMessages(token: String, room_id: Long): List<MessageRealm> = withContext(CommonPool) {
+    private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {
         api.getMessages(token, room_id).await()
     }
 
-    suspend fun getMessages(room_id: Long) : List<MessageRealm>{
+    suspend fun getMessages(room_id: Long) : List<Message>{
         val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
         try {
@@ -38,7 +38,7 @@ class GetMessages: API() {
 		}
     }
 
-	fun getMessagesFromDb(room_id: Long) : List<MessageRealm>{
+	fun getMessagesFromDb(room_id: Long) : List<Message>{
 		return repo.getAll(room_id)
 	}
 }

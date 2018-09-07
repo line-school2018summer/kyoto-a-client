@@ -2,7 +2,7 @@ package intern.line.me.kyotoaclient.presenter.room
 
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
-import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.CommonPool
@@ -16,11 +16,11 @@ class GetRooms: API(){
 	private val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = RoomRepository()
 
-	private suspend fun getAsyncRooms(token: String): List<RoomRealm> = withContext(CommonPool){
+	private suspend fun getAsyncRooms(token: String): List<Room> = withContext(CommonPool){
 		api.getRooms(token).await()
 	}
 
-	suspend fun getRooms(): List<RoomRealm>{
+	suspend fun getRooms(): List<Room>{
 		val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
 		try {
@@ -33,7 +33,7 @@ class GetRooms: API(){
 		}
 	}
 
-	suspend fun getRoomsFromDB() : List<RoomRealm>{
+	suspend fun getRoomsFromDB() : List<Room>{
 		return repo.getAll()
 	}
 }

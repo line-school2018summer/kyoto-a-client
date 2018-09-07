@@ -11,8 +11,8 @@ import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.model.entity.MessageRealm
-import intern.line.me.kyotoaclient.model.entity.RoomRealm
+import intern.line.me.kyotoaclient.model.entity.Message
+import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
 import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
@@ -32,7 +32,7 @@ class MessageActivity : AppCompatActivity() {
     private val MESSAGE_DELETE_EVENT = 1
 
     private var editingMessagePosition: Int? = null
-    private lateinit var room: RoomRealm
+    private lateinit var room: Room
     private lateinit var listAdapter: MessageListAdapter
 
     private var myId: Long? = null
@@ -55,7 +55,7 @@ class MessageActivity : AppCompatActivity() {
         //先にDBから情報を読み込む
         launch(job+UI) {
 			val messages  = presenter.getMessagesFromDb(room.id)
-			listAdapter.messages = messages as MutableList<MessageRealm>
+			listAdapter.messages = messages as MutableList<Message>
 			drawMessagesList()
 
 			GetMyInfo().getMyInfo().let{ myId = it.id }
@@ -65,7 +65,7 @@ class MessageActivity : AppCompatActivity() {
 		//その後APIから取得
 		launch(job + UI) {
 			val messages  = presenter.getMessages(room.id)
-			listAdapter.messages = messages as MutableList<MessageRealm>
+			listAdapter.messages = messages as MutableList<Message>
 			drawMessagesList()
 
 		}
@@ -73,7 +73,7 @@ class MessageActivity : AppCompatActivity() {
 
 		//ルームの名前がない場合はデフォルトを指定
         if(room.name.isBlank()){
-            this.title = "RoomRealm"
+            this.title = "Room"
         } else {
             this.title = room.name
         }
@@ -118,7 +118,7 @@ class MessageActivity : AppCompatActivity() {
 
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
         val listView = v as ListView
-        val messageObj = listView.getItemAtPosition(adapterInfo.position) as MessageRealm
+        val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
         val myId: Long = myId ?: 0
 
         if (messageObj.user_id == myId){
@@ -165,7 +165,7 @@ class MessageActivity : AppCompatActivity() {
         toEditMode(position)
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-        val message: MessageRealm = listAdapter.messages!![position]
+        val message: Message = listAdapter.messages!![position]
 		message_edit_text.setText(message.text)
 
         return true
@@ -206,7 +206,7 @@ class MessageActivity : AppCompatActivity() {
         }
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-		val message: MessageRealm = listAdapter.messages!![position]
+		val message: Message = listAdapter.messages!![position]
 
 		//何も編集されてなかった時
         if (message.text == message_edit_text.text.toString()){
@@ -285,7 +285,7 @@ class MessageActivity : AppCompatActivity() {
 					Thread.sleep(1000)
 					return@withContext client.getMessages(room_id)
 				}
-				listAdapter.messages = messages as MutableList<MessageRealm>
+				listAdapter.messages = messages as MutableList<Message>
 				drawMessagesList()
 			}
 		}

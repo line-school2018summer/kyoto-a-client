@@ -8,12 +8,12 @@ import android.content.Context
 import android.util.Log
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 
 class UserListAdapter(private val context: Context): BaseAdapter() {
     var layoutInflater: LayoutInflater
 
-    private var users: List<UserRealm> = emptyList()
+    private var users: List<User> = emptyList()
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -35,7 +35,7 @@ class UserListAdapter(private val context: Context): BaseAdapter() {
         return convertView
     }
 
-    override fun getItem(position: Int): UserRealm {
+    override fun getItem(position: Int): User {
         return users[position]
     }
 
@@ -44,7 +44,7 @@ class UserListAdapter(private val context: Context): BaseAdapter() {
     }
 
 
-    fun setUsers(set_users: List<UserRealm>){
+    fun setUsers(set_users: List<User>){
         users = set_users
         notifyDataSetChanged()
     }

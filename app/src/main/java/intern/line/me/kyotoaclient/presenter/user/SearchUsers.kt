@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.presenter.user
 
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.withContext
@@ -12,11 +12,11 @@ class SearchUsers(val name: String): API() {
 
 	val api = retrofit.create(UserAPI::class.java)
 
-	private suspend fun getAsyncUsersList(): List<UserRealm> = withContext(CommonPool) {
+	private suspend fun getAsyncUsersList(): List<User> = withContext(CommonPool) {
 		api.searchUsers(name).await()
 	}
 
-	suspend fun getUsersList(): List<UserRealm> {
+	suspend fun getUsersList(): List<User> {
 		try {
 			return getAsyncUsersList()
 

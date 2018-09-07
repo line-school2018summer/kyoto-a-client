@@ -1,7 +1,7 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
 
 
-import intern.line.me.kyotoaclient.model.entity.UserRealm
+import intern.line.me.kyotoaclient.model.entity.User
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -13,20 +13,20 @@ interface UserAPI{
             @Query("name") name: String,
             @Header("Token") token : String
 
-    ) : Call<UserRealm>
+    ) : Call<User>
 
     @GET("/users")
-    fun getUsers(): Call<List<UserRealm>>
+    fun getUsers(): Call<List<User>>
 
     @GET("/users/{id}")
-    fun getUserInfoById(@Path("id")id: Long): Call<UserRealm>
+    fun getUserInfoById(@Path("id")id: Long): Call<User>
 
     @GET("/users/me")
-    fun getMyInfo(@Header("Token") Token: String): Call<UserRealm>
+    fun getMyInfo(@Header("Token") Token: String): Call<User>
 
     @PUT("/users/me")
-    fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Call<UserRealm>
+    fun changeUserInfo(@Header("Token") Token: String, @Query("name")name: String): Call<User>
 
     @GET("/users/search")
-    fun searchUsers(@Query("name")name: String): Call<List<UserRealm>>
+    fun searchUsers(@Query("name")name: String): Call<List<User>>
 }
