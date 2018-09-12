@@ -48,8 +48,6 @@ class UserListActivity : AppCompatActivity() {
             presenter.getUsersList()
         }
 
-
-
         button.setOnClickListener {
             val intent = Intent(this, ChangeMyProfileActivity::class.java)
             startActivity(intent)
