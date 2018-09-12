@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.model.repository
 import intern.line.me.kyotoaclient.model.entity.User
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmResults
 import io.realm.Sort
 
 class UserRepository {
@@ -21,14 +22,12 @@ class UserRepository {
 		return  mRealm.where(User::class.java).equalTo("id", id).findFirst()
 	}
 
-	fun getAll() : List<User> {
-		val users: MutableList<User> = mutableListOf<User>()
-		val db_users = mRealm.where(User::class.java).findAll().sort("id", Sort.ASCENDING)
+	fun getAll() : RealmResults<User> {
+		return  mRealm.where(User::class.java).sort("id", Sort.ASCENDING).findAll()
+	}
 
-		db_users.forEach{
-			users.add(it)
-		}
-		return users
+	fun getUsersFromName(name: String) : RealmResults<User>{
+		return mRealm.where(User::class.java).contains("name",name).findAll()
 	}
 
 

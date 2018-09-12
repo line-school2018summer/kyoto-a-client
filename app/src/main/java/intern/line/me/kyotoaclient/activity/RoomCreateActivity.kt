@@ -37,7 +37,7 @@ class RoomCreateActivity : AppCompatActivity() {
             //TODO(ここボトルネック自分の情報をローカルに取りに行きたい)
             me = GetMyInfo().getMyInfo()
 
-            val users = GetUserList().getUsersListFromDb()
+            val users = GetUserList().getUsersList()
 
             val filteredUserList = mutableListOf<User>()
             //自分を除外する

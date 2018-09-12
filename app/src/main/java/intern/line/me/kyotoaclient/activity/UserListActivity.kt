@@ -19,9 +19,13 @@ import kotlinx.coroutines.experimental.launch
 class UserListActivity : AppCompatActivity() {
 
     lateinit var adapter: UserListAdapter
+    lateinit var list: ListView
 
     //非同期処理管理用
     private val job = Job()
+
+    private  val presenter = GetUserList()
+    private val search_presenter = SearchUsers()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,16 +34,20 @@ class UserListActivity : AppCompatActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-        val list = findViewById<ListView>(R.id.user_list)
+         list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<Button>(R.id.profile_button)
         val searchButton = findViewById<Button>(R.id.top)
         val searchBox = findViewById<EditText>(R.id.search_box)
 
-        adapter = UserListAdapter(this)
+        //これで自動的にDBの更新がアダプターに反映される
+        adapter = UserListAdapter(this, presenter.getUsersListFromDb())
         list.adapter = adapter
 
-        //非同期でユーザー取得
-        updateUserList()
+        //APIを叩いてローカルDBを更新
+        launch(job + UI) {
+            presenter.getUsersList()
+        }
+
 
 
         button.setOnClickListener {
@@ -64,20 +72,13 @@ class UserListActivity : AppCompatActivity() {
             return@setOnItemLongClickListener true
         }
 
-        searchButton.setOnClickListener{
+        searchButton.setOnClickListener {
             val name = searchBox.text.toString()
-            launch(job + UI) {
-                SearchUsers(name).getUsersList().let {
-                adapter.setUsers(it)
-                }
-            }.start()
+            adapter = UserListAdapter(this, search_presenter.getUsersListFromDB(name))
+            list.adapter = adapter
+
+
         }
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-
-        updateUserList()
     }
 
     override fun onDestroy() {
@@ -85,19 +86,4 @@ class UserListActivity : AppCompatActivity() {
         job.cancel()
     }
 
-
-    //非同期でユーザー取得
-    fun updateUserList(){
-        launch(job + UI) {
-            val cli = GetUserList()
-
-            cli.getUsersListFromDb().let {
-                adapter.setUsers(it)
-            }
-
-            GetUserList().getUsersList().let{
-                adapter.setUsers(it)
-            }
-        }
-    }
 }
