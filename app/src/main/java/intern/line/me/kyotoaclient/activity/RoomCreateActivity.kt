@@ -21,6 +21,7 @@ class RoomCreateActivity : AppCompatActivity() {
     lateinit var me: User
 
     private val job = Job()
+    private val presenter = GetUserList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,26 +29,15 @@ class RoomCreateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_room_create)
 
         //アダプターの設定
-        adapter = UserSelectListAdapter(this)
-        user_select_list.adapter = adapter
         registerForContextMenu(user_select_list)
 
         //先にDBから取得
         launch(job + UI) {
             //TODO(ここボトルネック自分の情報をローカルに取りに行きたい)
             me = GetMyInfo().getMyInfo()
-
-            val users = GetUserList().getUsersList()
-
-            val filteredUserList = mutableListOf<User>()
-            //自分を除外する
-            users.forEach {
-                if (it.id != me.id) {
-                    filteredUserList.add(it)
-                }
-            }
-            adapter.setUsers(filteredUserList)
         }
+        adapter = UserSelectListAdapter(applicationContext,presenter.getUsersListExcludeId(5))
+        user_select_list.adapter = adapter
     }
 
 

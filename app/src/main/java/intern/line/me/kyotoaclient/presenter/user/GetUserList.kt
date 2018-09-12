@@ -33,4 +33,8 @@ class GetUserList: API() {
 	fun getUsersListFromDb(): RealmResults<User> {
 			return repo.getAll()
 	}
+
+	fun getUsersListExcludeId(id : Long): RealmResults<User> {
+		return repo.getUsersListExcludeId(id)
+	}
 }
