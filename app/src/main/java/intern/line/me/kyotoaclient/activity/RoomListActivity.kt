@@ -25,6 +25,7 @@ class RoomListActivity : AppCompatActivity() {
 
 
     private val job = Job()
+	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
 
@@ -34,7 +35,7 @@ class RoomListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_room_list)
         setResult(Activity.RESULT_CANCELED)
 
-        adapter = RoomListAdapter(this)
+        adapter = RoomListAdapter(this,presenter.getRoomsFromDB())
         val listView: ListView = this.findViewById(R.id.room_list)
         listView.adapter = adapter
         registerForContextMenu(listView)
@@ -44,9 +45,9 @@ class RoomListActivity : AppCompatActivity() {
 
         //ルームをクリックしたらトークに飛ぶ
         listView.setOnItemClickListener { parent, view, position, id ->
-            val selectedRoom = adapter.getItem(position)
+            val selected_room_id = adapter.getItemId(position)
             val intent = Intent(this, MessageActivity::class.java)
-            intent.putExtra("room_id", selectedRoom.id)
+            intent.putExtra("room_id", selected_room_id)
             startActivity(intent)
         }
 
@@ -73,25 +74,11 @@ class RoomListActivity : AppCompatActivity() {
         job.cancel()
     }
 
+    //非同期でルーム取得
     private fun setAsyncRooms(){
-        //非同期でルーム取得
-        launch(job + UI) {
-
-            //DBから取得
-            GetRooms().getRoomsFromDB().let {
-                setRooms(it)
-            }
-        }
 
         launch(job + UI){
-             GetRooms().getRooms().let{
-                 setRooms(it)
-            }
+             GetRooms().getRooms()
         }
-    }
-
-    private fun setRooms(rooms : List<Room>){
-        adapter.setRooms(rooms)
-        adapter.notifyDataSetChanged()
     }
 }

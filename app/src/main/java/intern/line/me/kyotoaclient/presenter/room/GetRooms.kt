@@ -5,6 +5,7 @@ import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.presenter.API
+import io.realm.RealmResults
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
@@ -33,7 +34,7 @@ class GetRooms: API(){
 		}
 	}
 
-	suspend fun getRoomsFromDB() : List<Room>{
+	fun getRoomsFromDB() : RealmResults<Room>{
 		return repo.getAll()
 	}
 }
