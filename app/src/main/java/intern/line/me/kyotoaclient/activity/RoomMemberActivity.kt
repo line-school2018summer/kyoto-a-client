@@ -47,7 +47,7 @@ class RoomMemberActivity : AppCompatActivity() {
         et.setText(room.name)
         et.setSelection(et.text.length)
 
-		adapter = UserSelectListAdapter(this,user_repo.getAll())
+		adapter = UserSelectListAdapter(this,presenter.getUsersListFromDb())
 		val listView: ListView = this.findViewById(R.id.user_select_list)
 		listView.adapter = adapter
 		registerForContextMenu(listView)

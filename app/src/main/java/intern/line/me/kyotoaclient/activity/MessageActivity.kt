@@ -28,6 +28,11 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import java.sql.Timestamp
+import io.realm.OrderedCollectionChangeSet
+import io.realm.RealmResults
+import io.realm.OrderedRealmCollectionChangeListener
+
+
 
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
@@ -43,6 +48,8 @@ class MessageActivity : AppCompatActivity() {
 
 	private val presenter = GetMessages()
 
+	private val message_size = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -51,7 +58,8 @@ class MessageActivity : AppCompatActivity() {
 		val room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
-		listAdapter = MessageListAdapter(this, presenter.getMessagesFromDb(room.id))
+		val messages = presenter.getMessagesFromDb(room.id)
+		listAdapter = MessageListAdapter(this, messages)
 		main_list.adapter = listAdapter
 
 		drawMessagesList()
@@ -71,6 +79,10 @@ class MessageActivity : AppCompatActivity() {
 		} else {
 			this.title = room.name
 		}
+
+		//メッセージの変更を取得
+		messages.addChangeListener(OrderedRealmCollectionChangeListener<RealmResults<Message>> { results, changeSet ->
+		})
 
 		main_list.setOnScrollListener(object : AbsListView.OnScrollListener {
 			override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
