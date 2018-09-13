@@ -4,8 +4,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.User
-import intern.line.me.kyotoaclient.presenter.GetUserInfo
+import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.user.GetUserInfo
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI

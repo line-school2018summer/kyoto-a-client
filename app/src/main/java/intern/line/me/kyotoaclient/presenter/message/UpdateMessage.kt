@@ -1,9 +1,11 @@
-package intern.line.me.kyotoaclient.presenter
+package intern.line.me.kyotoaclient.presenter.message
 
 import android.util.Log
-import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.lib.api.interfaces.MessagesAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
+import intern.line.me.kyotoaclient.model.repository.MessageRepository
+import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import retrofit2.HttpException
@@ -15,6 +17,7 @@ import java.net.SocketTimeoutException
 class UpdateMessage: API() {
 
     val api = retrofit.create(MessagesAPI::class.java)
+    private val repo = MessageRepository()
 
     private suspend fun updateAsyncMessage(token: String, newMessage: Message): Response<Message> = withContext(CommonPool) {
         api.updateMessage(token, newMessage.id, hashMapOf("text" to newMessage.text)).awaitResponse()
@@ -24,7 +27,13 @@ class UpdateMessage: API() {
         val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
         try {
-            return updateAsyncMessage(token, newMessage)
+            val res =  updateAsyncMessage(token, newMessage)
+
+            if(res.isSuccessful){
+                MessageRepository().update(res.body()!!)
+            }
+
+            return res
 
         } catch (t: HttpException) {
             Log.v("MESSAGE_UPDATER", "API failed: 403 forbidden")
@@ -42,33 +51,4 @@ class UpdateMessage: API() {
     }
 }
 
-class DeleteMessage: API() {
-    val api = retrofit.create(MessagesAPI::class.java)
 
-    private suspend fun deleteAsyncMessage(token: String, message: Message): Response<HashMap<String, Boolean>> = withContext(CommonPool) {
-        api.deleteMessage(token, message.id).awaitResponse()
-    }
-
-    suspend fun deleteMessage(message: Message): Boolean {
-        val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
-
-        try {
-            val res = deleteAsyncMessage(token, message)
-            return res.isSuccessful
-
-        } catch (t: HttpException) {
-            Log.v("MESSAGE_DELETER", "API failed: 403 forbidden")
-            return false
-
-        } catch (t: SocketTimeoutException) {
-            Log.v("MESSAGE_DELETER", "API failed: timeout")
-            return false
-
-        } catch (t: IOException) {
-            Log.v("MESSAGE_DELETER", "API failed: unknown reason")
-            return false
-
-        }
-        return false
-    }
-}

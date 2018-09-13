@@ -4,9 +4,9 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.User
-import intern.line.me.kyotoaclient.presenter.GetMyInfo
-import intern.line.me.kyotoaclient.presenter.PutMyInfo
+import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import intern.line.me.kyotoaclient.presenter.user.PutMyInfo
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI

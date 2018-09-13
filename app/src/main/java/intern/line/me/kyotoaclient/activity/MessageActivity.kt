@@ -11,10 +11,14 @@ import android.widget.EditText
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
-import intern.line.me.kyotoaclient.model.Message
-import intern.line.me.kyotoaclient.model.MessageList
-import intern.line.me.kyotoaclient.model.Room
-import intern.line.me.kyotoaclient.presenter.*
+import intern.line.me.kyotoaclient.model.entity.Message
+import intern.line.me.kyotoaclient.model.entity.Room
+import intern.line.me.kyotoaclient.model.repository.RoomRepository
+import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
+import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
+import intern.line.me.kyotoaclient.presenter.room.CreateMessage
+import intern.line.me.kyotoaclient.presenter.room.GetMessages
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -34,25 +38,37 @@ class MessageActivity : AppCompatActivity() {
     private var myId: Long? = null
 
     private val job = Job()
+	
+	private val presenter = GetMessages()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
 
-        room = intent.getSerializableExtra("room") as Room
+        val room_id = intent.getSerializableExtra("room_id") as Long
+		room = RoomRepository().getById(room_id)!!
 
 		listAdapter = MessageListAdapter(this)
 		main_list.adapter = listAdapter
 
-        //ユーザー情報を取得できたらビューにセット
+        //先にDBから情報を読み込む
         launch(job+UI) {
-            GetMyInfo().getMyInfo().let{ myId = it.id }
-			val messages  = GetMessages().getMessages(room.id)
-
+			val messages  = presenter.getMessagesFromDb(room.id)
 			listAdapter.messages = messages as MutableList<Message>
 			drawMessagesList()
-        }
+
+			GetMyInfo().getMyInfo().let{ myId = it.id }
+		}
+
+
+		//その後APIから取得
+		launch(job + UI) {
+			val messages  = presenter.getMessages(room.id)
+			listAdapter.messages = messages as MutableList<Message>
+			drawMessagesList()
+
+		}
 
 
 		//ルームの名前がない場合はデフォルトを指定
@@ -256,7 +272,7 @@ class MessageActivity : AppCompatActivity() {
 
 	fun startPool(job: Job,room_id: Long) {
 
-		val client = GetMessages()
+		val client = presenter
 		val pool_job = Job()
 
 		//結果をUIスレッドで受け取れるように
@@ -269,7 +285,6 @@ class MessageActivity : AppCompatActivity() {
 					Thread.sleep(1000)
 					return@withContext client.getMessages(room_id)
 				}
-
 				listAdapter.messages = messages as MutableList<Message>
 				drawMessagesList()
 			}

@@ -3,15 +3,13 @@ package intern.line.me.kyotoaclient.activity
 import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.ListView
-import android.support.design.widget.FloatingActionButton
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
-import intern.line.me.kyotoaclient.model.Room
+import intern.line.me.kyotoaclient.model.entity.Room
 import android.app.Activity
 import android.content.Intent
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.presenter.GetRooms
+import intern.line.me.kyotoaclient.presenter.room.GetRooms
 import kotlinx.android.synthetic.main.activity_room_list.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -27,6 +25,7 @@ class RoomListActivity : AppCompatActivity() {
 
 
     private val job = Job()
+	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
 
@@ -36,19 +35,19 @@ class RoomListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_room_list)
         setResult(Activity.RESULT_CANCELED)
 
-        //ルーム一覧を非同期で取得
-        setAsyncRooms()
-
-        adapter = RoomListAdapter(this)
+        adapter = RoomListAdapter(this,presenter.getRoomsFromDB())
         val listView: ListView = this.findViewById(R.id.room_list)
         listView.adapter = adapter
         registerForContextMenu(listView)
 
+        //ルーム一覧を非同期で取得
+        setAsyncRooms()
+
         //ルームをクリックしたらトークに飛ぶ
         listView.setOnItemClickListener { parent, view, position, id ->
-            val selectedRoom = adapter.getItem(position)
+            val selected_room_id = adapter.getItemId(position)
             val intent = Intent(this, MessageActivity::class.java)
-            intent.putExtra("room", selectedRoom)
+            intent.putExtra("room_id", selected_room_id)
             startActivity(intent)
         }
 
@@ -75,16 +74,11 @@ class RoomListActivity : AppCompatActivity() {
         job.cancel()
     }
 
+    //非同期でルーム取得
     private fun setAsyncRooms(){
-        //非同期でルーム取得
-        launch(job + UI) {
-            val rooms = GetRooms().getRooms()
-            setRooms(rooms)
-        }
-    }
 
-    private fun setRooms(rooms : List<Room>){
-        adapter.setRooms(rooms)
-        adapter.notifyDataSetChanged()
+        launch(job + UI){
+             GetRooms().getRooms()
+        }
     }
 }

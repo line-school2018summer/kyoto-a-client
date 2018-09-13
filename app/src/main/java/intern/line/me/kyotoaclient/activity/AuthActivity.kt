@@ -11,7 +11,7 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.presenter.CreateUserPresenter
+import intern.line.me.kyotoaclient.presenter.user.CreateUser
 import kotlinx.android.synthetic.main.activity_auth.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -37,7 +37,6 @@ class AuthActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_auth)
 
-        //必ずログインするように変更(デバッグのしやすさから)
         auth.signOut()
 
         if(auth.currentUser != null){
@@ -71,7 +70,7 @@ class AuthActivity : AppCompatActivity() {
                 val user = auth.currentUser!!
 
                 launch(job + UI) {
-                    val res = CreateUserPresenter().createUser(user.displayName!!)
+                    val res = CreateUser().createUser(user.displayName!!)
                     if (res.isSuccessful) {
                         onCompleteSignIn()
                     } else {

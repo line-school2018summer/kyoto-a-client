@@ -4,21 +4,16 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.CheckedTextView
-import android.widget.ListView
-import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
-import intern.line.me.kyotoaclient.model.User
-import intern.line.me.kyotoaclient.presenter.CreateRoom
-import intern.line.me.kyotoaclient.presenter.GetMyInfo
-import intern.line.me.kyotoaclient.presenter.GetUserList
+import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.room.CreateRoom
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import intern.line.me.kyotoaclient.presenter.user.GetUserList
 import kotlinx.android.synthetic.main.activity_room_create.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
-import java.sql.Timestamp
 
 class RoomCreateActivity : AppCompatActivity() {
 
@@ -26,6 +21,7 @@ class RoomCreateActivity : AppCompatActivity() {
     lateinit var me: User
 
     private val job = Job()
+    private val presenter = GetUserList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,25 +29,15 @@ class RoomCreateActivity : AppCompatActivity() {
         setContentView(R.layout.activity_room_create)
 
         //アダプターの設定
-        adapter = UserSelectListAdapter(this)
-        user_select_list.adapter = adapter
         registerForContextMenu(user_select_list)
 
-        //非同期処理
+        //先にDBから取得
         launch(job + UI) {
-            //自分のユーザーを取得
+            //TODO(ここボトルネック自分の情報をローカルに取りに行きたい)
             me = GetMyInfo().getMyInfo()
-
-            val users = GetUserList().getUsersList()
-            val filteredUserList = mutableListOf<User>()
-            //自分を除外する
-            users.forEach {
-                if (it.id != me.id) {
-                    filteredUserList.add(it)
-                }
-            }
-            adapter.setUsers(filteredUserList)
         }
+        adapter = UserSelectListAdapter(applicationContext,presenter.getUsersListExcludeId(5))
+        user_select_list.adapter = adapter
     }
 
 
@@ -72,7 +58,7 @@ class RoomCreateActivity : AppCompatActivity() {
         println(selectedUsers)
 
         launch (this.job + UI) {
-            CreateRoom (roomName, selectedUsers).createRoom()
+            CreateRoom(roomName, selectedUsers).createRoom()
             goBack()
         }
     }

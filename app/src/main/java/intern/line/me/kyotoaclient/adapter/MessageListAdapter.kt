@@ -9,7 +9,7 @@ import android.text.format.DateUtils
 import android.text.format.DateUtils.*
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.Message
+import intern.line.me.kyotoaclient.model.entity.Message
 import java.lang.Math.max
 import java.sql.Date
 import java.sql.Timestamp
@@ -42,7 +42,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         var oldYear: String? = null
         var oldDate: String? = null
 
-        val created_at: Timestamp = (message.created_at)
+        val created_at: Timestamp = (Timestamp(message.created_at.time))
         val format = SimpleDateFormat("HH:mm")
         val formatForDateChk = SimpleDateFormat("MM/dd")
         val formatForYearChk = SimpleDateFormat("yyyy")
@@ -71,7 +71,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
             dateView.visibility = View.GONE
         }
 
-        (view.findViewById(R.id.message_author) as TextView).text = message.user.name
+        (view.findViewById(R.id.message_author) as TextView).text = message.user?.name
         (view.findViewById(R.id.message_text) as TextView).text = (message.text)
         (view.findViewById(R.id.message_time) as TextView).text = format.format(time)
 
