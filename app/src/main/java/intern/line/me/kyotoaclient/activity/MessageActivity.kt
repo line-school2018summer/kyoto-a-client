@@ -1,7 +1,9 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
@@ -19,6 +21,7 @@ import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -26,6 +29,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import java.sql.Timestamp
+
 
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
@@ -38,60 +42,71 @@ class MessageActivity : AppCompatActivity() {
     private var myId: Long? = null
 
     private val job = Job()
-	
+
 	private val presenter = GetMessages()
+
+	private var message_size = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_message)
+		super.onCreate(savedInstanceState)
+		setContentView(R.layout.activity_message)
 
-        val room_id = intent.getSerializableExtra("room_id") as Long
+		val room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
-		listAdapter = MessageListAdapter(this)
+		val messages = presenter.getMessagesFromDb(room.id)
+		listAdapter = MessageListAdapter(this, messages)
 		main_list.adapter = listAdapter
 
-        //先にDBから情報を読み込む
-        launch(job+UI) {
-			val messages  = presenter.getMessagesFromDb(room.id)
-			listAdapter.messages = messages as MutableList<Message>
-			drawMessagesList()
-
-			GetMyInfo().getMyInfo().let{ myId = it.id }
-		}
+		drawMessagesList()
+		//最新のメッセージまでスクロール
+		scrollToEnd()
 
 
-		//その後APIから取得
 		launch(job + UI) {
-			val messages  = presenter.getMessages(room.id)
-			listAdapter.messages = messages as MutableList<Message>
-			drawMessagesList()
-
+			GetMyInfo().getMyInfo().let { myId = it.id }
+			presenter.getMessages(room_id)
 		}
 
 
 		//ルームの名前がない場合はデフォルトを指定
-        if(room.name.isBlank()){
-            this.title = "Room"
-        } else {
-            this.title = room.name
-        }
+		if (room.name.isBlank()) {
+			this.title = "Room"
+		} else {
+			this.title = room.name
+		}
 
-		main_list.setOnScrollListener(object: AbsListView.OnScrollListener {
-            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+		//メッセージが増えたら新着メッセージ通知を表示
+		messages.addChangeListener(RealmChangeListener<RealmResults<Message>>{
+			if(it.size - message_size > 0){
+				message_new_notify.visibility = View.VISIBLE
+				message_size = it.size
+			}
+		})
 
-            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
+
+		main_list.setOnScrollListener(object : AbsListView.OnScrollListener {
+			override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+
+			override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+				if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
 					message_new_notify.visibility = View.INVISIBLE
-                }
-            }
-        })
-        registerForContextMenu(main_list)
+				}
+			}
+		})
+		registerForContextMenu(main_list)
 
+
+		val memberEditButton = findViewById(R.id.member_edit_button) as FloatingActionButton
+		memberEditButton.setOnClickListener(View.OnClickListener {
+			val intent = Intent(application, RoomMemberActivity::class.java)
+			intent.putExtra("room_id", room.id)
+			startActivity(intent)
+		})
 
 		//ここでポーリングを開始
-		startPool(job,room.id)
+		startPool(job, room.id)
 	}
 
 
@@ -105,7 +120,7 @@ class MessageActivity : AppCompatActivity() {
 
 		launch(job + UI) {
 			CreateMessage().createMessage(room.id, sendText.text.toString())
-			drawMessagesList(-1)
+			scrollToEnd()
 			toSendMode()
 		}
 
@@ -117,8 +132,8 @@ class MessageActivity : AppCompatActivity() {
         super.onCreateContextMenu(menu, v, menuInfo)
 
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
-        val listView = v as ListView
-        val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
+
+        val messageObj = listAdapter.getItem(adapterInfo.position)!!
         val myId: Long = myId ?: 0
 
         if (messageObj.user_id == myId){
@@ -147,11 +162,10 @@ class MessageActivity : AppCompatActivity() {
 		launch(job  + UI) {
 
 			//positionはクリックした場所を表すので存在が保証されていると考える
-			val result = DeleteMessage().deleteMessage(listAdapter.messages!![position])
+			val result = DeleteMessage().deleteMessage(listAdapter.getItem(position)!!)
 
 			if(result) {
-				listAdapter.messages!!.removeAt(position)
-				drawMessagesList()
+//				drawMessagesList()
 			}else{
 				//TODO(削除に失敗した時)
 			}
@@ -165,7 +179,7 @@ class MessageActivity : AppCompatActivity() {
         toEditMode(position)
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-        val message: Message = listAdapter.messages!![position]
+        val message: Message = listAdapter.getItem(position)!!
 		message_edit_text.setText(message.text)
 
         return true
@@ -200,13 +214,13 @@ class MessageActivity : AppCompatActivity() {
             return
         }
 
-        if (listAdapter.messages == null) {
+        if (listAdapter.count == 0) {
             this.toSendMode()
             return
         }
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-		val message: Message = listAdapter.messages!![position]
+		val message: Message = listAdapter.getItem(position)!!
 
 		//何も編集されてなかった時
         if (message.text == message_edit_text.text.toString()){
@@ -218,20 +232,13 @@ class MessageActivity : AppCompatActivity() {
             return
         }
 
-		message.text = message_edit_text.text.toString()
-		message.updated_at = Timestamp(System.currentTimeMillis())
-
-
 		//非同期で更新
 		launch(job + UI) {
-			val res = UpdateMessage().updateMessage(message)
+			val res = UpdateMessage().updateMessage(message.id,message_edit_text.text.toString())
 
 			if(res.isSuccessful) {
 				toSendMode()
-
-				//positionはタップした場所を表すので存在が保証されていると考える
-				listAdapter.messages!![position] = message
-				drawMessagesList()
+//				drawMessagesList()
 			}else{
 				//TODO(200以外が返ってきた時)
 			}
@@ -241,17 +248,7 @@ class MessageActivity : AppCompatActivity() {
 
 
     private fun drawMessagesList(scrollAt: Int? = null) {
-
-		if (listAdapter.messages == null) {
-			main_list.visibility = View.INVISIBLE
-			message_loading.visibility = View.VISIBLE
-			return
-		}
-
-		listAdapter.notifyDataSetChanged()
-
-		//最新のメッセージまでスクロール
-		scrollToEnd()
+		
 
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
@@ -266,13 +263,19 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+		room = RoomRepository().getById(room.id)!!
+		//ルームの名前がない場合はデフォルトを指定
+		if (room.name.isBlank()) {
+			this.title = "Room"
+		} else {
+			this.title = room.name
+		}
 		startPool(job,room.id)
 	}
 
 
 	fun startPool(job: Job,room_id: Long) {
 
-		val client = presenter
 		val pool_job = Job()
 
 		//結果をUIスレッドで受け取れるように
@@ -280,21 +283,19 @@ class MessageActivity : AppCompatActivity() {
 
 			while (true) {
 				//別スレッドで常に取得してる
-				val messages = withContext(pool_job + CommonPool) {
+				withContext(pool_job + CommonPool) {
 					// 1秒ごとに取得
 					Thread.sleep(1000)
-					return@withContext client.getMessages(room_id)
+					presenter.getMessages(room_id)
 				}
-				listAdapter.messages = messages as MutableList<Message>
 				drawMessagesList()
 			}
 		}
 	}
 
-
 	//最後までスクロール
-    fun scrollToEnd() {
-		val last = (listAdapter.messages?.size ?:  1 ) - 1
+    fun scrollToEnd(view:View? = null) {
+		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
 }

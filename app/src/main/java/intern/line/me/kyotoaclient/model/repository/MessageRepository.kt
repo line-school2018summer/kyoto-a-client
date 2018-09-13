@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.model.repository
 import intern.line.me.kyotoaclient.model.entity.Message
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmResults
 import io.realm.Sort
 
 class MessageRepository {
@@ -10,42 +11,42 @@ class MessageRepository {
 	val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+
 
 	fun getById(id: Long): Message? {
+		val mRealm = Realm.getInstance(realmConfig)
 		val r_message = mRealm.where(Message::class.java).equalTo("id", id).findFirst()
+		mRealm.close()
 		return r_message
 	}
 
-	fun getAll(room_id : Long) : List<Message> {
-		val messages: MutableList<Message> = mutableListOf<Message>()
-		val db_messages = mRealm.where(Message::class.java).equalTo("room_id",room_id).findAll().sort("created_at", Sort.ASCENDING)
+	fun getAll(room_id : Long) : RealmResults<Message> {
+		val mRealm = Realm.getInstance(realmConfig)
+		mRealm.close()
 
-		db_messages.forEach{
-			messages.add(it!!)
-		}
-		return messages
+		return mRealm.where(Message::class.java).equalTo("room_id",room_id).findAllAsync().sort("created_at", Sort.ASCENDING)
+
 	}
 
 
 	fun create(message: Message) {
-		mRealm.executeTransaction {
-			var create_message = mRealm.copyToRealmOrUpdate(message)!!
+		val mRealm = Realm.getInstance(realmConfig)
 
-			val repo = UserRepository()
-			val user = repo.getUserRealmById(message.user_id) ?: mRealm.copyToRealm(message.user)
-			create_message.user = user
+		mRealm.executeTransaction {
+			mRealm.copyToRealmOrUpdate(message)!!
 		}
+		mRealm.close()
+
 	}
 
 	fun update(message: Message) {
-		mRealm.executeTransaction {
-			var update_message = mRealm.copyToRealmOrUpdate(message)!!
+		val mRealm = Realm.getInstance(realmConfig)
 
-			val repo = UserRepository()
-			val user = repo.getUserRealmById(message.user_id) ?: mRealm.copyToRealm(message.user)
-			update_message.user = user
+		mRealm.executeTransaction {
+			mRealm.copyToRealmOrUpdate(message)!!
 		}
+		mRealm.close()
+
 	}
 
 	fun updateAll(messages: List<Message>) {
@@ -54,10 +55,12 @@ class MessageRepository {
 		}
 	}
 
-	fun delete(message: Message) {
+	fun delete(message_id: Long) {
+		val mRealm = Realm.getInstance(realmConfig)
 		mRealm.executeTransaction {
-			var delete_message = mRealm.where(Message::class.java).equalTo("id", message.id).findAll()
+			var delete_message = mRealm.where(Message::class.java).equalTo("id", message_id).findAll()
 			delete_message.deleteFromRealm(0)
 		}
+		mRealm.close()
 	}
 }
