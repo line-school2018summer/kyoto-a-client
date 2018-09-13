@@ -6,6 +6,7 @@ import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
 import intern.line.me.kyotoaclient.presenter.API
+import io.realm.RealmResults
 import kotlinx.coroutines.experimental.withContext
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
@@ -29,7 +30,7 @@ class GetMessages: API() {
             val messages =  getAsyncMessages(token, room_id)
 			Log.d("GetMessages","start writing DB")
 
-			launch(UI){ repo.updateAll(messages) }
+			launch(CommonPool) { repo.updateAll(messages)}
 
 			return messages
         } catch (t: HttpException) {
@@ -38,7 +39,7 @@ class GetMessages: API() {
 		}
     }
 
-	fun getMessagesFromDb(room_id: Long) : List<Message>{
+	fun getMessagesFromDb(room_id: Long) : RealmResults<Message>{
 		return repo.getAll(room_id)
 	}
 }

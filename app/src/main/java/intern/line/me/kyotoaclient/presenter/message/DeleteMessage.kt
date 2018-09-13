@@ -7,6 +7,8 @@ import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 import retrofit2.Response
@@ -18,17 +20,18 @@ class DeleteMessage: API() {
 	val api = retrofit.create(MessagesAPI::class.java)
 	private val repo = MessageRepository()
 
-	private suspend fun deleteAsyncMessage(token: String, message: Message): Response<HashMap<String, Boolean>> = withContext(CommonPool) {
-		api.deleteMessage(token, message.id).awaitResponse()
+	private suspend fun deleteAsyncMessage(token: String, message_id: Long): Response<HashMap<String, Boolean>> = withContext(CommonPool) {
+		api.deleteMessage(token, message_id).awaitResponse()
 	}
 
 	suspend fun deleteMessage(message: Message): Boolean {
 		val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
 		try {
-			val res = deleteAsyncMessage(token, message)
+			val res = deleteAsyncMessage(token, message.id)
 			if(res.isSuccessful){
-				repo.delete(message)
+				val id = message.id
+				launch(UI){repo.delete(id)}
 			}
 			return res.isSuccessful
 

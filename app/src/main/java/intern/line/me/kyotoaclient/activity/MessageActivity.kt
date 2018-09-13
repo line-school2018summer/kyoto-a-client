@@ -38,7 +38,7 @@ class MessageActivity : AppCompatActivity() {
     private var myId: Long? = null
 
     private val job = Job()
-	
+
 	private val presenter = GetMessages()
 
 
@@ -49,25 +49,17 @@ class MessageActivity : AppCompatActivity() {
         val room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
-		listAdapter = MessageListAdapter(this)
+		listAdapter = MessageListAdapter(this, presenter.getMessagesFromDb(room.id))
 		main_list.adapter = listAdapter
 
-        //先にDBから情報を読み込む
-        launch(job+UI) {
-			val messages  = presenter.getMessagesFromDb(room.id)
-			listAdapter.messages = messages as MutableList<Message>
-			drawMessagesList()
+		drawMessagesList()
+		//最新のメッセージまでスクロール
+		scrollToEnd()
 
+
+    launch(job+UI) {
 			GetMyInfo().getMyInfo().let{ myId = it.id }
-		}
-
-
-		//その後APIから取得
-		launch(job + UI) {
-			val messages  = presenter.getMessages(room.id)
-			listAdapter.messages = messages as MutableList<Message>
-			drawMessagesList()
-
+			presenter.getMessages(room_id)
 		}
 
 
@@ -105,7 +97,7 @@ class MessageActivity : AppCompatActivity() {
 
 		launch(job + UI) {
 			CreateMessage().createMessage(room.id, sendText.text.toString())
-			drawMessagesList(-1)
+			scrollToEnd()
 			toSendMode()
 		}
 
@@ -117,8 +109,8 @@ class MessageActivity : AppCompatActivity() {
         super.onCreateContextMenu(menu, v, menuInfo)
 
         val adapterInfo: AdapterView.AdapterContextMenuInfo = menuInfo as AdapterView.AdapterContextMenuInfo
-        val listView = v as ListView
-        val messageObj = listView.getItemAtPosition(adapterInfo.position) as Message
+
+        val messageObj = listAdapter.getItem(adapterInfo.position)!!
         val myId: Long = myId ?: 0
 
         if (messageObj.user_id == myId){
@@ -147,11 +139,10 @@ class MessageActivity : AppCompatActivity() {
 		launch(job  + UI) {
 
 			//positionはクリックした場所を表すので存在が保証されていると考える
-			val result = DeleteMessage().deleteMessage(listAdapter.messages!![position])
+			val result = DeleteMessage().deleteMessage(listAdapter.getItem(position)!!)
 
 			if(result) {
-				listAdapter.messages!!.removeAt(position)
-				drawMessagesList()
+//				drawMessagesList()
 			}else{
 				//TODO(削除に失敗した時)
 			}
@@ -165,7 +156,7 @@ class MessageActivity : AppCompatActivity() {
         toEditMode(position)
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-        val message: Message = listAdapter.messages!![position]
+        val message: Message = listAdapter.getItem(position)!!
 		message_edit_text.setText(message.text)
 
         return true
@@ -200,13 +191,13 @@ class MessageActivity : AppCompatActivity() {
             return
         }
 
-        if (listAdapter.messages == null) {
+        if (listAdapter.count == 0) {
             this.toSendMode()
             return
         }
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
-		val message: Message = listAdapter.messages!![position]
+		val message: Message = listAdapter.getItem(position)!!
 
 		//何も編集されてなかった時
         if (message.text == message_edit_text.text.toString()){
@@ -218,20 +209,13 @@ class MessageActivity : AppCompatActivity() {
             return
         }
 
-		message.text = message_edit_text.text.toString()
-		message.updated_at = Timestamp(System.currentTimeMillis())
-
-
 		//非同期で更新
 		launch(job + UI) {
-			val res = UpdateMessage().updateMessage(message)
+			val res = UpdateMessage().updateMessage(message.id,message_edit_text.text.toString())
 
 			if(res.isSuccessful) {
 				toSendMode()
-
-				//positionはタップした場所を表すので存在が保証されていると考える
-				listAdapter.messages!![position] = message
-				drawMessagesList()
+//				drawMessagesList()
 			}else{
 				//TODO(200以外が返ってきた時)
 			}
@@ -242,16 +226,11 @@ class MessageActivity : AppCompatActivity() {
 
     private fun drawMessagesList(scrollAt: Int? = null) {
 
-		if (listAdapter.messages == null) {
+		if (listAdapter.count == 0) {
 			main_list.visibility = View.INVISIBLE
 			message_loading.visibility = View.VISIBLE
 			return
 		}
-
-		listAdapter.notifyDataSetChanged()
-
-		//最新のメッセージまでスクロール
-		scrollToEnd()
 
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
@@ -272,7 +251,6 @@ class MessageActivity : AppCompatActivity() {
 
 	fun startPool(job: Job,room_id: Long) {
 
-		val client = presenter
 		val pool_job = Job()
 
 		//結果をUIスレッドで受け取れるように
@@ -280,13 +258,11 @@ class MessageActivity : AppCompatActivity() {
 
 			while (true) {
 				//別スレッドで常に取得してる
-				val messages = withContext(pool_job + CommonPool) {
+				 withContext(pool_job + CommonPool) {
 					// 1秒ごとに取得
 					Thread.sleep(1000)
-					return@withContext client.getMessages(room_id)
+					presenter	.getMessages(room_id)
 				}
-				listAdapter.messages = messages as MutableList<Message>
-				drawMessagesList()
 			}
 		}
 	}
@@ -294,7 +270,7 @@ class MessageActivity : AppCompatActivity() {
 
 	//最後までスクロール
     fun scrollToEnd() {
-		val last = (listAdapter.messages?.size ?:  1 ) - 1
+		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
 }
