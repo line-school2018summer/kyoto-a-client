@@ -23,6 +23,10 @@ class UpdateMember(private  val name: String, val users: List<User>, val room: R
 		api.updateMember(token, roomId, hashMapOf("name" to name, "userIds" to userIds)).await()
 	}
 
+	private suspend fun updateAsyncRoomName(name: String, userIds: List<Long>, roomId: Long, token: String): Room = withContext(CommonPool){
+		api.updateRoomName(token, roomId, hashMapOf("name" to name, "userIds" to userIds)).await()
+	}
+
 	suspend fun updateMember(){
 		try {
 			val token = firebase_cli.getToken()
@@ -36,7 +40,8 @@ class UpdateMember(private  val name: String, val users: List<User>, val room: R
 			println(userIds)
 
 			if(token != null) {
-				val room = updateAsyncMember(name, userIds, room.id, token)
+				var room = updateAsyncMember(name, userIds, room.id, token)
+				room = updateAsyncRoomName(name, userIds, room.id, token)
 				repo.update(room)
 			}
 		} catch (t: HttpException) {

@@ -254,6 +254,13 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+		room = RoomRepository().getById(room.id)!!
+		//ルームの名前がない場合はデフォルトを指定
+		if (room.name.isBlank()) {
+			this.title = "Room"
+		} else {
+			this.title = room.name
+		}
 		startPool(job,room.id)
 	}
 

@@ -43,8 +43,9 @@ class RoomMemberActivity : AppCompatActivity() {
         val room_id = intent.getSerializableExtra("room_id") as Long
 		room = room_repo.getById(room_id)!!
 
-        val et = findViewById(R.id.room_name_text) as TextView
+        val et = findViewById(R.id.room_name_text) as EditText
         et.setText(room.name)
+        et.setSelection(et.text.length)
 
 		adapter = UserSelectListAdapter(this,user_repo.getAll())
 		val listView: ListView = this.findViewById(R.id.user_select_list)

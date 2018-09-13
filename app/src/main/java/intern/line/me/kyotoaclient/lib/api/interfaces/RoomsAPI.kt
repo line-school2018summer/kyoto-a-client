@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
 import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
+import intern.line.me.kyotoaclient.model.entity.User
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -28,6 +29,12 @@ interface RoomsAPI {
             @Header("Token") token : String,
             @Body body: HashMap<String, Any>
     ): Call<Room>
+
+    @GET("/rooms/{id}/members")
+    fun getMembers(
+            @Header("Token") token : String,
+            @Path("id") id: Long
+    ): Call<List<User>>
 
     @PUT("/rooms/{id}/members")
     fun updateMember(
