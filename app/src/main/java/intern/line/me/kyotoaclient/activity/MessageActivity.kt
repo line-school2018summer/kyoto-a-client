@@ -21,6 +21,7 @@ import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -28,10 +29,6 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import java.sql.Timestamp
-import io.realm.OrderedCollectionChangeSet
-import io.realm.RealmResults
-import io.realm.OrderedRealmCollectionChangeListener
-
 
 
 class MessageActivity : AppCompatActivity() {
@@ -48,7 +45,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private val presenter = GetMessages()
 
-	private val message_size = 0
+	private var message_size = 0
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,9 +77,14 @@ class MessageActivity : AppCompatActivity() {
 			this.title = room.name
 		}
 
-		//メッセージの変更を取得
-		messages.addChangeListener(OrderedRealmCollectionChangeListener<RealmResults<Message>> { results, changeSet ->
+		//メッセージが増えたら新着メッセージ通知を表示
+		messages.addChangeListener(RealmChangeListener<RealmResults<Message>>{
+			if(it.size - message_size > 0){
+				message_new_notify.visibility = View.VISIBLE
+				message_size = it.size
+			}
 		})
+
 
 		main_list.setOnScrollListener(object : AbsListView.OnScrollListener {
 			override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
@@ -297,7 +299,7 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 	//最後までスクロール
-    fun scrollToEnd() {
+    fun scrollToEnd(view:View? = null) {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
