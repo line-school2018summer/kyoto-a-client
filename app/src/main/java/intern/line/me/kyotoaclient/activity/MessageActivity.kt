@@ -248,12 +248,7 @@ class MessageActivity : AppCompatActivity() {
 
 
     private fun drawMessagesList(scrollAt: Int? = null) {
-
-		if (listAdapter.count == 0) {
-			main_list.visibility = View.INVISIBLE
-			message_loading.visibility = View.VISIBLE
-			return
-		}
+		
 
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
