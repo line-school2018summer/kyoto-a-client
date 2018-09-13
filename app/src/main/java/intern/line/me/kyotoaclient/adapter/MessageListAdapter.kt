@@ -7,37 +7,34 @@ import android.widget.BaseAdapter
 import android.content.Context
 import android.text.format.DateUtils
 import android.text.format.DateUtils.*
+import android.widget.ListAdapter
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.Message
+import intern.line.me.kyotoaclient.model.entity.Room
+import io.realm.RealmBaseAdapter
+import io.realm.RealmResults
 import java.lang.Math.max
 import java.sql.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
-class MessageListAdapter(private val context: Context): BaseAdapter() {
+class MessageListAdapter(private val context: Context, private val realm_results : RealmResults<Message>): RealmBaseAdapter<Message>(realm_results), ListAdapter {
     var layoutInflater: LayoutInflater
-
-    var messages : MutableList<Message>? = null
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
-    override fun getCount(): Int {
-        if(messages != null) return messages!!.size
-
-		return 0
-    }
 
     override fun getView(position: Int,
 						 convertView: View?,
 						 parent: ViewGroup?): View{
         val view = convertView ?: layoutInflater.inflate(R.layout.message_ballon, parent, false)
 
-        val message: Message = messages!![position] //選択されたメッセージは必ず存在すると考える
+        val message: Message = adapterData!![position] //選択されたメッセージは必ず存在すると考える
 
-		val oldMessage: Message? = messages!![max(0,position - 1)]
+		val oldMessage: Message? = adapterData!![max(0,position - 1)]
         val oldTime = oldMessage?.created_at?.time
         var oldYear: String? = null
         var oldDate: String? = null
@@ -71,7 +68,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
             dateView.visibility = View.GONE
         }
 
-        (view.findViewById(R.id.message_author) as TextView).text = message.user?.name
+        (view.findViewById(R.id.message_author) as TextView).text = message.user_name
         (view.findViewById(R.id.message_text) as TextView).text = (message.text)
         (view.findViewById(R.id.message_time) as TextView).text = format.format(time)
 
@@ -84,11 +81,7 @@ class MessageListAdapter(private val context: Context): BaseAdapter() {
         return view
     }
 
-    override fun getItem(position: Int): Message {
-        return messages!![position]
-    }
-
-    override fun getItemId(position: Int): Long {
-        return messages!![position]?.id
-    }
+	override fun getItemId(position: Int): Long {
+		return super.getItem(position)!!.id
+	}
 }

@@ -10,7 +10,7 @@ open class Message(
 		open var room_id: Long = 0,
 		open var user_id: Long = 0,
 		open var text: String = "",
-		open var user: User? = User(),
+		open var user_name: String = "",
 		open var created_at: Date = Date(Timestamp(2018,1,1,0,0,0,0).time),
 		open var updated_at: Date = Date(Timestamp(2018,1,1,0,0,0,0).time)
 ):RealmObject()
