@@ -35,9 +35,10 @@ class RoomCreateActivity : AppCompatActivity() {
         launch(job + UI) {
             //TODO(ここボトルネック自分の情報をローカルに取りに行きたい)
             me = GetMyInfo().getMyInfo()
+            adapter = UserSelectListAdapter(applicationContext,presenter.getUsersListExcludeId(me.id))
+            user_select_list.adapter = adapter
+
         }
-        adapter = UserSelectListAdapter(applicationContext,presenter.getUsersListExcludeId(5))
-        user_select_list.adapter = adapter
     }
 
 
