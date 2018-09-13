@@ -23,10 +23,11 @@
         <activity android:name=".activity.MessageActivity"
             android:parentActivityName=".activity.RoomListActivity">
         </activity>
+        <activity android:name=".activity.RoomMemberActivity">
+        </activity>
         <activity android:name=".activity.RoomCreateActivity">
         </activity>
         <activity android:name=".activity.UserListActivity">
-
         </activity>
         <activity android:name=".activity.ChangeMyProfileActivity">
         </activity>

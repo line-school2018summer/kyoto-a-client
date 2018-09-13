@@ -1,7 +1,9 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
@@ -43,10 +45,10 @@ class MessageActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_message)
+		super.onCreate(savedInstanceState)
+		setContentView(R.layout.activity_message)
 
-        val room_id = intent.getSerializableExtra("room_id") as Long
+		val room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
 		listAdapter = MessageListAdapter(this, presenter.getMessagesFromDb(room.id))
@@ -57,33 +59,40 @@ class MessageActivity : AppCompatActivity() {
 		scrollToEnd()
 
 
-    launch(job+UI) {
-			GetMyInfo().getMyInfo().let{ myId = it.id }
+		launch(job + UI) {
+			GetMyInfo().getMyInfo().let { myId = it.id }
 			presenter.getMessages(room_id)
 		}
 
 
 		//ルームの名前がない場合はデフォルトを指定
-        if(room.name.isBlank()){
-            this.title = "Room"
-        } else {
-            this.title = room.name
-        }
+		if (room.name.isBlank()) {
+			this.title = "Room"
+		} else {
+			this.title = room.name
+		}
 
-		main_list.setOnScrollListener(object: AbsListView.OnScrollListener {
-            override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
+		main_list.setOnScrollListener(object : AbsListView.OnScrollListener {
+			override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
 
-            override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
-                if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
+			override fun onScroll(view: AbsListView?, firstVisibleItem: Int, visibleItemCount: Int, totalItemCount: Int) {
+				if ((totalItemCount - visibleItemCount) == firstVisibleItem) {
 					message_new_notify.visibility = View.INVISIBLE
-                }
-            }
-        })
-        registerForContextMenu(main_list)
+				}
+			}
+		})
+		registerForContextMenu(main_list)
 
+
+		val memberEditButton = findViewById(R.id.member_edit_button) as FloatingActionButton
+		memberEditButton.setOnClickListener(View.OnClickListener {
+			val intent = Intent(application, RoomMemberActivity::class.java)
+			intent.putExtra("room_id", room.id)
+			startActivity(intent)
+		})
 
 		//ここでポーリングを開始
-		startPool(job,room.id)
+		startPool(job, room.id)
 	}
 
 
@@ -258,16 +267,15 @@ class MessageActivity : AppCompatActivity() {
 
 			while (true) {
 				//別スレッドで常に取得してる
-				 withContext(pool_job + CommonPool) {
+				withContext(pool_job + CommonPool) {
 					// 1秒ごとに取得
 					Thread.sleep(1000)
-					presenter	.getMessages(room_id)
+					presenter.getMessages(room_id)
 				}
 				drawMessagesList()
 			}
 		}
 	}
-
 
 	//最後までスクロール
     fun scrollToEnd() {
