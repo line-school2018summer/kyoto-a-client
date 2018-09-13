@@ -4,6 +4,7 @@ import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.API
+import io.realm.RealmResults
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
@@ -29,7 +30,11 @@ class GetUserList: API() {
 		}
 	}
 
-	fun getUsersListFromDb(): List<User> {
+	fun getUsersListFromDb(): RealmResults<User> {
 			return repo.getAll()
+	}
+
+	fun getUsersListExcludeId(id : Long): RealmResults<User> {
+		return repo.getUsersListExcludeId(id)
 	}
 }

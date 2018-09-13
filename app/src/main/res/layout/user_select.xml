@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_select"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -11,9 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="?android:attr/listPreferredItemHeightSmall"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:checked="true"
+        android:clickable="true"
+        android:contextClickable="true"
+        android:cursorVisible="true"
         android:gravity="center_vertical"
         android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
         android:paddingStart="?android:attr/listPreferredItemPaddingStart"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:textColor="@android:color/black"
+        tools:checkMarkTint="?attr/colorPrimary"
         tools:text="User Name" />
 </RelativeLayout>

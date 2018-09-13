@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.model.repository
 import intern.line.me.kyotoaclient.model.entity.Room
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import io.realm.RealmResults
 import io.realm.Sort
 
 class RoomRepository {
@@ -17,14 +18,8 @@ class RoomRepository {
 		return r_room
 	}
 
-	fun getAll(): List<Room> {
-		val rooms: MutableList<Room> = mutableListOf<Room>()
-		val db_rooms = mRealm.where(Room::class.java).findAll().sort("created_at", Sort.ASCENDING)
-
-		db_rooms.forEach {
-			rooms.add(it)!!
-		}
-		return rooms
+	fun getAll(): RealmResults<Room> {
+		return mRealm.where(Room::class.java).findAll().sort("created_at", Sort.ASCENDING)
 	}
 
 
