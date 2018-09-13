@@ -24,7 +24,7 @@ class MessageRepository {
 		val mRealm = Realm.getInstance(realmConfig)
 		mRealm.close()
 
-		return mRealm.where(Message::class.java).equalTo("room_id",room_id).findAll().sort("created_at", Sort.ASCENDING)
+		return mRealm.where(Message::class.java).equalTo("room_id",room_id).findAllAsync().sort("created_at", Sort.ASCENDING)
 
 	}
 

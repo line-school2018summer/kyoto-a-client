@@ -28,12 +28,12 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView = layoutInflater.inflate(R.layout.room_display, parent, false)
         val format = SimpleDateFormat("HH:mm")
-        val lastMessage: Message? = adapterData!![position].last_message
-        if (lastMessage != null) {
-            val created_at: Timestamp = Timestamp(lastMessage.created_at.time)
+        val lastMessage_text = adapterData!![position].last_message_text
+        if (lastMessage_text != null) {
+            val created_at: Timestamp = Timestamp(adapterData!![position].last_message_created_at!!.time)
             val time = Date(created_at.time)
             (convertView.findViewById(R.id.message_time_view) as TextView).text = format.format(time)
-            (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessage.text
+            (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessage_text
         }
         (convertView.findViewById(R.id.room_name_view) as TextView).text = adapterData!![position].name
         return convertView

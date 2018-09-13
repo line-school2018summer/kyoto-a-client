@@ -263,6 +263,7 @@ class MessageActivity : AppCompatActivity() {
 					Thread.sleep(1000)
 					presenter	.getMessages(room_id)
 				}
+				drawMessagesList()
 			}
 		}
 	}
