@@ -3,6 +3,7 @@ package intern.line.me.kyotoaclient.lib.api.interfaces
 
 import intern.line.me.kyotoaclient.model.entity.User
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -45,7 +46,7 @@ interface UserAPI{
     @POST("/upload/icon")
     fun uploadIcon(
             @Header("Token") token: String,
-            @Part file: MultipartBody.Part
+            @Body file: RequestBody
     ): Call<Boolean>
 
     @DELETE("/upload/icon")
