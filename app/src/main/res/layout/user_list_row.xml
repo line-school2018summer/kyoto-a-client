@@ -11,13 +11,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         app:layout_constraintBottom_toTopOf="@+id/center_line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/name_icon"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="name" />
 
@@ -26,13 +26,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:text="message"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/name_icon"
+        app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="@+id/center_line"
         tools:text="message" />
 
@@ -43,22 +43,16 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
-    <TextView
-        android:id="@+id/name_icon"
-        android:layout_width="48dp"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@android:color/holo_blue_dark"
-        android:gravity="center"
-        android:textAllCaps="true"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textColor="@android:color/background_light"
-        android:textSize="36sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="🏧" />
+        app:srcCompat="@android:drawable/ic_menu_myplaces" />
 
 </android.support.constraint.ConstraintLayout>

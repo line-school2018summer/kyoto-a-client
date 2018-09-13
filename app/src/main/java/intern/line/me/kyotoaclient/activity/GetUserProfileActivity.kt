@@ -1,10 +1,12 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.user.GetIcon
 import intern.line.me.kyotoaclient.presenter.user.GetUserInfo
 import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import kotlinx.coroutines.experimental.Job
@@ -26,6 +28,13 @@ class GetUserProfileActivity : AppCompatActivity() {
 
         launch(job + UI) {
             GetUserInfo(selectedId).getUserInfo().let{ setUserInfo(it) }
+        }
+
+        launch(job + UI){
+            GetIcon(selectedId).getIcon().let{
+                val image = BitmapFactory.decodeStream(it)
+                profiele_img.setImageBitmap(image)
+            }
         }
     }
 
