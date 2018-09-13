@@ -19,7 +19,7 @@ class RoomRepository {
 	}
 
 	fun getAll(): RealmResults<Room> {
-		return mRealm.where(Room::class.java).findAll().sort("created_at", Sort.ASCENDING)
+		return mRealm.where(Room::class.java).findAll().sort("last_message_created_at", Sort.DESCENDING)
 	}
 
 
