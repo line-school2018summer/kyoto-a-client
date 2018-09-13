@@ -1,7 +1,9 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
@@ -81,6 +83,15 @@ class MessageActivity : AppCompatActivity() {
         })
         registerForContextMenu(main_list)
 
+        messagePool = MessagesAdapter(this).getPool(room.id)
+
+        val memberEditButton = findViewById(R.id.member_edit_button) as FloatingActionButton
+        memberEditButton.setOnClickListener(View.OnClickListener {
+            val intent = Intent(application, RoomMemberActivity::class.java)
+            intent.putExtra("room", room)
+            startActivity(intent)
+        })
+    }
 
 		//ここでポーリングを開始
 		startPool(job,room.id)

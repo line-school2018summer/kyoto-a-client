@@ -2,6 +2,7 @@
     <string name="app_name">SHABEL</string>
     <string name="room_create_input">Room Name</string>
     <string name="room_create_button">Create</string>
+    <string name="room_edit_button">Edit</string>
     <string name="message_input">Input text</string>
     <string name="message_send">Send</string>
     <string name="message_edit">Edit</string>

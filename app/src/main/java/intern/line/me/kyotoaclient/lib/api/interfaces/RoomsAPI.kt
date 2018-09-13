@@ -28,4 +28,18 @@ interface RoomsAPI {
             @Header("Token") token : String,
             @Body body: HashMap<String, Any>
     ): Call<Room>
+
+    @PUT("/rooms/{id}/members")
+    fun updateMember(
+            @Header("Token") token : String,
+            @Path("id") id: Long,
+            @Body body: HashMap<String, Any>
+    ): Call<Room>
+
+    @PUT("/rooms/{id}/name")
+    fun updateRoomName(
+            @Header("Token") token : String,
+            @Path("id") id: Long,
+            @Body body: HashMap<String, Any>
+    ): Call<Room>
 }
