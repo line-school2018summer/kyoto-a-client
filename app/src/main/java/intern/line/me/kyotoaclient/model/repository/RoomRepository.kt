@@ -46,6 +46,9 @@ class RoomRepository {
 	}
 
 	fun updateAll(rooms: List<Room>) {
+		mRealm.executeTransaction{
+			mRealm.delete(Room::class.java)
+		}
 		for (room in rooms) {
 			update(room)
 		}

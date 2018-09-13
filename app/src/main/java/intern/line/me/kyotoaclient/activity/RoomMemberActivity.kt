@@ -28,7 +28,7 @@ class RoomMemberActivity : AppCompatActivity() {
 
     private var me: User? = null
 
-    private var adapter: UserSelectListAdapter? = null
+    lateinit var adapter: UserSelectListAdapter
 
 	private	val room_repo = RoomRepository()
 	private  val user_repo = UserRepository()
@@ -46,10 +46,9 @@ class RoomMemberActivity : AppCompatActivity() {
         val et = findViewById(R.id.room_name_text) as TextView
         et.setText(room.name)
 
-		val adapter = UserSelectListAdapter(this,user_repo.getAll())
+		adapter = UserSelectListAdapter(this,user_repo.getAll())
 		val listView: ListView = this.findViewById(R.id.user_select_list)
 		listView.adapter = adapter
-		this.adapter = adapter
 		registerForContextMenu(listView)
 
 		launch(job + UI) {
@@ -67,7 +66,7 @@ class RoomMemberActivity : AppCompatActivity() {
         println("on click!")
         val room = room
         val roomName = (findViewById<TextView>(R.id.room_name_text)).text.toString()
-        var selectedUsers = adapter?.getCheckedUserList()
+        var selectedUsers = adapter.getCheckedUserList()
         val me = me
         if (me != null){
             selectedUsers = (selectedUsers as MutableList<User>)
