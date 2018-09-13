@@ -21,6 +21,7 @@ import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
@@ -28,6 +29,7 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
 import java.sql.Timestamp
+
 
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
@@ -43,6 +45,8 @@ class MessageActivity : AppCompatActivity() {
 
 	private val presenter = GetMessages()
 
+	private var message_size = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -51,7 +55,8 @@ class MessageActivity : AppCompatActivity() {
 		val room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
-		listAdapter = MessageListAdapter(this, presenter.getMessagesFromDb(room.id))
+		val messages = presenter.getMessagesFromDb(room.id)
+		listAdapter = MessageListAdapter(this, messages)
 		main_list.adapter = listAdapter
 
 		drawMessagesList()
@@ -71,6 +76,15 @@ class MessageActivity : AppCompatActivity() {
 		} else {
 			this.title = room.name
 		}
+
+		//メッセージが増えたら新着メッセージ通知を表示
+		messages.addChangeListener(RealmChangeListener<RealmResults<Message>>{
+			if(it.size - message_size > 0){
+				message_new_notify.visibility = View.VISIBLE
+				message_size = it.size
+			}
+		})
+
 
 		main_list.setOnScrollListener(object : AbsListView.OnScrollListener {
 			override fun onScrollStateChanged(view: AbsListView?, scrollState: Int) {}
@@ -234,12 +248,7 @@ class MessageActivity : AppCompatActivity() {
 
 
     private fun drawMessagesList(scrollAt: Int? = null) {
-
-		if (listAdapter.count == 0) {
-			main_list.visibility = View.INVISIBLE
-			message_loading.visibility = View.VISIBLE
-			return
-		}
+		
 
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
@@ -285,7 +294,7 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 	//最後までスクロール
-    fun scrollToEnd() {
+    fun scrollToEnd(view:View? = null) {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}

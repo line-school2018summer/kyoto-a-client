@@ -23,6 +23,7 @@ class UserSelectListAdapter(private val context: Context,private val realm_resul
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
+        checkList.addAll(MutableList<Boolean>(count-checkList.size,{false}))
         var convertView = convertView?: layoutInflater.inflate(R.layout.user_select, parent, false)
         val checkView: CheckedTextView = convertView.findViewById(R.id.user_name_view)
         checkView.text = adapterData!![position].name
