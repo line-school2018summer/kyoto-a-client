@@ -46,7 +46,7 @@ interface UserAPI{
     @POST("/upload/icon")
     fun uploadIcon(
             @Header("Token") token: String,
-            @Body file: RequestBody
+            @Body file:  MultipartBody.Part
     ): Call<Boolean>
 
     @DELETE("/upload/icon")
