@@ -81,7 +81,7 @@
         android:id="@+id/image_change"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="24dp"
         android:text="画像選択"
         app:layout_constraintBottom_toTopOf="@+id/apply_button"
