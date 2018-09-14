@@ -3,6 +3,8 @@ package intern.line.me.kyotoaclient.activity
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
@@ -24,7 +26,10 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         //非同期でユーザー情報を取ってくる
         launch(job + UI) {
-            GetMyInfo().getMyInfo().let { setUserInfo(it) }
+            GetMyInfo().getMyInfo().let {
+                setUserInfo(it)
+                setImg(it.id)
+            }
         }
 
         //ボタンを押したときの処理
@@ -51,5 +56,12 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     fun setUserInfo(user: User){
         my_profile_progress_bar.visibility = View.INVISIBLE
         my_name.text = user.name
+    }
+
+    fun setImg(id: Long){
+        val imageView = findViewById<ImageView>(R.id.icon)
+        Glide.with(this)
+                .load("https://kyoto-a-api.pinfort.me/download/icon/${id}")
+                .into(imageView)
     }
 }
