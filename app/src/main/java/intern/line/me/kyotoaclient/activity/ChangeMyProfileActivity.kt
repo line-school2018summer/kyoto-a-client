@@ -83,14 +83,15 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                 var filePath = data.getDataString()
                 filePath=filePath.substring(filePath.indexOf("storage"))
                 val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
-/*
+                //Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+
                 //TODO(file選択方法)
-                val file =  File(decodedPath)
+                val file: File =  File(decodedPath)
+
                 launch(job + UI){
                     PostIcon(file).postIcon()
-                    Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
-                }*/
+                }
+                Toast.makeText(this, "updated!", Toast.LENGTH_LONG).show()
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()

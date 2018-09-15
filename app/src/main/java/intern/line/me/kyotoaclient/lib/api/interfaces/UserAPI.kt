@@ -8,6 +8,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
+import java.io.File
 
 
 interface UserAPI{
@@ -46,7 +47,7 @@ interface UserAPI{
     @POST("/upload/icon")
     fun uploadIcon(
             @Header("Token") token: String,
-            @Body file:  MultipartBody.Part
+            @Part file: MultipartBody.Part
     ): Call<Boolean>
 
     @DELETE("/upload/icon")
