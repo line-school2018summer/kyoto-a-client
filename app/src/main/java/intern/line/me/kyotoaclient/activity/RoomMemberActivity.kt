@@ -63,8 +63,6 @@ class RoomMemberActivity : AppCompatActivity() {
 
             adapter.checkList = users.map{ it -> member_id_list.contains(it.id)} as MutableList<Boolean>
             adapter.notifyDataSetChanged()
-            println(users.map{ it -> member_id_list.contains(it.id)} as MutableList<Boolean>)
-
         }
 	}
 
