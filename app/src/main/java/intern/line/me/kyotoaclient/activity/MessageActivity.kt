@@ -4,15 +4,16 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.util.Log
 import android.view.ContextMenu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
-import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
+import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
@@ -20,7 +21,9 @@ import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
 import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
+import intern.line.me.kyotoaclient.presenter.room.GetRooms
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
+
 import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
@@ -28,7 +31,14 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
-import java.sql.Timestamp
+import ua.naiksoftware.stomp.Stomp
+import ua.naiksoftware.stomp.LifecycleEvent
+import ua.naiksoftware.stomp.client.StompClient
+
+
+
+
+
 
 
 class MessageActivity : AppCompatActivity() {
@@ -298,4 +308,34 @@ class MessageActivity : AppCompatActivity() {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
+
+
+	fun connectStomp(){
+		lateinit var client : StompClient
+		val util = FirebaseUtil()
+		val presenter = GetRooms()
+
+		launch(job + UI) {
+			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "http://localhost:8080/hello", mapOf("TOKEN" to util.getToken()))
+
+			client.lifecycle().subscribe { lifecycleEvent ->
+				when (lifecycleEvent.type) {
+					LifecycleEvent.Type.OPENED -> Log.d("stomp", "Stomp connection opened")
+					LifecycleEvent.Type.CLOSED -> Log.d("stomp", "Stomp connection closed")
+					LifecycleEvent.Type.ERROR -> Log.e("stomp", "Stomp connection error", lifecycleEvent.exception)
+				}
+			}
+
+			client.topic("/topic/rooms").subscribe() {
+				it.payload //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+			}
+
+			client.topic("/topic/rooms/${room.id}/messages").subscribe() {
+				it.payload //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+			}
+
+
+		}
+	}
+
 }
