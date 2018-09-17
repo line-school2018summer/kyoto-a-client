@@ -31,9 +31,12 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.withContext
-import ua.naiksoftware.stomp.Stomp
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import ua.naiksoftware.stomp.LifecycleEvent
-import ua.naiksoftware.stomp.client.StompClient
+import ua.naiksoftware.stomp.Stomp;
+import ua.naiksoftware.stomp.StompHeader
+import ua.naiksoftware.stomp.client.StompClient;
 
 
 
@@ -57,6 +60,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private var message_size = 0
 
+	lateinit var client : StompClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -116,7 +120,9 @@ class MessageActivity : AppCompatActivity() {
 		})
 
 		//ここでポーリングを開始
-		startPool(job, room.id)
+//		startPool(job, room.id)
+
+		connectStomp()
 	}
 
 
@@ -269,6 +275,7 @@ class MessageActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 		job.cancel()
+//		client.disconnect()
     }
 
     override fun onRestart() {
@@ -311,14 +318,17 @@ class MessageActivity : AppCompatActivity() {
 
 
 	fun connectStomp(){
-		lateinit var client : StompClient
 		val util = FirebaseUtil()
 		val presenter = GetRooms()
 
 		launch(job + UI) {
-			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "http://localhost:8080/hello", mapOf("TOKEN" to util.getToken()))
+			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://localhost:8080/hello", mapOf("Token" to util.getToken()))
 
-			client.lifecycle().subscribe { lifecycleEvent ->
+			//
+			client.lifecycle()
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe { lifecycleEvent ->
 				when (lifecycleEvent.type) {
 					LifecycleEvent.Type.OPENED -> Log.d("stomp", "Stomp connection opened")
 					LifecycleEvent.Type.CLOSED -> Log.d("stomp", "Stomp connection closed")
@@ -326,14 +336,28 @@ class MessageActivity : AppCompatActivity() {
 				}
 			}
 
-			client.topic("/topic/rooms").subscribe() {
-				it.payload //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+			client.topic("/topic/rooms", mutableListOf(StompHeader("Token",util.getToken())))
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe() {
+				Log.d("rooms",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
 			}
 
-			client.topic("/topic/rooms/${room.id}/messages").subscribe() {
-				it.payload //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+			client.topic("/topic/rooms/${room.id}/messages",mutableListOf(StompHeader("Token",util.getToken())))
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe() {
+				Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
 			}
 
+			client.topic("/topic/greetings",mutableListOf(StompHeader("Token",util.getToken())))
+					.subscribeOn(Schedulers.io())
+					.observeOn(AndroidSchedulers.mainThread())
+					.subscribe() {
+				Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+			}
+
+			client.connect()
 
 		}
 	}

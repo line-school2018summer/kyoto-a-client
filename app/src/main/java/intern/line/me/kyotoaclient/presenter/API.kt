@@ -51,7 +51,7 @@ open class API {
     }
 
     val retrofit = Retrofit.Builder()
-            .baseUrl("https://kyoto-a-api.pinfort.me/")
+            .baseUrl("http://localhost:8080/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client.build())
             .build()
