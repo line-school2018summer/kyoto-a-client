@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient.model.repository
 
+import android.util.Log
 import intern.line.me.kyotoaclient.model.entity.Event
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -22,7 +23,12 @@ class EventRespository {
 	}
 
 	fun getLatest() : Event?{
-		return mRealm.where(Event::class.java).findAll().sort("id", Sort.ASCENDING).last()
+		try {
+			return mRealm.where(Event::class.java).findAll().sort("id", Sort.ASCENDING).last()
+		}catch(e : Throwable){
+			Log.e("getLatest","can't get latest event",e)
+			return null
+		}
 	}
 
 
