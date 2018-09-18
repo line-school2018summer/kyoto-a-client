@@ -14,15 +14,15 @@ class EventRespository {
 	val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): Event? {
-		return mRealm.where(Event::class.java).equalTo("id", id).findFirst()
+		return mRealm.where(Event::class.java).equalTo("id", id).findFirstAsync()
 	}
 
 	fun getAll() : RealmResults<Event> {
-		return  mRealm.where(Event::class.java).sort("id", Sort.ASCENDING).findAll()
+		return  mRealm.where(Event::class.java).sort("id", Sort.ASCENDING).findAllAsync()
 	}
 
 	fun getLatest() : Event?{
-		return mRealm.where(Event::class.java).sort("id", Sort.DESCENDING).findFirst()
+		return mRealm.where(Event::class.java).findAll().sort("id", Sort.ASCENDING).last()
 	}
 
 
@@ -40,7 +40,7 @@ class EventRespository {
 
 	fun delete(event: Event) {
 		mRealm.executeTransaction {
-			var delete_event = mRealm.where(Event::class.java).equalTo("id", event.id).findAll()
+			var delete_event = mRealm.where(Event::class.java).equalTo("id", event.id).findAllAsync()
 			delete_event.deleteFromRealm(0)
 		}
 	}

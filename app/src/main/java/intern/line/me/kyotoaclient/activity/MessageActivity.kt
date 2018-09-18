@@ -89,7 +89,7 @@ class MessageActivity : AppCompatActivity() {
 
 		launch(job + UI) {
 			GetMyInfo().getMyInfo().let { myId = it.id }
-			presenter.getMessages(room_id)
+//			presenter.getMessages(room_id)
 		}
 
 
@@ -136,7 +136,10 @@ class MessageActivity : AppCompatActivity() {
 
 		//websocketに接続したらREST APIを叩く
 		launch(job + UI) {
-			val events = event_presenter.getMessageEvent(room_id, (repo.getLatest()?.id ?: 0 )+ 1)
+			
+			val latest_event_id = repo.getLatest()?.id ?: 0
+			Log.d("Event Rest",latest_event_id.toString())
+			val events = event_presenter.getMessageEvent(room_id, latest_event_id+ 1)
 			update_event_presenter.updateAllModel(events)
 		}
 	}
@@ -303,7 +306,7 @@ class MessageActivity : AppCompatActivity() {
 		} else {
 			this.title = room.name
 		}
-		startPool(job,room.id)
+//		startPool(job,room.id)
 	}
 
 
