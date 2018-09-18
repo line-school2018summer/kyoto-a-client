@@ -89,7 +89,6 @@ class MessageActivity : AppCompatActivity() {
 
 		launch(job + UI) {
 			GetMyInfo().getMyInfo().let { myId = it.id }
-//			presenter.getMessages(room_id)
 		}
 
 
@@ -127,9 +126,6 @@ class MessageActivity : AppCompatActivity() {
 			intent.putExtra("room_id", room.id)
 			startActivity(intent)
 		})
-
-		//ここでポーリングを開始
-//		startPool(job, room.id)
 
 		//websocketに接続
 		connectStomp()
@@ -200,7 +196,6 @@ class MessageActivity : AppCompatActivity() {
 			val result = DeleteMessage().deleteMessage(listAdapter.getItem(position)!!)
 
 			if(result) {
-//				drawMessagesList()
 			}else{
 				//TODO(削除に失敗した時)
 			}
@@ -278,23 +273,20 @@ class MessageActivity : AppCompatActivity() {
 				//TODO(200以外が返ってきた時)
 			}
 		}
-    }
+  }
 
 
 
     private fun drawMessagesList(scrollAt: Int? = null) {
-		
-
-		main_list.visibility = View.VISIBLE
-		message_loading.visibility = View.INVISIBLE
+  		main_list.visibility = View.VISIBLE
+  		message_loading.visibility = View.INVISIBLE
     }
-
 
 	//アクティビティが終わるときにポーリングを辞める
     override fun onStop() {
         super.onStop()
 		job.cancel()
-//		client.disconnect()
+		client.disconnect()
     }
 
     override fun onRestart() {
@@ -306,7 +298,6 @@ class MessageActivity : AppCompatActivity() {
 		} else {
 			this.title = room.name
 		}
-//		startPool(job,room.id)
 	}
 
 
@@ -343,19 +334,6 @@ class MessageActivity : AppCompatActivity() {
 		launch(job + UI) {
 			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to util.getToken()))
 
-			//
-			client.lifecycle()
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribe { lifecycleEvent ->
-				when (lifecycleEvent.type) {
-					LifecycleEvent.Type.OPENED -> Log.d("stomp", "Stomp connection opened")
-					LifecycleEvent.Type.CLOSED -> Log.d("stomp", "Stomp connection closed")
-					LifecycleEvent.Type.ERROR -> Log.e("stomp", "Stomp connection error", lifecycleEvent.exception)
-				}
-			}
-
-
 			client.topic("/topic/rooms/${room.id}/messages",mutableListOf(StompHeader("Token",util.getToken())))
 					.subscribeOn(Schedulers.io())
 					.observeOn(AndroidSchedulers.mainThread())
@@ -368,10 +346,8 @@ class MessageActivity : AppCompatActivity() {
 						}
 			}
 
-
 			client.connect()
 
 		}
 	}
-
 }
