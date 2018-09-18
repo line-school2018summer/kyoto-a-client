@@ -18,10 +18,6 @@ class UserRepository {
 		return r_user
 	}
 
-	fun getUserRealmById(id: Long): User? {
-		return  mRealm.where(User::class.java).equalTo("id", id).findFirst()
-	}
-
 	fun getUsersListExcludeId(id: Long): RealmResults<User>{
 		return mRealm.where(User::class.java).notEqualTo("id",id).findAll()
 	}
