@@ -1,0 +1,13 @@
+package intern.line.me.kyotoaclient.model.entity
+
+enum class EventTypes {
+	PROFILE_UPDATED,
+	ROOM_CREATED,
+	ROOM_UPDATED,
+	ROOM_MEMBER_JOINED,
+	ROOM_MEMBER_LEAVED,
+	ROOM_MEMBER_DELETED,
+	MESSAGE_SENT,
+	MESSAGE_UPDATED,
+	MESSAGE_DELETED,
+}

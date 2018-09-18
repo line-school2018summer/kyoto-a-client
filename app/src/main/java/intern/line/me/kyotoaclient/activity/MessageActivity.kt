@@ -11,12 +11,17 @@ import android.view.View
 import android.widget.AbsListView
 import android.widget.AdapterView
 import android.widget.EditText
+import com.google.gson.Gson
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.MessageListAdapter
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
+import intern.line.me.kyotoaclient.model.entity.Event
 import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
+import intern.line.me.kyotoaclient.model.repository.EventRespository
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
+import intern.line.me.kyotoaclient.presenter.event.GetMessageEvent
+import intern.line.me.kyotoaclient.presenter.event.UpdateModel
 import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
 import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
@@ -57,6 +62,10 @@ class MessageActivity : AppCompatActivity() {
     private val job = Job()
 
 	private val presenter = GetMessages()
+	private val event_presenter = GetMessageEvent()
+	private val update_event_presenter = UpdateModel()
+	private val gson = Gson()
+	private val repo = EventRespository()
 
 	private var message_size = 0
 
@@ -122,7 +131,14 @@ class MessageActivity : AppCompatActivity() {
 		//ここでポーリングを開始
 //		startPool(job, room.id)
 
+		//websocketに接続
 		connectStomp()
+
+		//websocketに接続したらREST APIを叩く
+		launch(job + UI) {
+			val events = event_presenter.getMessageEvent(room_id, (repo.getLatest()?.id ?: 0 )+ 1)
+			update_event_presenter.updateAllModel(events)
+		}
 	}
 
 
@@ -336,26 +352,19 @@ class MessageActivity : AppCompatActivity() {
 				}
 			}
 
-			client.topic("/topic/rooms", mutableListOf(StompHeader("Token",util.getToken())))
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribe() {
-				Log.d("rooms",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
-			}
 
 			client.topic("/topic/rooms/${room.id}/messages",mutableListOf(StompHeader("Token",util.getToken())))
 					.subscribeOn(Schedulers.io())
 					.observeOn(AndroidSchedulers.mainThread())
 					.subscribe() {
-				Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+						Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+						val event = gson.fromJson<Event>(it.payload,Event::class.java)
+
+						launch(job + UI) {
+							update_event_presenter.updateModel(event)
+						}
 			}
 
-			client.topic("/topic/greetings",mutableListOf(StompHeader("Token",util.getToken())))
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribe() {
-				Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
-			}
 
 			client.connect()
 
