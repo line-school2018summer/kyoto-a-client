@@ -18,7 +18,7 @@ class UpdateModel {
 		when(event.event_type){
 			EventTypes.MESSAGE_SENT.ordinal ->{
 				if(event.room_id != null) {
-					GetMessages().getMessages(event.room_id!!)
+					GetMessage().getMessage(event.message_id!!)
 				}
 			}
 
