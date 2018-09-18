@@ -136,7 +136,7 @@ class MessageActivity : AppCompatActivity() {
 
 		//websocketに接続したらREST APIを叩く
 		launch(job + UI) {
-			
+
 			val latest_event_id = repo.getLatest()?.id ?: 0
 			Log.d("Event Rest",latest_event_id.toString())
 			val events = event_presenter.getMessageEvent(room_id, latest_event_id+ 1)
@@ -341,7 +341,7 @@ class MessageActivity : AppCompatActivity() {
 		val presenter = GetRooms()
 
 		launch(job + UI) {
-			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "ws://localhost:8080/hello", mapOf("Token" to util.getToken()))
+			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to util.getToken()))
 
 			//
 			client.lifecycle()
