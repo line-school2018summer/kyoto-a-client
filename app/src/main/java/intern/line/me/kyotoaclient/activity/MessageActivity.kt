@@ -28,31 +28,23 @@ import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
-
 import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.rx1.openSubscription
 import kotlinx.coroutines.experimental.withContext
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
-import ua.naiksoftware.stomp.LifecycleEvent
 import ua.naiksoftware.stomp.Stomp;
 import ua.naiksoftware.stomp.StompHeader
 import ua.naiksoftware.stomp.client.StompClient;
 
 
-
-
-
-
-
 class MessageActivity : AppCompatActivity() {
     private val MESSAGE_EDIT_EVENT = 0
     private val MESSAGE_DELETE_EVENT = 1
-
     private var editingMessagePosition: Int? = null
     private lateinit var room: Room
 	private  var room_id: Long = 0
@@ -148,14 +140,12 @@ class MessageActivity : AppCompatActivity() {
 		if (sendText.text.isBlank()) {
 			return
 		}
-//		val room = room
 
 		launch(job + UI) {
 			CreateMessage().createMessage(room_id, sendText.text.toString())
 			scrollToEnd()
 			toSendMode()
 		}
-
 	}
 
 
@@ -238,50 +228,47 @@ class MessageActivity : AppCompatActivity() {
 	//編集を実行したとき
     fun onEdit(v: View) {
 
-		val position = editingMessagePosition ?:throw Exception("no message found")
+		val position = editingMessagePosition ?: throw Exception("no message found")
 
-        if (editingMessagePosition == null) {
-            this.toSendMode()
-            return
-        }
+		if (editingMessagePosition == null) {
+			this.toSendMode()
+			return
+		}
 
-        if (listAdapter.count == 0) {
-            this.toSendMode()
-            return
-        }
+		if (listAdapter.count == 0) {
+			this.toSendMode()
+			return
+		}
 
 		//positionはクリックした場所を表すので存在が保証されていると考える
 		val message: Message = listAdapter.getItem(position)!!
 
 		//何も編集されてなかった時
-        if (message.text == message_edit_text.text.toString()){
-            this.toSendMode()
-            return
-        }
+		if (message.text == message_edit_text.text.toString()) {
+			this.toSendMode()
+			return
+		}
 		//編集して空欄にした時
-        if (message_edit_text.text.isBlank()) {
-            return
-        }
+		if (message_edit_text.text.isBlank()) {
+			return
+		}
 
 		//非同期で更新
 		launch(job + UI) {
-			val res = UpdateMessage().updateMessage(message.id,message_edit_text.text.toString())
+			val res = UpdateMessage().updateMessage(message.id, message_edit_text.text.toString())
 
-			if(res.isSuccessful) {
+			if (res.isSuccessful) {
 				toSendMode()
-//				drawMessagesList()
-			}else{
+			} else {
 				//TODO(200以外が返ってきた時)
 			}
 		}
-  }
+	}
 
-
-
-    private fun drawMessagesList(scrollAt: Int? = null) {
-  		main_list.visibility = View.VISIBLE
-  		message_loading.visibility = View.INVISIBLE
-    }
+	private fun drawMessagesList(scrollAt: Int? = null) {
+		main_list.visibility = View.VISIBLE
+		message_loading.visibility = View.INVISIBLE
+	}
 
 	//アクティビティが終わるときにポーリングを辞める
     override fun onStop() {
@@ -328,36 +315,28 @@ class MessageActivity : AppCompatActivity() {
 		main_list.setSelection(last)
 	}
 
-
 	fun connectStomp(){
 		val util = FirebaseUtil()
 		val presenter = GetRooms()
 
 		launch(job + UI) {
-			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to util.getToken()))
+			val token = util.getToken()
 
-			//このtry,catch合ってんのか、、、
 			try {
-				client!!.topic("/topic/rooms/${room.id}/messages", mutableListOf(StompHeader("Token", util.getToken())))
-						.subscribeOn(Schedulers.io())
-						.observeOn(AndroidSchedulers.mainThread())
-						.retry(3) //失敗したら3回リトライするように変更
-						.subscribe() {
+				if(token != null) {
+					client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
+					val res = client!!.topic("/topic/rooms/${room_id}/messages", mutableListOf(StompHeader("Token", token)))
+							.openSubscription()
+					client!!.connect()
 
-
-							Log.d("rooms${room.id}", it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
-							val event = gson.fromJson<Event>(it.payload, Event::class.java)
-
-							launch(job + UI) {
-								update_event_presenter.updateModel(event)
-							}
-						}
+					res.consumeEach {
+						val event = gson.fromJson<Event>(it.payload, Event::class.java)
+						update_event_presenter.updateModel(event)
+					}
+				}
 			} catch (e: Throwable) {
 				Log.e("connectStomp", "Catch Error", e)
 			}
-
-			client!!.connect()
-
 		}
 	}
 }
