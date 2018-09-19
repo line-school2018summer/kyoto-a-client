@@ -292,7 +292,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-		room = RoomRepository().getById(room.id)!!
+		room = RoomRepository().getById(room_id)!!
 		//ルームの名前がない場合はデフォルトを指定
 		if (room.name.isBlank()) {
 			this.title = "Room"
@@ -336,10 +336,12 @@ class MessageActivity : AppCompatActivity() {
 		launch(job + UI) {
 			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to util.getToken()))
 
+			//このtry,catch合ってんのか、、、
 			try {
 				client!!.topic("/topic/rooms/${room.id}/messages", mutableListOf(StompHeader("Token", util.getToken())))
 						.subscribeOn(Schedulers.io())
 						.observeOn(AndroidSchedulers.mainThread())
+						.retry(3) //失敗したら3回リトライするように変更
 						.subscribe() {
 
 
