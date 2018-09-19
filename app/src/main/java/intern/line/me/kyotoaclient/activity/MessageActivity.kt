@@ -55,6 +55,7 @@ class MessageActivity : AppCompatActivity() {
 
     private var editingMessagePosition: Int? = null
     private lateinit var room: Room
+	private  var room_id: Long = 0
     private lateinit var listAdapter: MessageListAdapter
 
     private var myId: Long? = null
@@ -69,13 +70,13 @@ class MessageActivity : AppCompatActivity() {
 
 	private var message_size = 0
 
-	lateinit var client : StompClient
+	var client : StompClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_message)
 
-		val room_id = intent.getSerializableExtra("room_id") as Long
+		room_id = intent.getSerializableExtra("room_id") as Long
 		room = RoomRepository().getById(room_id)!!
 
 		val messages = presenter.getMessagesFromDb(room.id)
@@ -123,7 +124,7 @@ class MessageActivity : AppCompatActivity() {
 		val memberEditButton = findViewById(R.id.member_edit_button) as FloatingActionButton
 		memberEditButton.setOnClickListener(View.OnClickListener {
 			val intent = Intent(application, RoomMemberActivity::class.java)
-			intent.putExtra("room_id", room.id)
+			intent.putExtra("room_id", room_id)
 			startActivity(intent)
 		})
 
@@ -147,10 +148,10 @@ class MessageActivity : AppCompatActivity() {
 		if (sendText.text.isBlank()) {
 			return
 		}
-		val room = room
+//		val room = room
 
 		launch(job + UI) {
-			CreateMessage().createMessage(room.id, sendText.text.toString())
+			CreateMessage().createMessage(room_id, sendText.text.toString())
 			scrollToEnd()
 			toSendMode()
 		}
@@ -286,8 +287,8 @@ class MessageActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
 		job.cancel()
-		client.disconnect()
-    }
+		if(client != null && client!!.isConnected) client!!.disconnect()
+	}
 
     override fun onRestart() {
         super.onRestart()
@@ -298,6 +299,7 @@ class MessageActivity : AppCompatActivity() {
 		} else {
 			this.title = room.name
 		}
+		connectStomp()
 	}
 
 
@@ -334,19 +336,25 @@ class MessageActivity : AppCompatActivity() {
 		launch(job + UI) {
 			client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to util.getToken()))
 
-			client.topic("/topic/rooms/${room.id}/messages",mutableListOf(StompHeader("Token",util.getToken())))
-					.subscribeOn(Schedulers.io())
-					.observeOn(AndroidSchedulers.mainThread())
-					.subscribe() {
-						Log.d("rooms${room.id}",it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
-						val event = gson.fromJson<Event>(it.payload,Event::class.java)
+			try {
+				client!!.topic("/topic/rooms/${room.id}/messages", mutableListOf(StompHeader("Token", util.getToken())))
+						.subscribeOn(Schedulers.io())
+						.observeOn(AndroidSchedulers.mainThread())
+						.subscribe() {
 
-						launch(job + UI) {
-							update_event_presenter.updateModel(event)
+
+							Log.d("rooms${room.id}", it.payload) //Stringで渡されるのでGsonなどでクラスに変換する必要がある
+							val event = gson.fromJson<Event>(it.payload, Event::class.java)
+
+							launch(job + UI) {
+								update_event_presenter.updateModel(event)
+							}
 						}
+			} catch (e: Throwable) {
+				Log.e("connectStomp", "Catch Error", e)
 			}
 
-			client.connect()
+			client!!.connect()
 
 		}
 	}
