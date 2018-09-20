@@ -131,7 +131,6 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
                     launch(job + UI) {
                         PostIcon(file).postIcon()
-                        Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show()
                         setImgByC(myId)
                     }
                 } else{
