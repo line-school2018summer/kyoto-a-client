@@ -96,8 +96,8 @@ class MessageActivity : AppCompatActivity() {
 		messages.addChangeListener(RealmChangeListener<RealmResults<Message>>{
 			if(it.size - message_size > 0){
 				message_new_notify.visibility = View.VISIBLE
-				message_size = it.size
 			}
+			message_size = it.size
 		})
 
 
