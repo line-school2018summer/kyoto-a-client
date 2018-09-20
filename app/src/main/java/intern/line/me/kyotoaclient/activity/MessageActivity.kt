@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
 import android.widget.AdapterView
+import android.widget.Button
 import android.widget.EditText
 import com.google.gson.Gson
 import intern.line.me.kyotoaclient.R
@@ -37,9 +38,9 @@ import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.rx1.openSubscription
 import kotlinx.coroutines.experimental.withContext
-import ua.naiksoftware.stomp.Stomp;
+import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompHeader
-import ua.naiksoftware.stomp.client.StompClient;
+import ua.naiksoftware.stomp.client.StompClient
 
 
 class MessageActivity : AppCompatActivity() {
@@ -52,7 +53,7 @@ class MessageActivity : AppCompatActivity() {
 
     private var myId: Long? = null
 
-    private val job = Job()
+    private var job = Job()
 
 	private val presenter = GetMessages()
 	private val event_presenter = GetMessageEvent()
@@ -136,13 +137,19 @@ class MessageActivity : AppCompatActivity() {
 
 	//送信ボタンを押した時
 	fun onSend(v: View) {
+		val sendButton: Button = findViewById(R.id.message_send_button)
+		sendButton.isEnabled = false
 		val sendText: EditText = findViewById(R.id.message_send_text)
-		if (sendText.text.isBlank()) {
+		val text = sendText.text.toString()
+		sendText.text.clear()
+		if (text.isBlank()) {
+			sendButton.isEnabled = true
 			return
 		}
+		sendButton.isEnabled = true
 
 		launch(job + UI) {
-			CreateMessage().createMessage(room_id, sendText.text.toString())
+			CreateMessage().createMessage(room_id, text)
 			scrollToEnd()
 			toSendMode()
 		}
@@ -279,6 +286,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
+		job = Job()
 		room = RoomRepository().getById(room_id)!!
 		//ルームの名前がない場合はデフォルトを指定
 		if (room.name.isBlank()) {
@@ -319,7 +327,7 @@ class MessageActivity : AppCompatActivity() {
 		val util = FirebaseUtil()
 		val presenter = GetRooms()
 
-		launch(UI) {
+		launch(job + UI) {
 			val token = util.getToken()
 
 			try {
