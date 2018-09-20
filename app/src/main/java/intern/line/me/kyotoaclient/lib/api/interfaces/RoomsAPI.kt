@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.lib.api.interfaces
 import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.entity.User
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -49,4 +50,19 @@ interface RoomsAPI {
             @Path("id") id: Long,
             @Body body: HashMap<String, Any>
     ): Call<Room>
+
+
+    @Multipart
+    @POST("/upload/icon/room/{id}")
+    fun uploadRoomIcon(
+            @Path("id") id: Long,
+            @Header("Token") token: String,
+            @Part file: MultipartBody.Part
+    ): Call<Boolean>
+
+    @DELETE("/upload/icon/room/{id}")
+    fun deleteRoomIcon(
+            @Path("id") id: Long,
+            @Header("Token") token: String
+    ): Call<Boolean>
 }

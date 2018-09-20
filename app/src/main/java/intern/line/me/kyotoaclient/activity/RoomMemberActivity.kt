@@ -1,12 +1,11 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
-import android.widget.CheckedTextView
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
@@ -14,15 +13,21 @@ import intern.line.me.kyotoaclient.model.entity.*
 import intern.line.me.kyotoaclient.presenter.room.UpdateMember
 import intern.line.me.kyotoaclient.presenter.user.*
 import java.sql.Timestamp
-import android.widget.EditText
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.model.repository.UserRepository
+import kotlinx.android.synthetic.main.activity_room_create.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import java.io.File
+import java.io.UnsupportedEncodingException
+import java.net.URLDecoder
 
 
 class RoomMemberActivity : AppCompatActivity() {
+
+    private val CHOSE_FILE_CODE: Int = 777
+    lateinit var file: File
 
     lateinit var room: Room
 
@@ -64,6 +69,12 @@ class RoomMemberActivity : AppCompatActivity() {
             adapter.checkList = users.map{ it -> member_id_list.contains(it.id)} as MutableList<Boolean>
             adapter.notifyDataSetChanged()
         }
+
+        room_icon_view.setOnClickListener{
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.setType("file/*")
+            startActivityForResult(intent, CHOSE_FILE_CODE)
+        }
 	}
 
 	override fun onDestroy() {
@@ -71,6 +82,25 @@ class RoomMemberActivity : AppCompatActivity() {
 		job.cancel()
 	}
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val context = this
+
+        try{
+            if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
+                var filePath = data.getDataString()
+                filePath=filePath.substring(filePath.indexOf("storage"))
+                val decodedPath = URLDecoder.decode(filePath, "utf-8")
+                //val decodedPath = "/sdcard/P.jpg"
+                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+
+                //TODO(file選択方法)
+                file =  File(decodedPath)
+            }
+        } catch(t: UnsupportedEncodingException) {
+            Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     fun onEditRoom(v: View) {
         println("on click!")
