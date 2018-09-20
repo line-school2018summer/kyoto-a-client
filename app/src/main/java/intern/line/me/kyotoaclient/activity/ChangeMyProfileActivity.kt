@@ -27,17 +27,19 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     private val job = Job()
     private var myId = 0L
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_change_my_profile)
 
         my_profile_progress_bar.visibility = View.VISIBLE
+       // findViewById<ImageView>(R.id.icon).setScrollingCacheEnabled( false )
 
         //非同期でユーザー情報を取ってくる
         launch(job + UI) {
             GetMyInfo().getMyInfo().let {
                 setUserInfo(it)
-                setImg(it.id)
+                setImgByC(it.id)
                 myId = it.id
             }
         }
@@ -55,7 +57,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         //画像変更ボタン
         image_change.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            //intent.setType("file/*")
+            intent.setType("file/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
@@ -80,24 +82,27 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
+                /*
                 var filePath = data.getDataString()
                 filePath=filePath.substring(filePath.indexOf("storage"))
                 val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                //Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+                */
+                val decodedPath = "/sdcard/P.jpg"
+                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
 
                 //TODO(file選択方法)
                 val file: File =  File(decodedPath)
 
                 launch(job + UI){
                     PostIcon(file).postIcon()
+                    Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
+                    setImgByC(myId)
                 }
-                Toast.makeText(this, "updated!", Toast.LENGTH_LONG).show()
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     //ユーザー情報をセットする
     fun setUserInfo(user: User){
