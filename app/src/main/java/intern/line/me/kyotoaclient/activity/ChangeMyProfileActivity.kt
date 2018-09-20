@@ -120,6 +120,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                     launch(job + UI) {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
+                        file!!.delete()
                     }
                 }
             }
