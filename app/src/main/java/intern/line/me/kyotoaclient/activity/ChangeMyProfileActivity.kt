@@ -47,6 +47,12 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             }
         }
 
+        if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        }
+
         //ボタンを押したときの処理
         apply_button.setOnClickListener {
 
@@ -59,11 +65,8 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         //画像変更ボタン
         image_change.setOnClickListener{
-            if (ContextCompat.checkSelfPermission(
-                            this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
-            }
+
+
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.setType("file/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
