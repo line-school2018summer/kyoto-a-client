@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
@@ -13,7 +14,6 @@ import intern.line.me.kyotoaclient.presenter.room.CreateRoom
 import intern.line.me.kyotoaclient.presenter.room.PostRoomIcon
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import intern.line.me.kyotoaclient.presenter.user.GetUserList
-import intern.line.me.kyotoaclient.presenter.user.PostIcon
 import kotlinx.android.synthetic.main.activity_room_create.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -49,7 +49,7 @@ class RoomCreateActivity : AppCompatActivity() {
             user_select_list.adapter = adapter
         }
 
-        room_icon_view.setOnClickListener{
+        create_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.setType("file/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
@@ -75,6 +75,8 @@ class RoomCreateActivity : AppCompatActivity() {
 
                 //TODO(file選択方法)
                 file =  File(decodedPath)
+                val image = BitmapFactory.decodeStream(file.inputStream())
+                create_room_icon_view.setImageBitmap(image)
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
@@ -92,7 +94,10 @@ class RoomCreateActivity : AppCompatActivity() {
         println(selectedUsers)
 
         launch (this.job + UI) {
-            CreateRoom(roomName, selectedUsers).createRoom()
+            val room = CreateRoom(roomName, selectedUsers).createRoom()
+
+            PostRoomIcon().postRoomIcon(room.id,file)
+
             goBack()
         }
     }

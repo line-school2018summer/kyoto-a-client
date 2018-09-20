@@ -3,6 +3,7 @@ import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.entity.User
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -51,6 +52,10 @@ interface RoomsAPI {
             @Body body: HashMap<String, Any>
     ): Call<Room>
 
+    @GET("/download/icon/room/{id}")
+    fun getRoomIcon(
+            @Path("id") id: Long
+    ): Call<ResponseBody>
 
     @Multipart
     @POST("/upload/icon/room/{id}")

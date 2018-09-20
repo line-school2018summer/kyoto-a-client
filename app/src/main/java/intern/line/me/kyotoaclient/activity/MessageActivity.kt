@@ -344,7 +344,9 @@ class MessageActivity : AppCompatActivity() {
 				}
 			} catch (e: Throwable) {
 				Log.e("connectStomp", "Catch Error", e)
-				client!!.disconnect()
+				if(client != null && client!!.isConnected){
+					client!!.disconnect()
+				}
 			}
 		}
 	}

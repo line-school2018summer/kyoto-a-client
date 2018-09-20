@@ -26,7 +26,7 @@
             android:visibility="visible">
 
             <ImageView
-                android:id="@+id/room_icon_view"
+                android:id="@+id/edit_room_icon_view"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_centerVertical="true"
@@ -45,7 +45,7 @@
                     android:id="@+id/room_name_text"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_toEndOf="@id/room_icon_view"
+                    android:layout_toEndOf="@id/edit_room_icon_view"
                     android:ems="10"
                     android:hint="@string/room_create_input"
                     android:inputType="textPersonName" />
@@ -55,7 +55,7 @@
                 android:id="@+id/room_edit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_alignBottom="@+id/room_icon_view"
+                android:layout_alignBottom="@+id/edit_room_icon_view"
                 android:onClick="onEditRoom"
                 android:text="@string/room_edit_button" />
         </LinearLayout>

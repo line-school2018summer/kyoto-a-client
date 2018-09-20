@@ -1,7 +1,6 @@
 package intern.line.me.kyotoaclient.presenter.room
 
 import android.util.Log
-import com.google.android.gms.common.internal.service.Common
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.presenter.API

@@ -1,21 +1,23 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.widget.*
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
 import intern.line.me.kyotoaclient.model.entity.*
 import intern.line.me.kyotoaclient.presenter.room.UpdateMember
 import intern.line.me.kyotoaclient.presenter.user.*
-import java.sql.Timestamp
 import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.model.repository.UserRepository
+import intern.line.me.kyotoaclient.presenter.room.GetRoomIcon
+import intern.line.me.kyotoaclient.presenter.room.PostRoomIcon
 import kotlinx.android.synthetic.main.activity_room_create.*
+import kotlinx.android.synthetic.main.activity_room_member.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -70,7 +72,14 @@ class RoomMemberActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
 
-        room_icon_view.setOnClickListener{
+		launch(job + UI) {
+			GetRoomIcon().getRoomIcon(room_id).let {
+				val image = BitmapFactory.decodeStream(it)
+				edit_room_icon_view.setImageBitmap(image)
+			}
+		}
+
+        edit_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.setType("file/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
@@ -96,6 +105,10 @@ class RoomMemberActivity : AppCompatActivity() {
 
                 //TODO(file選択方法)
                 file =  File(decodedPath)
+
+				val image = BitmapFactory.decodeStream(file.inputStream())
+				edit_room_icon_view.setImageBitmap(image)
+
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
@@ -117,6 +130,7 @@ class RoomMemberActivity : AppCompatActivity() {
 
 		launch(UI) {
 			UpdateMember(roomName, selectedUsers, room).updateMember()
+			PostRoomIcon().postRoomIcon(room.id,file)
 			goBack()
 		}
     }
