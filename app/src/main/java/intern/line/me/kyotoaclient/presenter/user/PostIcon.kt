@@ -50,4 +50,3 @@ class PostIcon(file: File): API() {
         }
     }
 }
-

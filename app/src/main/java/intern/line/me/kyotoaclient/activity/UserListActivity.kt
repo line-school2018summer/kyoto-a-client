@@ -74,8 +74,6 @@ class UserListActivity : AppCompatActivity() {
             val name = searchBox.text.toString()
             adapter = UserListAdapter(this, search_presenter.getUsersListFromDB(name))
             list.adapter = adapter
-
-
         }
     }
 

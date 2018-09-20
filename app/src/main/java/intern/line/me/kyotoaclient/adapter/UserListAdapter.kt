@@ -4,14 +4,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.user.GetIcon
 import io.realm.OrderedRealmCollection
 import io.realm.RealmBaseAdapter
+import kotlinx.android.synthetic.main.activity_get_user_profile.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
+
 class UserListAdapter(private val context: Context, private val realm_results : OrderedRealmCollection<User>) : RealmBaseAdapter<User>(realm_results), ListAdapter {
     var layoutInflater: LayoutInflater
 
@@ -31,9 +37,13 @@ class UserListAdapter(private val context: Context, private val realm_results : 
         if (adapterData != null) {
             val user = adapterData!![position]
             (convertView.findViewById(R.id.name_text) as TextView).text = user.name
-            //(convertView.findViewById(R.id.name_icon) as TextView).text = user.name.substring(0, 1)
             val imageVIew = (convertView.findViewById(R.id.icon) as ImageView)
-            Glide.with(context).load("https://kyoto-a-api.pinfort.me/download/icon/${user.id}").into(imageVIew)
+            launch( UI ){
+                GetIcon(getItemId(position)).getIcon().let {
+                    val image = BitmapFactory.decodeStream(it)
+                    imageVIew.setImageBitmap(image)
+                }
+            }
         }
         return convertView
     }
