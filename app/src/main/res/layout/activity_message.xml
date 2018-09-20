@@ -94,7 +94,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="@string/message_input"
-                    android:inputType="textPersonName" />
+                    android:inputType="textMultiLine" />
 
                 <Button
                     android:id="@+id/message_edit_button"
@@ -120,7 +120,7 @@
                     android:layout_weight="1"
                     android:ems="10"
                     android:hint="@string/message_input"
-                    android:inputType="textPersonName" />
+                    android:inputType="textMultiLine" />
 
                 <Button
                     android:id="@+id/message_send_button"
