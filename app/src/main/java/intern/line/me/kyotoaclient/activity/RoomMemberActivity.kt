@@ -107,7 +107,6 @@ class RoomMemberActivity : AppCompatActivity() {
                 val checkUri: String = uri.toString().replace("content://", "")
                 if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
                     val fileId = DocumentsContract.getDocumentId(uri)
-                    println(uri)
                     val id = fileId.split(":")[1]
                     val selector = MediaStore.Images.Media._ID + "=?"
                     cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
