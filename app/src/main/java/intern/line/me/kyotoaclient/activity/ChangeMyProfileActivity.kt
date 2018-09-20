@@ -1,9 +1,17 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -23,9 +31,11 @@ import java.net.URLDecoder
 class ChangeMyProfileActivity : AppCompatActivity() {
 
     private val CHOSE_FILE_CODE: Int = 777
+    lateinit var file: File
 
     private val job = Job()
     private var myId = 0L
+    val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,26 +53,39 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             }
         }
 
+        if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        }
+
         //ボタンを押したときの処理
         apply_button.setOnClickListener {
 
             val inputText = changed_name.text.toString()
 
             launch(job + UI) {
-                PutMyInfo(inputText).putMyInfo().let{ setUserInfo(it) }
+                if (regex.matches(inputText) ) {
+                    PutMyInfo(inputText).putMyInfo().let { setUserInfo(it) }
+                } else {
+                    changed_name.error = "不正な名前です"
+                }
             }
         }
 
         //画像変更ボタン
         image_change.setOnClickListener{
+
+
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("file/*")
+            intent.setType("image/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
         //画像削除ボタン
-        image_delete.setOnClickListener{
-            launch(job + UI){
+        image_delete.setOnClickListener {
+
+            launch(job + UI) {
                 DeleteIcon().deleteIcon()
                 setImgByC(myId)
             }
@@ -79,24 +102,42 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val context = this
 
-        try{
-            if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                var filePath = data.getDataString()
-                filePath=filePath.substring(filePath.indexOf("storage"))
-                val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                //val decodedPath = "/sdcard/P.jpg"
-                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+        try {
+            if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
+                val uri = Uri.parse(data.dataString)
 
-                //TODO(file選択方法)
-                val file =  File(decodedPath)
+                val column = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor: Cursor?
+                val checkUri: String = uri.toString().replace("content://", "")
+                if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
+                    val fileId = DocumentsContract.getDocumentId(uri)
+                    println(uri)
+                    val id = fileId.split(":")[1]
+                    val selector = MediaStore.Images.Media._ID + "=?"
+                    cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
+                } else {
+                    cursor = context.contentResolver.query(uri, column, null, null, null)
+                }
+                var path: String? = null
+                val columnIndex = cursor.getColumnIndex(column[0])
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        path = cursor.getString(columnIndex)
+                    }
+                    cursor.close()
+                    if (path != null) {
+                        file = File(path)
+                    }
 
-                launch(job + UI){
-                    PostIcon(file).postIcon()
-                    Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
-                    setImgByC(myId)
+                    launch(job + UI) {
+                        PostIcon(file).postIcon()
+                        setImgByC(myId)
+                    }
+                } else{
+                    Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
             }
-        } catch(t: UnsupportedEncodingException) {
+        } catch (t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
         }
     }

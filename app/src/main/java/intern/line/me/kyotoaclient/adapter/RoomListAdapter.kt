@@ -3,16 +3,18 @@ package intern.line.me.kyotoaclient.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
-import intern.line.me.kyotoaclient.model.entity.User
+import intern.line.me.kyotoaclient.presenter.room.GetRoomIcon
 import io.realm.RealmBaseAdapter
 import io.realm.RealmResults
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 import java.sql.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
@@ -26,7 +28,7 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
 
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-        var convertView = layoutInflater.inflate(R.layout.room_display, parent, false)
+        var convertView =convertView?:  layoutInflater.inflate(R.layout.room_display, parent, false)
         val format = SimpleDateFormat("HH:mm")
         val lastMessage_text = adapterData!![position].last_message_text
         if (lastMessage_text != null) {
@@ -36,6 +38,15 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
             (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessage_text
         }
         (convertView.findViewById(R.id.room_name_view) as TextView).text = adapterData!![position].name
+
+        val imageVIew = (convertView.findViewById(R.id.room_icon_view) as ImageView)
+        launch(UI) {
+                GetRoomIcon().getRoomIcon(getItemId(position)).let {
+                    val image = BitmapFactory.decodeStream(it)
+                    imageVIew.setImageBitmap(image)
+            }
+        }
+
         return convertView
     }
 

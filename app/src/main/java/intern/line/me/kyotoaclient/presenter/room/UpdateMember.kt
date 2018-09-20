@@ -1,5 +1,6 @@
 package intern.line.me.kyotoaclient.presenter.room
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import intern.line.me.kyotoaclient.lib.api.interfaces.RoomsAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
@@ -45,6 +46,7 @@ class UpdateMember(private  val name: String, val users: List<User>, val room: R
 				repo.update(room)
 			}
 		} catch (t: HttpException) {
+			Log.e("updateRoomName","Can't update Room Name ",t)
 			throw Exception("Update failed.")
 		}
 	}
