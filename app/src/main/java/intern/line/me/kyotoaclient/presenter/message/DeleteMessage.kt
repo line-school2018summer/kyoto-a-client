@@ -29,10 +29,7 @@ class DeleteMessage: API() {
 
 		try {
 			val res = deleteAsyncMessage(token, message.id)
-			if(res.isSuccessful){
-				val id = message.id
-				launch(UI){repo.delete(id)}
-			}
+
 			return res.isSuccessful
 
 		} catch (t: HttpException) {

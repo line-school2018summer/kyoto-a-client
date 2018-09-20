@@ -4,6 +4,12 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface MessagesAPI {
+    @GET("/messages/{id}")
+    fun getMessage(
+            @Header("Token") token : String,
+            @Path("id") id: Long
+    ): Call<Message>
+
     @PUT("/messages/{id}")
     fun updateMessage(
         @Header("Token") token : String,
