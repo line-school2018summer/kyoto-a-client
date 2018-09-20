@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
@@ -24,6 +25,7 @@ import kotlinx.coroutines.experimental.launch
 import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
+import android.provider.MediaStore
 
 
 class RoomMemberActivity : AppCompatActivity() {
@@ -97,18 +99,23 @@ class RoomMemberActivity : AppCompatActivity() {
 
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                var filePath = data.getDataString()
-                filePath=filePath.substring(filePath.indexOf("storage"))
-                val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                //val decodedPath = "/sdcard/P.jpg"
-                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+                val uri = Uri.parse(data.dataString)
+                val projection = arrayOf(MediaStore.MediaColumns.DATA)
+                val cursor = context.contentResolver.query(uri, projection, null, null, null)
+                var path: String? = null
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        path = cursor.getString(0)
+                    }
+                    cursor.close()
+                    if (path != null) {
+                        file = File(path)
+                    }
+                }
+                Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
 
-                //TODO(file選択方法)
-                file =  File(decodedPath)
-				if(file != null) {
-					val image = BitmapFactory.decodeStream(file!!.inputStream())
-					edit_room_icon_view.setImageBitmap(image)
-				}
+				val image = BitmapFactory.decodeStream(file.inputStream())
+				edit_room_icon_view.setImageBitmap(image)
 
             }
         } catch(t: UnsupportedEncodingException) {
