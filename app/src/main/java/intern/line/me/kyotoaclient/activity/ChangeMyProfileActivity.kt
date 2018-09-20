@@ -1,11 +1,15 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.View
@@ -31,6 +35,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     private val job = Job()
     private var myId = 0L
+    val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,26 +53,39 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             }
         }
 
+        if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+        }
+
         //ボタンを押したときの処理
         apply_button.setOnClickListener {
 
             val inputText = changed_name.text.toString()
 
             launch(job + UI) {
-                PutMyInfo(inputText).putMyInfo().let{ setUserInfo(it) }
+                if (regex.matches(inputText) ) {
+                    PutMyInfo(inputText).putMyInfo().let { setUserInfo(it) }
+                } else {
+                    changed_name.error = "不正な名前です"
+                }
             }
         }
 
         //画像変更ボタン
         image_change.setOnClickListener{
+
+
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.setType("image/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
         //画像削除ボタン
-        image_delete.setOnClickListener{
-            launch(job + UI){
+        image_delete.setOnClickListener {
+
+            launch(job + UI) {
                 DeleteIcon().deleteIcon()
                 setImgByC(myId)
             }
@@ -84,9 +102,10 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val context = this
 
-        try{
-            if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
+        try {
+            if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
                 val uri = Uri.parse(data.dataString)
+
                 val column = arrayOf(MediaStore.Images.Media.DATA)
                 val cursor: Cursor?
                 val checkUri: String = uri.toString().replace("content://", "")
@@ -109,15 +128,17 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                     if (path != null) {
                         file = File(path)
                     }
-                }
 
-                launch(job + UI){
-                    PostIcon(file).postIcon()
-                    Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
-                    setImgByC(myId)
+                    launch(job + UI) {
+                        PostIcon(file).postIcon()
+                        Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show()
+                        setImgByC(myId)
+                    }
+                } else{
+                    Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
             }
-        } catch(t: UnsupportedEncodingException) {
+        } catch (t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
         }
     }
