@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -38,6 +39,7 @@ class UserListActivity : AppCompatActivity() {
         val button = findViewById<Button>(R.id.profile_button)
         val searchButton = findViewById<Button>(R.id.top)
         val searchBox = findViewById<EditText>(R.id.search_box)
+
 
         //これで自動的にDBの更新がアダプターに反映される
         adapter = UserListAdapter(this, presenter.getUsersListFromDb())
