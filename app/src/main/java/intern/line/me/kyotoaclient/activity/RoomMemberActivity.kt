@@ -114,7 +114,7 @@ class RoomMemberActivity : AppCompatActivity() {
                 }
                 Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
 
-				val image = BitmapFactory.decodeStream(file.inputStream())
+				val image = BitmapFactory.decodeStream(file?.inputStream())
 				edit_room_icon_view.setImageBitmap(image)
 
             }
