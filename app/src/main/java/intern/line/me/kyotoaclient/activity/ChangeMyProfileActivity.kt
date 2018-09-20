@@ -3,12 +3,14 @@ package intern.line.me.kyotoaclient.activity
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
@@ -76,7 +78,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
 
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("file/*")
+            intent.setType("image/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
@@ -99,23 +101,32 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     //主に画像選択後の処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val context = this
-        val regex = Regex(".+\\.(png)|(jpg)|(bmp)|(gif){1}$")
 
         try {
             if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
                 val uri = Uri.parse(data.dataString)
-                if (regex.matches(uri.toString())) {
-                    val projection = arrayOf(MediaStore.MediaColumns.DATA)
-                    val cursor = context.contentResolver.query(uri, projection, null, null, null)
-                    var path: String? = null
-                    if (cursor != null) {
-                        if (cursor.moveToFirst()) {
-                            path = cursor.getString(0)
-                        }
-                        cursor.close()
-                        if (path != null) {
-                            file = File(path)
-                        }
+
+                val column = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor: Cursor?
+                val checkUri: String = uri.toString().replace("content://", "")
+                if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
+                    val fileId = DocumentsContract.getDocumentId(uri)
+                    println(uri)
+                    val id = fileId.split(":")[1]
+                    val selector = MediaStore.Images.Media._ID + "=?"
+                    cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
+                } else {
+                    cursor = context.contentResolver.query(uri, column, null, null, null)
+                }
+                var path: String? = null
+                val columnIndex = cursor.getColumnIndex(column[0])
+                if (cursor != null) {
+                    if (cursor.moveToFirst()) {
+                        path = cursor.getString(columnIndex)
+                    }
+                    cursor.close()
+                    if (path != null) {
+                        file = File(path)
                     }
 
                     launch(job + UI) {
