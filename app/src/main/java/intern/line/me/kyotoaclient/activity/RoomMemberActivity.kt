@@ -1,6 +1,7 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -26,6 +27,7 @@ import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import android.provider.MediaStore
+import android.provider.DocumentsContract
 
 
 class RoomMemberActivity : AppCompatActivity() {
@@ -83,7 +85,7 @@ class RoomMemberActivity : AppCompatActivity() {
 
         edit_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("file/*")
+            intent.setType("image/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 	}
@@ -100,19 +102,29 @@ class RoomMemberActivity : AppCompatActivity() {
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
                 val uri = Uri.parse(data.dataString)
-                val projection = arrayOf(MediaStore.MediaColumns.DATA)
-                val cursor = context.contentResolver.query(uri, projection, null, null, null)
+                val column = arrayOf(MediaStore.Images.Media.DATA)
+                val cursor: Cursor?
+                val checkUri: String = uri.toString().replace("content://", "")
+                if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
+                    val fileId = DocumentsContract.getDocumentId(uri)
+                    println(uri)
+                    val id = fileId.split(":")[1]
+                    val selector = MediaStore.Images.Media._ID + "=?"
+                    cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
+                } else {
+                    cursor = context.contentResolver.query(uri, column, null, null, null)
+                }
                 var path: String? = null
+                val columnIndex = cursor.getColumnIndex(column[0])
                 if (cursor != null) {
                     if (cursor.moveToFirst()) {
-                        path = cursor.getString(0)
+                        path = cursor.getString(columnIndex)
                     }
                     cursor.close()
                     if (path != null) {
                         file = File(path)
                     }
                 }
-                Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
 
 				val image = BitmapFactory.decodeStream(file?.inputStream())
 				edit_room_icon_view.setImageBitmap(image)
