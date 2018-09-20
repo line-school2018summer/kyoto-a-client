@@ -56,21 +56,12 @@ class UserListActivity : AppCompatActivity() {
         }
 
         list.setOnItemClickListener { _, _, position, _ ->
-            val selectedUserId = adapter.getItemId(position)
-            val result = Intent()
-            result.putExtra("selectedUserId", selectedUserId)
-            setResult(Activity.RESULT_OK, result)
-            finish()
-        }
-
-
-        list.setOnItemLongClickListener { _, _, position, _ ->
             val longTapUserId = adapter.getItemId(position)
             val intent = Intent(this, GetUserProfileActivity::class.java)
             intent.putExtra("longTapUserId", longTapUserId)
             startActivityForResult(intent, 11)
-            return@setOnItemLongClickListener true
         }
+
 
         searchButton.setOnClickListener {
             val name = searchBox.text.toString()
