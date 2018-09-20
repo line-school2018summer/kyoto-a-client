@@ -43,9 +43,9 @@ class RoomMemberActivity : AppCompatActivity() {
         val room_id = intent.getSerializableExtra("room_id") as Long
 		room = room_repo.getById(room_id)!!
 
-        val et = findViewById(R.id.room_name_text) as EditText
-        et.setText(room.name)
-        et.setSelection(et.text.length)
+        val room_name = findViewById(R.id.room_name_text) as EditText
+        room_name.setText(room.name)
+        room_name.setSelection(room_name.text.length)
 
 		adapter = UserSelectListAdapter(this,presenter.getUsersListFromDb())
 		val listView: ListView = this.findViewById(R.id.user_select_list)
@@ -55,6 +55,15 @@ class RoomMemberActivity : AppCompatActivity() {
 		launch(job + UI) {
 			presenter.getUsersList()
 		}
+
+        launch(job + UI) {
+            val members = GetMembers().getMembers(room_id)
+            val member_id_list = members.map { it.id }
+            val users = user_repo.getAll()
+
+            adapter.checkList = users.map{ it -> member_id_list.contains(it.id)} as MutableList<Boolean>
+            adapter.notifyDataSetChanged()
+        }
 	}
 
 	override fun onDestroy() {
