@@ -31,12 +31,11 @@ class PostIcon(file: File): API() {
 
     private suspend fun postAsyncIcon(token: String): Response<Boolean>{
         return api.uploadIcon(token, body).awaitResponse()
-        println("#######async")
     }
 
     suspend fun postIcon(){
         val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
-        println("#######getToken")
+
         try {
             val res = postAsyncIcon(token)
             Log.d("postIcon",res.toString())
@@ -52,95 +51,3 @@ class PostIcon(file: File): API() {
     }
 }
 
-open class MultiPartAPI {
-    protected val job = Job()
-    //var debug = true
-    private val gson = GsonBuilder().create()
-    private var client = OkHttpClient.Builder()
-    val auth = FirebaseAuth.getInstance()
-/*
-
-    init {
-        client = client.addInterceptor(Interceptor { chain ->
-            val original: Request = chain.request()
-
-            val request = original.newBuilder()
-                    .header("Content-Type", "multipart/form-data")
-                    .method(original.method(), original.body())
-                    .build()
-
-            return@Interceptor chain.proceed(request)
-        })
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-    }*/
-
-    val retrofit = Retrofit.Builder()
-            .baseUrl("https://kyoto-a-api.pinfort.me/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            //.client(client.build())
-            .build()
-}
-
-
-
-/*
-class APIInterceptor: Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val original: Request = chain.request()
-
-        val request: Request = original.newBuilder()
-                .header("Content-Type", "multipart/form-data")
-                .method(original.method(), original.body())
-                .build()
-
-        val response: Response? = chain.proceed(request)
-
-        response ?: throw Exception("api connection failed")
-
-        return response
-    }
-}
-
-open class API {
-    protected val job = Job()
-    var debug = true
-    private val gson = GsonBuilder().create()
-    private var client = OkHttpClient.Builder()
-    val auth = FirebaseAuth.getInstance()
-
-
-    init {
-        client = client.addInterceptor(APIInterceptor())
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .apply {
-                    if(debug) {
-                        addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                    }
-                }
-    }
-
-    val retrofit = Retrofit.Builder()
-            .baseUrl("https://kyoto-a-api.pinfort.me/")
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(client.build())
-            .build()
-}
-*/
-
-/*
-class ServiceGenerator(){
-    public val API_BASE_URL = "https://kyoto-a-api.pinfort.me/"
-
-    private val httpClient: OkHttpClient.Builder = OkHttpClient.Builder()
-
-    private val builder: Retrofit.Builder = Retrofit.Builder().baseUrl(API_BASE_URL)
-
-    fun <T> createService(serviceClass: Class<T>): T{
-        val retrofit = builder.client(httpClient.build()).build()
-        return retrofit.create(serviceClass)
-    }
-}*/

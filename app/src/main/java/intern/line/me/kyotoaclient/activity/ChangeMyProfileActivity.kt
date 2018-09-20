@@ -33,7 +33,6 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_change_my_profile)
 
         my_profile_progress_bar.visibility = View.VISIBLE
-       // findViewById<ImageView>(R.id.icon).setScrollingCacheEnabled( false )
 
         //非同期でユーザー情報を取ってくる
         launch(job + UI) {
@@ -82,16 +81,14 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                /*
                 var filePath = data.getDataString()
                 filePath=filePath.substring(filePath.indexOf("storage"))
                 val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                */
-                val decodedPath = "/sdcard/P.jpg"
+                //val decodedPath = "/sdcard/P.jpg"
                 Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
 
                 //TODO(file選択方法)
-                val file: File =  File(decodedPath)
+                val file =  File(decodedPath)
 
                 launch(job + UI){
                     PostIcon(file).postIcon()
