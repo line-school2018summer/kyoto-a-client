@@ -25,7 +25,7 @@ import java.net.URLDecoder
 class RoomCreateActivity : AppCompatActivity() {
 
     private val CHOSE_FILE_CODE: Int = 777
-    lateinit var file: File
+    var file: File? = null
 
     lateinit var adapter: UserSelectListAdapter
     lateinit var me: User
@@ -75,8 +75,10 @@ class RoomCreateActivity : AppCompatActivity() {
 
                 //TODO(file選択方法)
                 file =  File(decodedPath)
-                val image = BitmapFactory.decodeStream(file.inputStream())
-                create_room_icon_view.setImageBitmap(image)
+                if(file != null) {
+                    val image = BitmapFactory.decodeStream(file!!.inputStream())
+                    create_room_icon_view.setImageBitmap(image)
+                }
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
@@ -96,7 +98,9 @@ class RoomCreateActivity : AppCompatActivity() {
         launch (this.job + UI) {
             val room = CreateRoom(roomName, selectedUsers).createRoom()
 
-            PostRoomIcon().postRoomIcon(room.id,file)
+            if(file != null) {
+                PostRoomIcon().postRoomIcon(room.id, file!!)
+            }
 
             goBack()
         }

@@ -31,7 +31,7 @@ import android.provider.MediaStore
 class RoomMemberActivity : AppCompatActivity() {
 
     private val CHOSE_FILE_CODE: Int = 777
-    lateinit var file: File
+     var file: File? = null
 
     lateinit var room: Room
 
@@ -137,8 +137,14 @@ class RoomMemberActivity : AppCompatActivity() {
         selectedUsers ?: return
 
 		launch(UI) {
-			UpdateMember(roomName, selectedUsers, room).updateMember()
-			PostRoomIcon().postRoomIcon(room.id,file)
+			try {
+				UpdateMember(roomName, selectedUsers, room).updateMember()
+			}catch (e : Throwable){
+				goBack()
+			}
+			if(file != null) {
+				PostRoomIcon().postRoomIcon(room.id, file!!)
+			}
 			goBack()
 		}
     }
