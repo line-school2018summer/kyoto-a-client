@@ -273,8 +273,8 @@ class MessageActivity : AppCompatActivity() {
 	//アクティビティが終わるときにポーリングを辞める
     override fun onStop() {
         super.onStop()
-		job.cancel()
 		if(client != null && client!!.isConnected) client!!.disconnect()
+		job.cancel()
 	}
 
     override fun onRestart() {
@@ -319,7 +319,7 @@ class MessageActivity : AppCompatActivity() {
 		val util = FirebaseUtil()
 		val presenter = GetRooms()
 
-		launch(job + UI) {
+		launch(UI) {
 			val token = util.getToken()
 
 			try {
@@ -336,6 +336,7 @@ class MessageActivity : AppCompatActivity() {
 				}
 			} catch (e: Throwable) {
 				Log.e("connectStomp", "Catch Error", e)
+				client!!.disconnect()
 			}
 		}
 	}
