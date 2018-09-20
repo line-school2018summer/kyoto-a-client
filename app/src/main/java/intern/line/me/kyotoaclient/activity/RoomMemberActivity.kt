@@ -33,6 +33,7 @@ import android.content.Context
 import android.os.Environment
 import android.webkit.MimeTypeMap
 import com.google.android.gms.common.util.IOUtils
+import java.io.FileOutputStream
 
 
 class RoomMemberActivity : AppCompatActivity() {
@@ -127,10 +128,10 @@ class RoomMemberActivity : AppCompatActivity() {
         val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime)
         val filename = "room_icon_id_" + room.id.toString() + "." + ext
 
-        val fos = openFileOutput(filename, Context.MODE_PRIVATE)
+        file = File(cacheDir, filename)
+        val fos = FileOutputStream(file)
         fos.write(IOUtils.toByteArray(contentResolver.openInputStream(uri)))
         fos.close()
-        file = File(filesDir, filename)
         return file
     }
 
@@ -211,6 +212,7 @@ class RoomMemberActivity : AppCompatActivity() {
 			}
 			if(file != null) {
 				PostRoomIcon().postRoomIcon(room.id, file!!)
+                file!!.delete()
 			}
 			goBack()
 		}
