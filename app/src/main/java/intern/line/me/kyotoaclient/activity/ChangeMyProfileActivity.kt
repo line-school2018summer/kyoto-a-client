@@ -1,9 +1,13 @@
 package intern.line.me.kyotoaclient.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
@@ -55,14 +59,20 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
         //画像変更ボタン
         image_change.setOnClickListener{
+            if (ContextCompat.checkSelfPermission(
+                            this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+            }
             val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.setType("file/*")
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
         //画像削除ボタン
-        image_delete.setOnClickListener{
-            launch(job + UI){
+        image_delete.setOnClickListener {
+
+            launch(job + UI) {
                 DeleteIcon().deleteIcon()
                 setImgByC(myId)
             }
@@ -79,25 +89,30 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         val context = this
 
-        try{
-            if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                var filePath = data.getDataString()
-                filePath=filePath.substring(filePath.indexOf("storage"))
-                val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                //val decodedPath = "/sdcard/P.jpg"
-                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+        if (ContextCompat.checkSelfPermission(
+                        this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
 
-                //TODO(file選択方法)
-                val file =  File(decodedPath)
+            try {
+                if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
+                    var filePath = data.getDataString()
+                    filePath = filePath.substring(filePath.indexOf("storage"))
+                    val decodedPath = URLDecoder.decode(filePath, "utf-8")
+                    //val decodedPath = "/sdcard/P.jpg"
+                    Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
 
-                launch(job + UI){
-                    PostIcon(file).postIcon()
-                    Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
-                    setImgByC(myId)
+                    //TODO(file選択方法)
+                    val file = File(decodedPath)
+
+                    launch(job + UI) {
+                        PostIcon(file).postIcon()
+                        Toast.makeText(context, "updated!", Toast.LENGTH_LONG).show()
+                        setImgByC(myId)
+                    }
                 }
+            } catch (t: UnsupportedEncodingException) {
+                Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
             }
-        } catch(t: UnsupportedEncodingException) {
-            Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
         }
     }
 
