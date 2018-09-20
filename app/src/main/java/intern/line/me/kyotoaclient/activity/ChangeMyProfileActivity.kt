@@ -30,6 +30,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     private val job = Job()
     private var myId = 0L
+    val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +60,11 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             val inputText = changed_name.text.toString()
 
             launch(job + UI) {
-                PutMyInfo(inputText).putMyInfo().let{ setUserInfo(it) }
+                if (regex.matches(inputText) ) {
+                    PutMyInfo(inputText).putMyInfo().let { setUserInfo(it) }
+                } else {
+                    changed_name.error = "不正な名前です"
+                }
             }
         }
 
