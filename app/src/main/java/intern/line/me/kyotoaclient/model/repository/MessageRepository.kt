@@ -58,8 +58,10 @@ class MessageRepository {
 	fun delete(message_id: Long) {
 		val mRealm = Realm.getInstance(realmConfig)
 		mRealm.executeTransaction {
-			var delete_message = mRealm.where(Message::class.java).equalTo("id", message_id).findAll()
-			delete_message.deleteFromRealm(0)
+			var delete_message = mRealm.where(Message::class.java).equalTo("id", message_id).findFirst()
+			if(delete_message != null) {
+				delete_message.deleteFromRealm()
+			}
 		}
 		mRealm.close()
 	}
