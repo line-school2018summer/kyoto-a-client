@@ -29,7 +29,7 @@ import java.net.URLDecoder
 class RoomMemberActivity : AppCompatActivity() {
 
     private val CHOSE_FILE_CODE: Int = 777
-    lateinit var file: File
+     var file: File? = null
 
     lateinit var room: Room
 
@@ -105,9 +105,10 @@ class RoomMemberActivity : AppCompatActivity() {
 
                 //TODO(file選択方法)
                 file =  File(decodedPath)
-
-				val image = BitmapFactory.decodeStream(file.inputStream())
-				edit_room_icon_view.setImageBitmap(image)
+				if(file != null) {
+					val image = BitmapFactory.decodeStream(file!!.inputStream())
+					edit_room_icon_view.setImageBitmap(image)
+				}
 
             }
         } catch(t: UnsupportedEncodingException) {
@@ -129,8 +130,14 @@ class RoomMemberActivity : AppCompatActivity() {
         selectedUsers ?: return
 
 		launch(UI) {
-			UpdateMember(roomName, selectedUsers, room).updateMember()
-			PostRoomIcon().postRoomIcon(room.id,file)
+			try {
+				UpdateMember(roomName, selectedUsers, room).updateMember()
+			}catch (e : Throwable){
+				goBack()
+			}
+			if(file != null) {
+				PostRoomIcon().postRoomIcon(room.id, file!!)
+			}
 			goBack()
 		}
     }

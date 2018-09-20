@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.util.Log
 import android.view.ContextMenu
+import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
@@ -149,7 +150,11 @@ class MessageActivity : AppCompatActivity() {
 		sendButton.isEnabled = true
 
 		launch(job + UI) {
-			CreateMessage().createMessage(room_id, text)
+			try {
+				CreateMessage().createMessage(room_id, text)
+			}catch(e:Throwable){
+				goBack()
+			}
 			scrollToEnd()
 			toSendMode()
 		}
@@ -349,5 +354,9 @@ class MessageActivity : AppCompatActivity() {
 				}
 			}
 		}
+	}
+	fun goBack() {
+		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
+		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
 	}
 }
