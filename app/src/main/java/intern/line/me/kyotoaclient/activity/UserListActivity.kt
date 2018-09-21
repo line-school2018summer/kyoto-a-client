@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.ListView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
@@ -36,9 +37,9 @@ class UserListActivity : AppCompatActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-         list = findViewById<ListView>(R.id.user_list)
+        list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<FloatingActionButton>(R.id.settings)
-        val searchButton = findViewById<Button>(R.id.top)
+        val searchButton = findViewById<ImageButton>(R.id.search_button)
         val searchBox = findViewById<EditText>(R.id.search_box)
 
 
