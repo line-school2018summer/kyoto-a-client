@@ -67,6 +67,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             launch(job + UI) {
                 if (regex.matches(inputText) ) {
                     PutMyInfo(inputText).putMyInfo().let { setUserInfo(it) }
+                    changed_name.text.clear()
                 } else {
                     changed_name.error = "不正な名前です"
                 }
@@ -133,7 +134,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
                     }
-                } else{
+                } else {
                     Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -145,7 +146,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     //ユーザー情報をセットする
     fun setUserInfo(user: User){
         my_profile_progress_bar.visibility = View.INVISIBLE
-        my_name.text = user.name
+        changed_name.hint = user.name
     }
 
     //画像をセットする
