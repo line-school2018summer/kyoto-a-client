@@ -42,6 +42,8 @@ class UserListAdapter(private val context: Context, private val realm_results : 
             val imageVIew = (convertView.findViewById(R.id.icon) as ImageView)
             val list = mutableMapOf<Long, Bitmap>()
             val id = user.id
+            //ビューが使いまわされるので一度nullにする
+            imageVIew.setImageDrawable(null)
 
             println(list.toString())
 
