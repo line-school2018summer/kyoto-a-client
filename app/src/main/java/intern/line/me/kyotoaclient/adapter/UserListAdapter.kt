@@ -47,7 +47,7 @@ class UserListAdapter(private val context: Context, private val realm_results : 
             val id = user.id
             //ビューが使いまわされるので一度nullにする
             imageVIew.setImageDrawable(null)
-            
+
 
             launch(UI) {
                 if (list[id] == null) {

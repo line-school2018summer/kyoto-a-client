@@ -34,6 +34,7 @@ class UserListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_list)
 
         setResult(Activity.RESULT_CANCELED)
+        UserListAdapter.list.clear()
 
          list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<Button>(R.id.profile_button)

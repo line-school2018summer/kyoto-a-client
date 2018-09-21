@@ -17,6 +17,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.*
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
@@ -88,6 +89,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             launch(job + UI) {
                 DeleteIcon().deleteIcon()
                 setImgByC(myId)
+                UserListAdapter.list.clear()
             }
         }
     }
@@ -133,6 +135,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
                     }
+                    UserListAdapter.list.clear()
                 } else{
                     Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
