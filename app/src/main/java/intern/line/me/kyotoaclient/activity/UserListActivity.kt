@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -36,7 +37,7 @@ class UserListActivity : AppCompatActivity() {
         setResult(Activity.RESULT_CANCELED)
 
          list = findViewById<ListView>(R.id.user_list)
-        val button = findViewById<Button>(R.id.profile_button)
+        val button = findViewById<FloatingActionButton>(R.id.settings)
         val searchButton = findViewById<Button>(R.id.top)
         val searchBox = findViewById<EditText>(R.id.search_box)
 
