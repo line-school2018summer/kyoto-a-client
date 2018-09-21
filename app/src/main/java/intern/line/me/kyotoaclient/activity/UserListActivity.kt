@@ -34,6 +34,8 @@ class UserListActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user_list)
 
         setResult(Activity.RESULT_CANCELED)
+
+        //画像キャッシュリセット
         UserListAdapter.list.clear()
 
          list = findViewById<ListView>(R.id.user_list)
