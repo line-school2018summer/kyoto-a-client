@@ -14,7 +14,7 @@ interface EventAPI{
 	): Call<Event>
 
 	@GET("events/rooms")
-	fun getEventByRoomId(
+	fun getRoomEvents(
 			@Header("Token") Token: String,
 			@Query("since_id") since_id: String
 	): Call<List<Event>>

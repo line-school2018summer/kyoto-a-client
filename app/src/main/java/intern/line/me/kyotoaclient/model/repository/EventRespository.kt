@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.model.repository
 
 import android.util.Log
 import intern.line.me.kyotoaclient.model.entity.Event
+import intern.line.me.kyotoaclient.model.entity.EventTypes
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import io.realm.RealmResults
@@ -25,6 +26,23 @@ class EventRespository {
 	fun getLatest(room_id: Long) : Event?{
 		try {
 			return mRealm.where(Event::class.java).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
+		}catch(e : Throwable){
+			Log.e("getLatest","can't get latest event",e)
+			return null
+		}
+	}
+
+	fun getLatestForRooms(): Event? {
+		try {
+			val eTypes: Array<out Int> = arrayOf(
+					EventTypes.ROOM_CREATED.ordinal,
+					EventTypes.ROOM_UPDATED.ordinal,
+					EventTypes.ROOM_MEMBER_JOINED.ordinal,
+					EventTypes.ROOM_MEMBER_LEAVED.ordinal,
+					EventTypes.ROOM_MEMBER_DELETED.ordinal
+			)
+
+			return mRealm.where(Event::class.java).`in`("event_type", eTypes).findAll().sort("id", Sort.ASCENDING).last()
 		}catch(e : Throwable){
 			Log.e("getLatest","can't get latest event",e)
 			return null
