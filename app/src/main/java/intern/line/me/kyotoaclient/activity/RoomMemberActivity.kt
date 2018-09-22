@@ -212,7 +212,7 @@ class RoomMemberActivity : AppCompatActivity() {
 			}
 			if(file != null) {
 				PostRoomIcon().postRoomIcon(room.id, file!!)
-                file!!.delete()
+				file!!.delete()
 			}
 			goBack()
 		}
