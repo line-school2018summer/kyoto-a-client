@@ -8,12 +8,26 @@ import intern.line.me.kyotoaclient.adapter.RoomListAdapter
 import intern.line.me.kyotoaclient.model.entity.Room
 import android.app.Activity
 import android.content.Intent
+import android.util.Log
+import com.google.gson.Gson
 import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
+import intern.line.me.kyotoaclient.model.entity.Event
+import intern.line.me.kyotoaclient.model.repository.EventRespository
+import intern.line.me.kyotoaclient.presenter.event.GetMessageEvent
+import intern.line.me.kyotoaclient.presenter.event.GetRoomEvent
+import intern.line.me.kyotoaclient.presenter.event.UpdateModel
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
+import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import kotlinx.android.synthetic.main.activity_room_list.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.rx1.openSubscription
+import ua.naiksoftware.stomp.Stomp
+import ua.naiksoftware.stomp.StompHeader
+import ua.naiksoftware.stomp.client.StompClient
 
 
 class RoomListActivity : AppCompatActivity() {
@@ -28,6 +42,11 @@ class RoomListActivity : AppCompatActivity() {
 	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
+    var client : StompClient? = null
+    private val gson = Gson()
+    private val update_event_presenter = UpdateModel()
+    private val repo = EventRespository()
+    private val event_presenter = GetRoomEvent()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,8 +83,52 @@ class RoomListActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        //websocketに接続
+        connectStomp()
+
+        //websocketに接続したらREST APIを叩く
+        launch(job + UI) {
+
+            val latest_event_id = repo.getLatestForRooms()?.id ?: 0
+            Log.d("Event Rest",latest_event_id.toString())
+            val events = event_presenter.getRoomEvent(latest_event_id+ 1)
+            update_event_presenter.updateAllModel(events)
+        }
     }
 
+    fun connectStomp(){
+        val util = FirebaseUtil()
+
+        launch(job + UI) {
+            val token = util.getToken()
+
+            try {
+                if(token != null) {
+                    var myId = 0L
+                    GetMyInfo().getMyInfo().let {
+                        myId = it.id
+                    }
+                    while (myId == 0L) {
+                        Thread.sleep(100)
+                    }
+                    client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
+                    val res = client!!.topic("/topic/users/${myId}/rooms", mutableListOf(StompHeader("Token", token)))
+                            .openSubscription()
+                    client!!.connect()
+
+                    res.consumeEach {
+                        val event = gson.fromJson<Event>(it.payload, Event::class.java)
+                        update_event_presenter.updateModel(event)
+                    }
+                }
+            } catch (e: Throwable) {
+                Log.e("connectStomp", "Catch Error", e)
+                if(client != null && client!!.isConnected){
+                    client!!.disconnect()
+                }
+            }
+        }
+    }
 
     override fun onRestart() {
         super.onRestart()

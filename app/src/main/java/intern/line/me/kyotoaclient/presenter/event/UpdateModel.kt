@@ -4,8 +4,10 @@ import intern.line.me.kyotoaclient.model.entity.Event
 import intern.line.me.kyotoaclient.model.entity.EventTypes
 import intern.line.me.kyotoaclient.model.repository.EventRespository
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
+import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.presenter.message.GetMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
+import intern.line.me.kyotoaclient.presenter.room.GetRooms
 
 class UpdateModel {
 
@@ -39,11 +41,11 @@ class UpdateModel {
 			 */
 
 			EventTypes.ROOM_CREATED.ordinal ->{
-
+				GetRooms().getRooms()
 			}
 
 			EventTypes.ROOM_UPDATED.ordinal ->{
-
+				GetRooms().getRooms()
 			}
 
 			EventTypes.ROOM_MEMBER_JOINED.ordinal ->{
