@@ -108,9 +108,6 @@ class RoomListActivity : AppCompatActivity() {
                     GetMyInfo().getMyInfo().let {
                         myId = it.id
                     }
-                    while (myId == 0L) {
-                        Thread.sleep(100)
-                    }
                     client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
                     val res = client!!.topic("/topic/users/${myId}/rooms", mutableListOf(StompHeader("Token", token)))
                             .openSubscription()
