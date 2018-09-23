@@ -33,6 +33,7 @@ import android.content.Context
 import android.os.Environment
 import android.webkit.MimeTypeMap
 import com.google.android.gms.common.util.IOUtils
+import intern.line.me.kyotoaclient.lib.util.FileUtils
 import java.io.FileOutputStream
 
 
@@ -108,7 +109,8 @@ class RoomMemberActivity : AppCompatActivity() {
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
                 val uri = Uri.parse(data.dataString)
-                val file = getFile(uri) ?: throw Exception("no file found")
+                file = FileUtils(this).getFile(uri, "room_icon_id_" + room.id.toString()) ?: throw Exception("no file found")
+                val file = file ?: throw Exception("invalid file")
 
 				val image = BitmapFactory.decodeStream(file.inputStream())
 				edit_room_icon_view.setImageBitmap(image)
@@ -116,79 +118,6 @@ class RoomMemberActivity : AppCompatActivity() {
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    fun getFile(uri: Uri): File? {
-        val path: String? = getPath(uri)
-        if (path != null) {
-            file = File(path)
-            return file
-        }
-        val mime = contentResolver.getType(uri)
-        val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime)
-        val filename = "room_icon_id_" + room.id.toString() + "." + ext
-
-        file = File(cacheDir, filename)
-        val fos = FileOutputStream(file)
-        fos.write(IOUtils.toByteArray(contentResolver.openInputStream(uri)))
-        fos.close()
-        return file
-    }
-
-    fun getPath(uri: Uri): String? {
-        val context = this
-
-        if (DocumentsContract.isDocumentUri(context, uri)) {
-            if ("com.android.externalstorage.documents" == uri.getAuthority()) {// ExternalStorageProvider
-                val docId = DocumentsContract.getDocumentId(uri)
-                val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val type = split[0]
-                return if ("primary".equals(type, ignoreCase = true)) {
-                    Environment.getExternalStorageDirectory().toString() + "/" + split[1]
-                } else {
-                    "/stroage/" + type + "/" + split[1]
-                }
-            } else if ("com.android.providers.downloads.documents" == uri.getAuthority()) {// DownloadsProvider
-                val id = DocumentsContract.getDocumentId(uri)
-                val contentUri = ContentUris.withAppendedId(
-                        Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
-                return getDataColumn(context, contentUri, null, null)
-            } else if ("com.android.providers.media.documents" == uri.getAuthority()) {// MediaProvider
-                val docId = DocumentsContract.getDocumentId(uri)
-                val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val type = split[0]
-                var contentUri: Uri? = null
-                contentUri = MediaStore.Files.getContentUri("external")
-                val selection = "_id=?"
-                val selectionArgs = arrayOf(split[1])
-                return getDataColumn(context, contentUri, selection, selectionArgs)
-            }
-        }
-        if ("content".equals(uri.getScheme(), ignoreCase = true)) {//MediaStore
-            return getDataColumn(context, uri, null, null)
-        } else if ("file".equals(uri.getScheme(), ignoreCase = true)) {// File
-            return uri.getPath()
-        }
-        return null
-    }
-
-    fun getDataColumn(context: Context?, uri: Uri, selection: String?,
-                      selectionArgs: Array<String>?): String? {
-        var cursor: Cursor? = null
-        val projection = arrayOf(MediaStore.Files.FileColumns.DATA)
-        try {
-            cursor = context!!.contentResolver.query(
-                    uri, projection, selection, selectionArgs, null)
-            if (cursor != null && cursor!!.moveToFirst()) {
-                val cindex = cursor!!.getColumnIndexOrThrow(projection[0])
-                return cursor.getString(cindex)
-            }
-        } catch (e: Exception) {
-            // no op
-        } finally {
-            cursor?.close()
-        }
-        return null
     }
 
     fun onEditRoom(v: View) {
