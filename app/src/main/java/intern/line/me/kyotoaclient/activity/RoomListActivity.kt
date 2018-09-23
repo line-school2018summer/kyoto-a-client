@@ -44,7 +44,7 @@ class RoomListActivity : AppCompatActivity() {
     lateinit var adapter: RoomListAdapter
     var client : StompClient? = null
     private val gson = Gson()
-    private val update_event_presenter = UpdateModel()
+    private val update_event_presenter = UpdateModel(this)
     private val repo = EventRespository()
     private val event_presenter = GetRoomEvent()
 
