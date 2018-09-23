@@ -116,7 +116,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                     val id = fileId.split(":")[1]
                     val selector = MediaStore.Images.Media._ID + "=?"
                     cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
-                } else{
+                } else {
                     cursor = context.contentResolver.query(uri, column, null, null, null)
                 }
                 var path: String? = null
@@ -134,7 +134,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
                     }
-                } else {
+                } else{
                     Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
             }
