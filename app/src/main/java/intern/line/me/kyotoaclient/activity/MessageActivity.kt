@@ -58,7 +58,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private val presenter = GetMessages()
 	private val event_presenter = GetMessageEvent()
-	private val update_event_presenter = UpdateModel()
+	private val update_event_presenter = UpdateModel(this)
 	private val gson = Gson()
 	private val repo = EventRespository()
 

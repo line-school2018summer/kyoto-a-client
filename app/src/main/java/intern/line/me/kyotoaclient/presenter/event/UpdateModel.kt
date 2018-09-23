@@ -1,15 +1,15 @@
 package intern.line.me.kyotoaclient.presenter.event
 
+import android.content.Context
+import intern.line.me.kyotoaclient.lib.util.IconFiles
 import intern.line.me.kyotoaclient.model.entity.Event
 import intern.line.me.kyotoaclient.model.entity.EventTypes
 import intern.line.me.kyotoaclient.model.repository.EventRespository
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
-import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.presenter.message.GetMessage
-import intern.line.me.kyotoaclient.presenter.room.GetMessages
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
 
-class UpdateModel {
+class UpdateModel(private val context: Context) {
 
 	private val event_repo = EventRespository()
 	private val message_repo = MessageRepository()
@@ -64,7 +64,12 @@ class UpdateModel {
 
 			}
 
-
+			EventTypes.ROOM_ICON_UPDATED.ordinal -> {
+				val room_id = event.room_id
+				if (room_id != null) {
+					IconFiles().upodateRoomIcon(context, room_id)
+				}
+			}
 		}
 	}
 
