@@ -22,9 +22,9 @@ class EventRespository {
 		return  mRealm.where(Event::class.java).sort("id", Sort.ASCENDING).findAllAsync()
 	}
 
-	fun getLatest() : Event?{
+	fun getLatest(room_id: Long) : Event?{
 		try {
-			return mRealm.where(Event::class.java).findAll().sort("id", Sort.ASCENDING).last()
+			return mRealm.where(Event::class.java).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
 		}catch(e : Throwable){
 			Log.e("getLatest","can't get latest event",e)
 			return null
