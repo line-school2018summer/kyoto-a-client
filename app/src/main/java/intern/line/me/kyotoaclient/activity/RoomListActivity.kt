@@ -40,6 +40,9 @@ class RoomListActivity : AppCompatActivity() {
         listView.adapter = adapter
         registerForContextMenu(listView)
 
+        //画像キャッシュリセット
+        RoomListAdapter.list.clear()
+
         //ルーム一覧を非同期で取得
         setAsyncRooms()
 

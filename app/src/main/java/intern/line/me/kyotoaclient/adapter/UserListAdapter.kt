@@ -28,6 +28,10 @@ class UserListAdapter(private val context: Context, private val realm_results : 
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
+    companion object {
+        val list = mutableMapOf<Long, Bitmap>()
+    }
+
     override fun getItemId(position: Int): Long {
         return super.getItem(position)?.id ?: 0
     }
@@ -40,10 +44,10 @@ class UserListAdapter(private val context: Context, private val realm_results : 
             val user = adapterData!![position]
             (convertView.findViewById(R.id.name_text) as TextView).text = user.name
             val imageVIew = (convertView.findViewById(R.id.icon) as ImageView)
-            val list = mutableMapOf<Long, Bitmap>()
             val id = user.id
+            //ビューが使いまわされるので一度nullにする
+            imageVIew.setImageDrawable(null)
 
-            println(list.toString())
 
             launch(UI) {
                 if (list[id] == null) {
