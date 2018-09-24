@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import intern.line.me.kyotoaclient.presenter.room.GetRoomIcon
+import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import java.io.File
@@ -11,7 +12,7 @@ import java.io.FileOutputStream
 
 class IconFiles {
     fun updateRoomIcon(context: Context, roomId: Long) {
-        launch(UI) {
+        launch(CommonPool) {
             val fileName = "room/icon_id_" + roomId.toString()
             val file = File(context.filesDir, fileName)
             GetRoomIcon().getRoomIcon(roomId).let {
