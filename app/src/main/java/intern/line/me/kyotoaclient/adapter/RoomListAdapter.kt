@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.TextView
@@ -19,6 +20,11 @@ import kotlinx.coroutines.experimental.launch
 import java.sql.Date
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
 
 class RoomListAdapter(private val context: Context, realm_results: RealmResults<Room>) : RealmBaseAdapter<Room>(realm_results), ListAdapter {
     var layoutInflater: LayoutInflater
@@ -52,14 +58,34 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
         //ビューが使いまわされるので一度nullにする
         imageVIew.setImageDrawable(null)
 
+        val dirName = "room"
+        val dir = File(context.filesDir, dirName)
+        if (!dir.exists()) {
+            dir.mkdir()
+        }
         launch(UI) {
-            if(list[id] == null) {
-                GetRoomIcon().getRoomIcon(getItemId(position)).let {
+            val roomId = getItemId(position)
+            val fileName = "room/icon_id_" + roomId.toString()
+            val file = File(context.filesDir, fileName)
+            if (list[id] != null) {
+                imageVIew.setImageBitmap(list[id])
+            } else if (!file.exists()) {
+                GetRoomIcon().getRoomIcon(roomId).let {
                     val image = BitmapFactory.decodeStream(it)
                     list[id] = image
+                    val fos = FileOutputStream(file)
+                    image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+                    fos.close()
+                    imageVIew.setImageBitmap(image)
+                }
+            } else {
+                val fis = FileInputStream(file)
+                val image = BitmapFactory.decodeStream(fis)
+                if (image != null) {
+                    list[id] = image
+                    imageVIew.setImageBitmap(image)
                 }
             }
-            imageVIew.setImageBitmap(list[id])
         }
 
         return convertView
