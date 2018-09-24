@@ -1,4 +1,4 @@
-# Android Application for SHABEL - Realime Messaging Application
+# SHABEL - Realime Messaging Application
 
 ## 概要
 SHABELはLine SUMMER INTERNSHIP 2018 エンジニアスクールコースにてKyoto Aチームによって開発されたリアルタイムメッセージングアプリです。
@@ -12,15 +12,15 @@ SHABELはLine SUMMER INTERNSHIP 2018 エンジニアスクールコースにてK
 
 ## 実装機能
 
-### STOMP over Websocket
+### リアルタイムメッセージング
 SHABELではリアルタイムでのメッセージのやり取りをSTOMP over Websocketを用いて実現しています。
-STOMPはPub - Sub型のメッセージングプロトコルであり、TCP上、Websocket上で利用できますす。今回はWebsocket上での実装を行いました。
+サーバーサイドから配信されたイベントを受取り、差分を更新することで実現しています
 
-### REST API
-リアルタイム以外で情報を受け取る時はSTOMP上ではなくREST APIを叩いて取得するようになっています。
+### 新着メッセージ通知
+トーク画面を開いている時に新着メッセージを受信した時に通知を表示させるようになっています。
 
+### ユーザーアイコン、ルームアイコン
+各ユーザー、ルームにはアイコンを指定することができます。画像はギャラリーやクラウドストレージ(Dropbox, Google Drive)からも指定することができます。
 
-### APIリファレンス
-[こちら](https://kyoto-a-api.pinfort.me/swagger-ui.html)からSwagger UI形式のAPIリファレンスを見ることができます。
-
-https://kyoto-a-api.pinfort.me/swagger-ui.html
+### ユーザー検索
+ユーザーの一覧を表示し、名前でユーザーの検索ができるようになっています。
