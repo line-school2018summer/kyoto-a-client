@@ -6,18 +6,14 @@ import android.view.ViewGroup
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
 import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import intern.line.me.kyotoaclient.R
-import intern.line.me.kyotoaclient.activity.UserListActivity
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.GetIcon
 import io.realm.OrderedRealmCollection
 import io.realm.RealmBaseAdapter
-import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
