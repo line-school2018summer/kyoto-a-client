@@ -40,6 +40,10 @@ class UserListActivity : AppCompatActivity() {
         list = findViewById<ListView>(R.id.user_list)
         val button = findViewById<FloatingActionButton>(R.id.settings)
         val searchButton = findViewById<ImageButton>(R.id.search_button)
+      
+        //画像キャッシュリセット
+        UserListAdapter.list.clear()
+      
         val searchBox = findViewById<EditText>(R.id.search_box)
 
 

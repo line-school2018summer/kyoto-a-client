@@ -28,12 +28,19 @@ import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 import android.provider.MediaStore
 import android.provider.DocumentsContract
+import android.content.ContentUris
+import android.content.Context
+import android.os.Environment
+import android.webkit.MimeTypeMap
+import com.google.android.gms.common.util.IOUtils
+import intern.line.me.kyotoaclient.lib.util.FileUtils
+import java.io.FileOutputStream
 
 
 class RoomMemberActivity : AppCompatActivity() {
 
     private val CHOSE_FILE_CODE: Int = 777
-     var file: File? = null
+    var file: File? = null
 
     lateinit var room: Room
 
@@ -102,32 +109,11 @@ class RoomMemberActivity : AppCompatActivity() {
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
                 val uri = Uri.parse(data.dataString)
-                val column = arrayOf(MediaStore.Images.Media.DATA)
-                val cursor: Cursor?
-                val checkUri: String = uri.toString().replace("content://", "")
-                if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
-                    val fileId = DocumentsContract.getDocumentId(uri)
-                    val id = fileId.split(":")[1]
-                    val selector = MediaStore.Images.Media._ID + "=?"
-                    cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
-                } else {
-                    cursor = context.contentResolver.query(uri, column, null, null, null)
-                }
-                var path: String? = null
-                val columnIndex = cursor.getColumnIndex(column[0])
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        path = cursor.getString(columnIndex)
-                    }
-                    cursor.close()
-                    if (path != null) {
-                        file = File(path)
-                    }
-                }
+                file = FileUtils(this).getFile(uri, "room_icon_id_" + room.id.toString()) ?: throw Exception("no file found")
+                val file = file ?: throw Exception("invalid file")
 
-				val image = BitmapFactory.decodeStream(file?.inputStream())
+				val image = BitmapFactory.decodeStream(file.inputStream())
 				edit_room_icon_view.setImageBitmap(image)
-
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
@@ -155,6 +141,7 @@ class RoomMemberActivity : AppCompatActivity() {
 			}
 			if(file != null) {
 				PostRoomIcon().postRoomIcon(room.id, file!!)
+				file!!.delete()
 			}
 			goBack()
 		}
