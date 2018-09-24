@@ -19,7 +19,12 @@ class FileUtils(private val context: Context) {
     fun getFile(uri: Uri, fileName: String): File? {
         val path: String? = getPath(uri)
         if (path != null) {
-            file = File(path)
+            val localFile = File(path)
+            val filename = localFile.name
+            file = File(context.cacheDir, filename)
+            val fos = FileOutputStream(file)
+            fos.write(localFile.readBytes())
+            fos.close()
             return file
         }
         val mime = context.contentResolver.getType(uri)
