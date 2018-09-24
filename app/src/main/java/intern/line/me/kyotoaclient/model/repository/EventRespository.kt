@@ -23,9 +23,14 @@ class EventRespository {
 		return  mRealm.where(Event::class.java).sort("id", Sort.ASCENDING).findAllAsync()
 	}
 
-	fun getLatest(room_id: Long) : Event?{
+	fun getLatestMessageEvent(room_id: Long) : Event?{
+		val eTypes: Array<out Int> = arrayOf(
+				EventTypes.MESSAGE_SENT.ordinal,
+				EventTypes.MESSAGE_UPDATED.ordinal,
+				EventTypes.MESSAGE_DELETED.ordinal
+		)
 		try {
-			return mRealm.where(Event::class.java).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
+			return mRealm.where(Event::class.java).`in`("event_type", eTypes).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
 		}catch(e : Throwable){
 			Log.e("getLatest","can't get latest event",e)
 			return null
