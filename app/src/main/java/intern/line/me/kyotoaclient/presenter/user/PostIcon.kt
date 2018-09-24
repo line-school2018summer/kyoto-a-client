@@ -1,10 +1,12 @@
 package intern.line.me.kyotoaclient.presenter.user
 
+import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
+import intern.line.me.kyotoaclient.lib.util.IconFiles
 import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.API
 import kotlinx.coroutines.experimental.Job
@@ -23,8 +25,9 @@ class PostIcon(file: File): API() {
     val api = retrofit.create(UserAPI::class.java)
     val img = file
 
+    val mime = IconFiles(). getMimeTypeOfFile(file.absolutePath)
     val requestBody: RequestBody = RequestBody
-            .create(MediaType.parse("multipart/form-data"), file)
+			.create(MediaType.parse(mime), file)
 
     val body: MultipartBody.Part = MultipartBody.Part
             .createFormData("file", file.getName(), requestBody)

@@ -23,4 +23,11 @@ class IconFiles {
             }
         }
     }
+
+    fun getMimeTypeOfFile(pathName: String): String {
+        val opt = BitmapFactory.Options()
+        opt.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(pathName, opt)
+        return opt.outMimeType
+    }
 }
