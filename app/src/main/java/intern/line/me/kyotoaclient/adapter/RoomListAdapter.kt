@@ -33,12 +33,6 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
-    companion object {
-        val list = mutableMapOf<Long, Bitmap>()
-    }
-
-
-
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         var convertView =convertView?:  layoutInflater.inflate(R.layout.room_display, parent, false)
         val format = SimpleDateFormat("HH:mm")
@@ -67,12 +61,9 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
             val roomId = getItemId(position)
             val fileName = "room/icon_id_" + roomId.toString()
             val file = File(context.filesDir, fileName)
-            if (list[id] != null) {
-                imageView.setImageBitmap(list[id])
-            } else if (!file.exists()) {
+            if (!file.exists()) {
                 GetRoomIcon().getRoomIcon(roomId).let {
                     val image = BitmapFactory.decodeStream(it)
-                    list[id] = image
                     val fos = FileOutputStream(file)
                     image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                     fos.close()
@@ -82,8 +73,7 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
                 val fis = FileInputStream(file)
                 val image = BitmapFactory.decodeStream(fis)
                 if (image != null) {
-                    list[id] = image
-                    imageView.setImageBitmap(image)
+                    imageVIew.setImageBitmap(image)
                 }
             }
         }
