@@ -17,7 +17,7 @@ class FirebaseUtil{
                     if (it.isSuccessful) {
                         cont.resume( it.result.token)
                     } else {
-                        throw Exception("can't get token.")
+                        Log.d("FirebaseUtil","can't get token.")
                     }
                 }
     }
