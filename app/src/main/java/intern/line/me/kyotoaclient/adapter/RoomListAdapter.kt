@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 
