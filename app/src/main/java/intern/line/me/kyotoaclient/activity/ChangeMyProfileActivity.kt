@@ -1,40 +1,28 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.Manifest
-import android.content.ContentUris
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Environment
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.google.android.gms.common.util.IOUtils
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.util.FileUtils
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.*
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
-import kotlinx.android.synthetic.main.activity_get_user_profile.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import java.io.File
-import java.io.FileOutputStream
 import java.io.UnsupportedEncodingException
-import java.net.URLDecoder
 
 class ChangeMyProfileActivity : AppCompatActivity() {
 

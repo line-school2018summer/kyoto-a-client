@@ -12,6 +12,7 @@ import okhttp3.RequestBody
 import retrofit2.Response
 import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.File
+import android.graphics.BitmapFactory
 
 class PostRoomIcon: API() {
 
@@ -19,8 +20,9 @@ class PostRoomIcon: API() {
 
 
 	suspend fun postAsyncRoomIcon(room_id: Long, token: String, file: File): Response<Boolean> = withContext(CommonPool) {
+		val mime = getMimeTypeOfFile(file.absolutePath)
 		val requestBody: RequestBody = RequestBody
-				.create(MediaType.parse("multipart/form-data"), file)
+				.create(MediaType.parse(mime), file)
 
 		val body: MultipartBody.Part = MultipartBody.Part
 				.createFormData("file", file.getName(), requestBody)
@@ -45,5 +47,12 @@ class PostRoomIcon: API() {
 			}
 		}
 		return false
+	}
+
+	fun getMimeTypeOfFile(pathName: String): String {
+		val opt = BitmapFactory.Options()
+		opt.inJustDecodeBounds = true
+		BitmapFactory.decodeFile(pathName, opt)
+		return opt.outMimeType
 	}
 }

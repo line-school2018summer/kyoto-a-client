@@ -41,7 +41,8 @@ class RoomRepository {
 			update_room.name = room.name
 			update_room.created_at = room.created_at
 			update_room.updated_at = room.updated_at
-
+			update_room.last_message_text = room.last_message_text
+			update_room.last_message_created_at = room.last_message_created_at
 		}
 	}
 

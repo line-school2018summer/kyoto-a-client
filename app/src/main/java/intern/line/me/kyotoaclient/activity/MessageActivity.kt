@@ -58,7 +58,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private val presenter = GetMessages()
 	private val event_presenter = GetMessageEvent()
-	private val update_event_presenter = UpdateModel()
+	private val update_event_presenter = UpdateModel(this)
 	private val gson = Gson()
 	private val repo = EventRespository()
 
@@ -128,7 +128,7 @@ class MessageActivity : AppCompatActivity() {
 		//websocketに接続したらREST APIを叩く
 		launch(job + UI) {
 
-			val latest_event_id = repo.getLatest(room_id)?.id ?: 0
+			val latest_event_id = repo.getLatestMessageEvent(room_id)?.id ?: 0
 			Log.d("Event Rest",latest_event_id.toString())
 			val events = event_presenter.getMessageEvent(room_id, latest_event_id+ 1)
 			update_event_presenter.updateAllModel(events)
