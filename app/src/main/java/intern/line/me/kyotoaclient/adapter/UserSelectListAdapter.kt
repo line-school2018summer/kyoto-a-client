@@ -56,9 +56,9 @@ class UserSelectListAdapter(private val context: Context,private val realm_resul
                 }
             }
 
-			val imageVIew = (convertView.findViewById(R.id.user_select_icon) as ImageView)
+			val imageView = (convertView.findViewById(R.id.user_select_icon) as ImageView)
 
-			imageVIew.setImageBitmap(UserSelectListAdapter.list[id])
+			imageView.setImageBitmap(UserSelectListAdapter.list[id])
         }
 
         return convertView
