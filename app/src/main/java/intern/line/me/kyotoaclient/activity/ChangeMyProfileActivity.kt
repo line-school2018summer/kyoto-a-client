@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.common.util.IOUtils
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.util.FileUtils
+import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.*
 import kotlinx.android.synthetic.main.activity_change_my_profile.*
@@ -95,6 +96,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             launch(job + UI) {
                 DeleteIcon().deleteIcon()
                 setImgByC(myId)
+                UserListAdapter.list.clear()
             }
         }
     }
@@ -123,6 +125,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                         setImgByC(myId)
                         file!!.delete()
                     }
+                    UserListAdapter.list.clear()
                 }
             }
         } catch (t: UnsupportedEncodingException) {
