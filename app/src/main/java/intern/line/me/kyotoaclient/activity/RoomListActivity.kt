@@ -38,7 +38,7 @@ class RoomListActivity : AppCompatActivity() {
     }
 
 
-    private val job = Job()
+    private var job = Job()
 	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
@@ -126,7 +126,8 @@ class RoomListActivity : AppCompatActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        setAsyncRooms()
+        job = Job()
+        connectStomp()
     }
 
     override fun onDestroy() {
