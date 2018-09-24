@@ -1,6 +1,8 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.Manifest
+import android.content.ContentUris
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -8,15 +10,19 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.google.android.gms.common.util.IOUtils
 import intern.line.me.kyotoaclient.R
+import intern.line.me.kyotoaclient.lib.util.FileUtils
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.user.*
@@ -26,6 +32,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import java.io.File
+import java.io.FileOutputStream
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
 
@@ -108,36 +115,17 @@ class ChangeMyProfileActivity : AppCompatActivity() {
             if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
                 val uri = Uri.parse(data.dataString)
 
-                val column = arrayOf(MediaStore.Images.Media.DATA)
-                val cursor: Cursor?
-                val checkUri: String = uri.toString().replace("content://", "")
-                if (checkUri.indexOf(':') != -1 || checkUri.indexOf("%3A") != -1) {
-                    val fileId = DocumentsContract.getDocumentId(uri)
-                    println(uri)
-                    val id = fileId.split(":")[1]
-                    val selector = MediaStore.Images.Media._ID + "=?"
-                    cursor = context.contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, column, selector, arrayOf(id), null)
+                val f = FileUtils(this).getFile(uri, "user_icon_id_" + myId.toString())
+                if (f == null) {
+                    Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 } else {
-                    cursor = context.contentResolver.query(uri, column, null, null, null)
-                }
-                var path: String? = null
-                val columnIndex = cursor.getColumnIndex(column[0])
-                if (cursor != null) {
-                    if (cursor.moveToFirst()) {
-                        path = cursor.getString(columnIndex)
-                    }
-                    cursor.close()
-                    if (path != null) {
-                        file = File(path)
-                    }
-
+                    file = f
                     launch(job + UI) {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
+                        file!!.delete()
                     }
                     UserListAdapter.list.clear()
-                } else{
-                    Toast.makeText(this, "適切でないファイル形式です", Toast.LENGTH_SHORT).show()
                 }
             }
         } catch (t: UnsupportedEncodingException) {
