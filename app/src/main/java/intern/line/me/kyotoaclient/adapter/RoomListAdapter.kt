@@ -73,7 +73,7 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
                 val fis = FileInputStream(file)
                 val image = BitmapFactory.decodeStream(fis)
                 if (image != null) {
-                    imageVIew.setImageBitmap(image)
+                    imageView.setImageBitmap(image)
                 }
             }
         }

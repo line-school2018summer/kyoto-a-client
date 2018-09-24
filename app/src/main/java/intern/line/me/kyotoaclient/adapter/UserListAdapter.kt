@@ -39,10 +39,10 @@ class UserListAdapter(private val context: Context, private val realm_results : 
         if (adapterData != null) {
             val user = adapterData!![position]
             (convertView.findViewById(R.id.name_text) as TextView).text = user.name
-            val imageVIew = (convertView.findViewById(R.id.icon) as ImageView)
+            val imageView = (convertView.findViewById(R.id.icon) as ImageView)
             val id = user.id
             //ビューが使いまわされるので一度nullにする
-            imageVIew.setImageDrawable(null)
+            imageView.setImageDrawable(null)
 
 
             launch(UI) {
@@ -52,7 +52,7 @@ class UserListAdapter(private val context: Context, private val realm_results : 
                         list[id] = image
                     }
                 }
-                imageVIew.setImageBitmap(list[id])
+                imageView.setImageBitmap(list[id])
             }
         }
         return convertView
