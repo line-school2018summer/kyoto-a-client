@@ -67,7 +67,7 @@ class UpdateModel(private val context: Context) {
 			EventTypes.ROOM_ICON_UPDATED.ordinal -> {
 				val room_id = event.room_id
 				if (room_id != null) {
-					IconFiles().upodateRoomIcon(context, room_id)
+					IconFiles().updateRoomIcon(context, room_id)
 				}
 			}
 		}

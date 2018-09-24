@@ -10,7 +10,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class IconFiles {
-    fun upodateRoomIcon(context: Context, roomId: Long) {
+    fun updateRoomIcon(context: Context, roomId: Long) {
         launch(UI) {
             val fileName = "room/icon_id_" + roomId.toString()
             val file = File(context.filesDir, fileName)
