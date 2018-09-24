@@ -54,9 +54,9 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
         }
         (convertView.findViewById(R.id.room_name_view) as TextView).text = adapterData!![position].name
 
-        val imageVIew = (convertView.findViewById(R.id.room_icon_view) as ImageView)
+        val imageView = (convertView.findViewById(R.id.room_icon_view) as ImageView)
         //ビューが使いまわされるので一度nullにする
-        imageVIew.setImageDrawable(null)
+        imageView.setImageDrawable(null)
 
         val dirName = "room"
         val dir = File(context.filesDir, dirName)
@@ -68,7 +68,7 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
             val fileName = "room/icon_id_" + roomId.toString()
             val file = File(context.filesDir, fileName)
             if (list[id] != null) {
-                imageVIew.setImageBitmap(list[id])
+                imageView.setImageBitmap(list[id])
             } else if (!file.exists()) {
                 GetRoomIcon().getRoomIcon(roomId).let {
                     val image = BitmapFactory.decodeStream(it)
@@ -76,14 +76,14 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
                     val fos = FileOutputStream(file)
                     image.compress(Bitmap.CompressFormat.JPEG, 100, fos)
                     fos.close()
-                    imageVIew.setImageBitmap(image)
+                    imageView.setImageBitmap(image)
                 }
             } else {
                 val fis = FileInputStream(file)
                 val image = BitmapFactory.decodeStream(fis)
                 if (image != null) {
                     list[id] = image
-                    imageVIew.setImageBitmap(image)
+                    imageView.setImageBitmap(image)
                 }
             }
         }
