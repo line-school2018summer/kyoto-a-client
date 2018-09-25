@@ -1,7 +1,6 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
 
 import intern.line.me.kyotoaclient.model.entity.Event
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 

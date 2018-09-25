@@ -27,7 +27,7 @@ class GetUserProfileActivity : AppCompatActivity() {
         user_profile_progress_bar.visibility = View.VISIBLE
 
         launch(job + UI) {
-            GetUserInfo(selectedId).getUserInfo().let{ setUserInfo(it) }
+            setUserInfo(GetUserInfo(selectedId).getUserInfo())
         }
 
         launch(job + UI){

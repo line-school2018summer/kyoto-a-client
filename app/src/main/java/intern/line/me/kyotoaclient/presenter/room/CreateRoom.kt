@@ -12,7 +12,7 @@ import retrofit2.HttpException
 import ru.gildor.coroutines.retrofit.await
 
 
-class CreateRoom(val name: String, val users: List<User>): API(){
+class CreateRoom(val name: String, private val users: List<User>): API(){
 	private val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = RoomRepository()
 

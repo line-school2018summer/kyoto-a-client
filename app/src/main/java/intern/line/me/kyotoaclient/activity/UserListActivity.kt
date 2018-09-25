@@ -2,11 +2,9 @@ package intern.line.me.kyotoaclient.activity
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ListView
@@ -16,7 +14,6 @@ import intern.line.me.kyotoaclient.presenter.user.SearchUsers
 import intern.line.me.kyotoaclient.presenter.user.GetUserList
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
 
 class UserListActivity : AppCompatActivity() {
@@ -28,7 +25,7 @@ class UserListActivity : AppCompatActivity() {
     private val job = Job()
 
     private  val presenter = GetUserList()
-    private val search_presenter = SearchUsers()
+    private val searchPresenter = SearchUsers()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +34,7 @@ class UserListActivity : AppCompatActivity() {
 
         setResult(Activity.RESULT_CANCELED)
 
-        list = findViewById<ListView>(R.id.user_list)
+        list = findViewById(R.id.user_list)
         val button = findViewById<FloatingActionButton>(R.id.settings)
         val searchButton = findViewById<ImageButton>(R.id.search_button)
       
@@ -71,7 +68,7 @@ class UserListActivity : AppCompatActivity() {
 
         searchButton.setOnClickListener {
             val name = searchBox.text.toString()
-            adapter = UserListAdapter(this, search_presenter.getUsersListFromDB(name))
+            adapter = UserListAdapter(this, searchPresenter.getUsersListFromDB(name))
             list.adapter = adapter
         }
     }

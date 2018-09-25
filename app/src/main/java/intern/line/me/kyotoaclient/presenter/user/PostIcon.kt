@@ -1,36 +1,25 @@
 package intern.line.me.kyotoaclient.presenter.user
 
-import android.graphics.BitmapFactory
 import android.util.Log
-import com.google.firebase.auth.FirebaseAuth
-import com.google.gson.GsonBuilder
 import intern.line.me.kyotoaclient.lib.api.interfaces.UserAPI
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.lib.util.IconFiles
-import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.API
-import kotlinx.coroutines.experimental.Job
 import okhttp3.*
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.HttpException
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import ru.gildor.coroutines.retrofit.await
 import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 class PostIcon(file: File): API() {
     private val api = retrofit.create(UserAPI::class.java)
-    val img = file
 
     private val mime = IconFiles(). getMimeTypeOfFile(file.absolutePath)
     private val requestBody: RequestBody = RequestBody
 			.create(MediaType.parse(mime), file)
 
     val body: MultipartBody.Part = MultipartBody.Part
-            .createFormData("file", file.getName(), requestBody)
+            .createFormData("file", file.name, requestBody)
 
     private suspend fun postAsyncIcon(token: String): Response<Boolean>{
         return api.uploadIcon(token, body).awaitResponse()

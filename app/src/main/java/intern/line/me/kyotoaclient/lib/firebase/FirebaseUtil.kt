@@ -2,7 +2,6 @@ package intern.line.me.kyotoaclient.lib.firebase
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import kotlin.coroutines.experimental.suspendCoroutine
 
 class FirebaseUtil{

@@ -10,7 +10,7 @@ import kotlinx.coroutines.experimental.withContext
 import retrofit2.HttpException
 import ru.gildor.coroutines.retrofit.await
 
-class SearchUsers(): API() {
+class SearchUsers: API() {
 
 	private val api = retrofit.create(UserAPI::class.java)
 	val repo = UserRepository()

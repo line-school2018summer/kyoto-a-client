@@ -27,14 +27,9 @@ class GetMyInfo: API(){
 			//TODO(ローカル参照する前にRESTを叩かないと行けない糞仕様)
 			val user =  getAsyncMyInfo(token)
 
-			val realm_user = repo.getById(user.id)
+			val realmUser = repo.getById(user.id)
 
-			if (realm_user != null){
-				return realm_user
-			}else{
-				return user
-			}
-
+			return realmUser ?: user
 		} catch (t: HttpException) {
 			throw Exception("Update failed.")
 		}

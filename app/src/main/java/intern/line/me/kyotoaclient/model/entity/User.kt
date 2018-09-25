@@ -1,10 +1,8 @@
 package intern.line.me.kyotoaclient.model.entity
 
-import io.realm.Realm
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import io.realm.annotations.Required
-import java.sql.Timestamp
 import java.util.Date
 
 open class User(

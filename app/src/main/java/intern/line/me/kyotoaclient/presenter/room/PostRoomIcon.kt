@@ -26,7 +26,7 @@ class PostRoomIcon: API() {
 				.create(MediaType.parse(mime), file)
 
 		val body: MultipartBody.Part = MultipartBody.Part
-				.createFormData("file", file.getName(), requestBody)
+				.createFormData("file", file.name, requestBody)
 
 		api.uploadRoomIcon(room_id, token, body).awaitResponse()
 	}

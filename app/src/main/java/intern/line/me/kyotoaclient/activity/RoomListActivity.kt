@@ -42,9 +42,9 @@ class RoomListActivity : AppCompatActivity() {
     lateinit var adapter: RoomListAdapter
     private var client : StompClient? = null
     private val gson = Gson()
-    private val update_event_presenter = UpdateModel(this)
+    private val updateEventPresenter = UpdateModel(this)
     private val repo = EventRespository()
-    private val event_presenter = GetRoomEvent()
+    private val eventPresenter = GetRoomEvent()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,8 +86,8 @@ class RoomListActivity : AppCompatActivity() {
 
             val latest_event_id = repo.getLatestForRooms()?.id ?: 0
             Log.d("Event Rest",latest_event_id.toString())
-            val events = event_presenter.getRoomEvent(latest_event_id+ 1)
-            update_event_presenter.updateAllModel(events)
+            val events = eventPresenter.getRoomEvent(latest_event_id+ 1)
+            updateEventPresenter.updateAllModel(events)
         }
     }
 
@@ -104,13 +104,13 @@ class RoomListActivity : AppCompatActivity() {
                         myId = it.id
                     }
                     client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
-                    val res = client!!.topic("/topic/users/${myId}/rooms", mutableListOf(StompHeader("Token", token)))
+                    val res = client!!.topic("/topic/users/$myId/rooms", mutableListOf(StompHeader("Token", token)))
                             .openSubscription()
                     client!!.connect()
 
                     res.consumeEach {
                         val event = gson.fromJson<Event>(it.payload, Event::class.java)
-                        update_event_presenter.updateModel(event)
+                        updateEventPresenter.updateModel(event)
                     }
                 }
             } catch (e: Throwable) {

@@ -1,6 +1,5 @@
 package intern.line.me.kyotoaclient.presenter
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.experimental.*
 import okhttp3.OkHttpClient
@@ -8,7 +7,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.experimental.CoroutineCallAdapterFactory
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -35,8 +33,6 @@ open class API {
     private var debug = true
     private val gson = GsonBuilder().create()
     private var client = OkHttpClient.Builder()
-    private val auth = FirebaseAuth.getInstance()
-
 
     init {
         client = client.addInterceptor(APIInterceptor())
@@ -50,7 +46,7 @@ open class API {
                 }
     }
 
-    val retrofit = Retrofit.Builder()
+    val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl("https://kyoto-a-api.pinfort.me/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(client.build())

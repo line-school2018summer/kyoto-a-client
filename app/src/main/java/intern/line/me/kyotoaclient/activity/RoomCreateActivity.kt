@@ -104,7 +104,7 @@ class RoomCreateActivity : AppCompatActivity() {
         }
     }
 
-    fun goBack() {
+    private fun goBack() {
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
     }

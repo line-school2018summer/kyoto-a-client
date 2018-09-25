@@ -1,6 +1,5 @@
 package intern.line.me.kyotoaclient.lib.util
 
-import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -29,7 +28,7 @@ class FileUtils(private val context: Context) {
         }
         val mime = context.contentResolver.getType(uri)
         val ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime)
-        val filename = fileName + "." + ext
+        val filename = "$fileName.$ext"
 
         file = File(context.cacheDir, filename)
         val fos = FileOutputStream(file)
@@ -58,8 +57,7 @@ class FileUtils(private val context: Context) {
             } else if ("com.android.providers.media.documents" == uri.authority) {// MediaProvider
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                var contentUri: Uri? = null
-                contentUri = MediaStore.Files.getContentUri("external")
+                val contentUri: Uri = MediaStore.Files.getContentUri("external")
                 val selection = "_id=?"
                 val selectionArgs = arrayOf(split[1])
                 return getDataColumn(this.context, contentUri, selection, selectionArgs)
@@ -81,8 +79,8 @@ class FileUtils(private val context: Context) {
             cursor = context!!.contentResolver.query(
                     uri, projection, selection, selectionArgs, null)
             if (cursor != null && cursor.moveToFirst()) {
-                val cindex = cursor.getColumnIndexOrThrow(projection[0])
-                return cursor.getString(cindex)
+                val cIndex = cursor.getColumnIndexOrThrow(projection[0])
+                return cursor.getString(cIndex)
             }
         } catch (e: Exception) {
             // no op

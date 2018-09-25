@@ -17,10 +17,10 @@ import io.realm.RealmBaseAdapter
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
-class UserSelectListAdapter(private val context: Context,private val realm_results : OrderedRealmCollection<User>): RealmBaseAdapter<User>(realm_results), ListAdapter{
-    private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+class UserSelectListAdapter(private val context: Context, private val realm_results : OrderedRealmCollection<User>): RealmBaseAdapter<User>(realm_results), ListAdapter{
+    private val layoutInflater: LayoutInflater = this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    var  checkList : MutableList<Boolean> = MutableList(count,{false})
+    var  checkList : MutableList<Boolean> = MutableList(count) {false}
 
 	companion object {
 		val list = mutableMapOf<Long, Bitmap>()
@@ -28,7 +28,7 @@ class UserSelectListAdapter(private val context: Context,private val realm_resul
 
 
     override fun getView(position: Int, originalConvertView: View?, parent: ViewGroup?): View? {
-        checkList.addAll(MutableList(count-checkList.size,{false}))
+        checkList.addAll(MutableList(count-checkList.size) {false})
         val convertView = originalConvertView?: layoutInflater.inflate(R.layout.user_select, parent, false)
         val checkView: CheckedTextView = convertView.findViewById(R.id.user_name_view)
         checkView.text = adapterData!![position].name
@@ -67,7 +67,7 @@ class UserSelectListAdapter(private val context: Context,private val realm_resul
 
     fun getCheckedUserList(): List<User> {
         if (adapterData!!.count() != checkList.count()) {
-            throw Exception("invailed data")
+            throw Exception("invalid data")
         }
         val selectedUsers = mutableListOf<User>()
         for (i in 0..(adapterData!!.count() - 1)){

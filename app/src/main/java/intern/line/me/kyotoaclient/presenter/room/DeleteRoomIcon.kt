@@ -13,7 +13,7 @@ class DeleteRoomIcon: API() {
 
 	private val api = retrofit.create(RoomsAPI::class.java)
 
-	suspend fun deleteAsyncRoomIcon(id : Long,token : String): Response<Boolean> = withContext(CommonPool){
+	private suspend fun deleteAsyncRoomIcon(id : Long,token : String): Response<Boolean> = withContext(CommonPool){
 		api.deleteRoomIcon(id,token).awaitResponse()
 	}
 

@@ -24,24 +24,24 @@ class RoomRepository {
 
 	fun create(room: Room) {
 		mRealm.executeTransaction {
-			var create_room = mRealm.copyToRealmOrUpdate(room)
+			val createRoom = mRealm.copyToRealmOrUpdate(room)
 
-			create_room.name = room.name
-			create_room.created_at = room.created_at
-			create_room.updated_at = room.updated_at
+			createRoom.name = room.name
+			createRoom.created_at = room.created_at
+			createRoom.updated_at = room.updated_at
 
 		}
 	}
 
 	fun update(room: Room) {
 		mRealm.executeTransaction {
-			var update_room = mRealm.copyToRealmOrUpdate(room)
+			val updateRoom = mRealm.copyToRealmOrUpdate(room)
 
-			update_room.name = room.name
-			update_room.created_at = room.created_at
-			update_room.updated_at = room.updated_at
-			update_room.last_message_text = room.last_message_text
-			update_room.last_message_created_at = room.last_message_created_at
+			updateRoom.name = room.name
+			updateRoom.created_at = room.created_at
+			updateRoom.updated_at = room.updated_at
+			updateRoom.last_message_text = room.last_message_text
+			updateRoom.last_message_created_at = room.last_message_created_at
 		}
 	}
 
@@ -56,8 +56,8 @@ class RoomRepository {
 
 	fun delete(room: Room) {
 		mRealm.executeTransaction {
-			var delete_room = mRealm.where(Room::class.java).equalTo("id", room.id).findAll()
-			delete_room.deleteFromRealm(0)
+			val deleteRoom = mRealm.where(Room::class.java).equalTo("id", room.id).findAll()
+			deleteRoom.deleteFromRealm(0)
 		}
 	}
 }

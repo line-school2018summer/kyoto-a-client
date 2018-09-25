@@ -1,4 +1,5 @@
 package intern.line.me.kyotoaclient.lib.api.interfaces
+
 import intern.line.me.kyotoaclient.model.entity.Message
 import intern.line.me.kyotoaclient.model.entity.Room
 import intern.line.me.kyotoaclient.model.entity.User
