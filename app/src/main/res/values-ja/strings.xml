@@ -1,0 +1,19 @@
+<resources>
+    <string name="room_create_input">ルーム名</string>
+    <string name="room_create_button">作成</string>
+    <string name="message_input">テキストを入力</string>
+    <string name="message_send">送信</string>
+    <string name="message_edit">編集</string>
+    <string name="edit">編集</string>
+    <string name="delete">削除</string>
+    <string name="message_modified">編集済</string>
+    <string name="retry">もう一度試す</string>
+    <string name="failed_to_sign_in">ログインに失敗しました</string>
+    <string name="api_forbidden">権限がありません</string>
+    <string name="api_timeout">タイムアウトしました</string>
+    <string name="api_failed">API接続に失敗しました</string>
+    <string name="message_new_available">新しいメッセージがあります</string>
+    <string name="apply">更新</string>
+    <string name="apply_button">適用</string>
+    <string name="app_name">SHABEL</string>
+</resources>

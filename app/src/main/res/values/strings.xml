@@ -1,3 +1,25 @@
 <resources>
-    <string name="app_name">Kyotoaclient</string>
+    <string name="app_name">SHABEL</string>
+    <string name="room_create_input">Room Name</string>
+    <string name="room_create_button">Create</string>
+    <string name="room_edit_button">Edit</string>
+    <string name="message_input">Input text</string>
+    <string name="message_send">Send</string>
+    <string name="message_edit">Edit</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="message_modified">Modified</string>
+    <string name="retry">Retry</string>
+    <string name="failed_to_sign_in">Failed to sign in</string>
+    <string name="api_forbidden">You don\'t have permission</string>
+    <string name="api_timeout">timeout error</string>
+    <string name="api_failed">api connection failed</string>
+    <string name="message_new_available">New message are exists</string>
+    <string name="title_activity_user_list">user_list</string>
+    <string name="item_name">Name :</string>
+    <string name="item_id">ID :</string>
+    <string name="my_profile">Profile</string>
+    <string name="show_created_at">Created At :</string>
+    <string name="apply">Apply</string>
+    <string name="apply_button">Apply</string>
 </resources>
