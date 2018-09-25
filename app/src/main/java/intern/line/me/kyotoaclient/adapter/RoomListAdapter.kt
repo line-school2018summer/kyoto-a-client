@@ -44,7 +44,9 @@ class RoomListAdapter(private val context: Context, realm_results: RealmResults<
             val time = Date(created_at.time)
 
             (convertView.findViewById(R.id.message_time_view) as TextView).text = format.format(time)
-            (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessage_text
+            (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessageText
+        }else{
+            (convertView.findViewById(R.id.latest_message_view) as TextView).text = ""
         }
         (convertView.findViewById(R.id.room_name_view) as TextView).text = adapterData!![position].name
 
