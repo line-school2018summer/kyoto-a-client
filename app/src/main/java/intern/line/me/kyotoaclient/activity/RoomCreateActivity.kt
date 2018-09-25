@@ -2,6 +2,7 @@ package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,6 +10,7 @@ import android.view.View
 import android.widget.Toast
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.adapter.UserSelectListAdapter
+import intern.line.me.kyotoaclient.lib.util.FileUtils
 import intern.line.me.kyotoaclient.model.entity.User
 import intern.line.me.kyotoaclient.presenter.room.CreateRoom
 import intern.line.me.kyotoaclient.presenter.room.PostRoomIcon
@@ -21,6 +23,7 @@ import kotlinx.coroutines.experimental.launch
 import java.io.File
 import java.io.UnsupportedEncodingException
 import java.net.URLDecoder
+import java.util.*
 
 class RoomCreateActivity : AppCompatActivity() {
 
@@ -51,7 +54,7 @@ class RoomCreateActivity : AppCompatActivity() {
 
         create_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "file/*"
+            intent.type = "image/*"
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
     }
@@ -65,18 +68,12 @@ class RoomCreateActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                var filePath = data.dataString ?: throw Exception("unsupported")
-                filePath = filePath.substring(filePath.indexOf("storage"))
-                val decodedPath = URLDecoder.decode(filePath, "utf-8")
-                //val decodedPath = "/sdcard/P.jpg"
-                Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
+                val uri = Uri.parse(data.dataString)
+                file = FileUtils(this).getFile(uri, "new_room_icon_" + Random().nextInt(100).toString()) ?: throw Exception("no file found")
+                val file = file ?: throw Exception("invalid file")
 
-                //TODO(file選択方法)
-                file =  File(decodedPath)
-                if(file != null) {
-                    val image = BitmapFactory.decodeStream(file!!.inputStream())
-                    create_room_icon_view.setImageBitmap(image)
-                }
+                val image = BitmapFactory.decodeStream(file.inputStream())
+                create_room_icon_view.setImageBitmap(image)
             }
         } catch(t: UnsupportedEncodingException) {
             Toast.makeText(this, "not supported", Toast.LENGTH_SHORT).show()
@@ -91,13 +88,12 @@ class RoomCreateActivity : AppCompatActivity() {
         selectedUsers = (selectedUsers as MutableList<User>)
         selectedUsers.add(me)
 
-        println(selectedUsers)
-
         launch (this.job + UI) {
             val room = CreateRoom(roomName, selectedUsers).createRoom()
 
             if(file != null) {
                 PostRoomIcon().postRoomIcon(room.id, file!!)
+                file!!.delete()
             }
 
             goBack()
