@@ -17,10 +17,10 @@ import intern.line.me.kyotoaclient.lib.util.IconFiles
 
 class PostRoomIcon: API() {
 
-	val api = retrofit.create(RoomsAPI::class.java)
+	private val api = retrofit.create(RoomsAPI::class.java)
 
 
-	suspend fun postAsyncRoomIcon(room_id: Long, token: String, file: File): Response<Boolean> = withContext(CommonPool) {
+	private suspend fun postAsyncRoomIcon(room_id: Long, token: String, file: File): Response<Boolean> = withContext(CommonPool) {
 		val mime = IconFiles().getMimeTypeOfFile(file.absolutePath)
 		val requestBody: RequestBody = RequestBody
 				.create(MediaType.parse(mime), file)

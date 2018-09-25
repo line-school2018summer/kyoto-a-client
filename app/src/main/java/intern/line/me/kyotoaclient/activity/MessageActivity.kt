@@ -64,7 +64,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private var message_size = 0
 
-	var client : StompClient? = null
+	private var client : StompClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -305,32 +305,13 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 
-	fun startPool(job: Job,room_id: Long) {
-
-		val pool_job = Job()
-
-		//結果をUIスレッドで受け取れるように
-		launch(job + UI) {
-
-			while (true) {
-				//別スレッドで常に取得してる
-				withContext(pool_job + CommonPool) {
-					// 1秒ごとに取得
-					Thread.sleep(1000)
-					presenter.getMessages(room_id)
-				}
-				drawMessagesList()
-			}
-		}
-	}
-
 	//最後までスクロール
     fun scrollToEnd() {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
 
-	fun connectStomp(){
+	private fun connectStomp(){
 		val util = FirebaseUtil()
 
 		launch(job + UI) {
@@ -356,7 +337,8 @@ class MessageActivity : AppCompatActivity() {
 			}
 		}
 	}
-	fun goBack() {
+
+	private fun goBack() {
 		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
 		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
 	}

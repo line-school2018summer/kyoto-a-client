@@ -12,7 +12,7 @@ import ru.gildor.coroutines.retrofit.await
 
 class SearchUsers(): API() {
 
-	val api = retrofit.create(UserAPI::class.java)
+	private val api = retrofit.create(UserAPI::class.java)
 	val repo = UserRepository()
 
 	private suspend fun getAsyncUsersList(name: String): List<User> = withContext(CommonPool) {

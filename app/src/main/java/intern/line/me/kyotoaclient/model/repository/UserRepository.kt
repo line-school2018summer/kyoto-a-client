@@ -8,14 +8,13 @@ import io.realm.Sort
 
 class UserRepository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+	private val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): User? {
-		val r_user = mRealm.where(User::class.java).equalTo("id", id).findFirst()
-		return r_user
+		return  mRealm.where(User::class.java).equalTo("id", id).findFirst()
 	}
 
 	fun getUsersListExcludeId(id: Long): RealmResults<User>{

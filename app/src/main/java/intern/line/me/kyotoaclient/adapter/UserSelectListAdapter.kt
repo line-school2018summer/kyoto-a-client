@@ -18,18 +18,14 @@ import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
 class UserSelectListAdapter(private val context: Context,private val realm_results : OrderedRealmCollection<User>): RealmBaseAdapter<User>(realm_results), ListAdapter{
-    var layoutInflater: LayoutInflater
+    private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    var  checkList : MutableList<Boolean>
+    var  checkList : MutableList<Boolean> = MutableList(count,{false})
 
 	companion object {
 		val list = mutableMapOf<Long, Bitmap>()
 	}
 
-    init {
-        this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        this. checkList = MutableList(count,{false})
-    }
 
     override fun getView(position: Int, originalConvertView: View?, parent: ViewGroup?): View? {
         checkList.addAll(MutableList(count-checkList.size,{false}))

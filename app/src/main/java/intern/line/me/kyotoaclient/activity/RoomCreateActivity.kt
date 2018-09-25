@@ -51,7 +51,7 @@ class RoomCreateActivity : AppCompatActivity() {
 
         create_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("file/*")
+            intent.type = "file/*"
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
     }

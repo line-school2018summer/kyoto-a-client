@@ -15,7 +15,7 @@ import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.InputStream
 
 class GetIcon(val id: Long): API() {
-    val api = retrofit.create(UserAPI::class.java)
+    private val api = retrofit.create(UserAPI::class.java)
     private val repo = UserRepository()
 
     private suspend fun getAsyncIcon(): ResponseBody = withContext(CommonPool){
@@ -25,8 +25,7 @@ class GetIcon(val id: Long): API() {
     suspend fun getIcon(): InputStream {
         try{
             val file =  getAsyncIcon()
-            val _is : InputStream = file.byteStream()
-            return _is
+            return file.byteStream()
         } catch (t: HttpException){
             throw Exception("update failed.")
         }

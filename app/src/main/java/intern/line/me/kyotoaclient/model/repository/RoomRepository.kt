@@ -8,14 +8,13 @@ import io.realm.Sort
 
 class RoomRepository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+	private val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): Room? {
-		val r_room = mRealm.where(Room::class.java).equalTo("id", id).findFirst()
-		return r_room
+		return mRealm.where(Room::class.java).equalTo("id", id).findFirst()
 	}
 
 	fun getAll(): RealmResults<Room> {

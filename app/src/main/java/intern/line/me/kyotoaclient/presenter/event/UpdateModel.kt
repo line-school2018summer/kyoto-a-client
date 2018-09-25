@@ -44,10 +44,6 @@ class UpdateModel(private val context: Context) {
 				}
 			}
 
-			/*
-				ここより下は今はいらないかなって感じ
-			 */
-
 			EventTypes.ROOM_CREATED.ordinal ->{
 				Log.d("ROOM_CREATED","ROOM_CREATED")
 				GetRooms().getRooms()

@@ -12,7 +12,7 @@ import ru.gildor.coroutines.retrofit.awaitResponse
 
 class GetRoomEvent : API(){
 
-	val api = retrofit.create(EventAPI::class.java)
+	private val api = retrofit.create(EventAPI::class.java)
 	private val repo = EventRespository()
 
 	private suspend fun getAsyncRoomEvent(token : String, since_id : Long) = withContext(CommonPool){

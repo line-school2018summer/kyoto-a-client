@@ -18,7 +18,7 @@ import java.net.SocketTimeoutException
 
 class UpdateMessage: API() {
 
-    val api = retrofit.create(MessagesAPI::class.java)
+    private val api = retrofit.create(MessagesAPI::class.java)
     private val repo = MessageRepository()
 
     private suspend fun updateAsyncMessage(token: String, id: Long, text : String): Response<Message> = withContext(CommonPool) {

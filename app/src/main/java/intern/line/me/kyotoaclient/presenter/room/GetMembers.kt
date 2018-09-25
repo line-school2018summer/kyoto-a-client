@@ -12,7 +12,7 @@ import retrofit2.HttpException
 import ru.gildor.coroutines.retrofit.await
 
 class GetMembers: API() {
-    val api = retrofit.create(RoomsAPI::class.java)
+    private val api = retrofit.create(RoomsAPI::class.java)
     private val repo = UserRepository()
 
     private suspend fun getAsyncMembers(token: String, room_id: Long): List<User> = withContext(CommonPool) {
@@ -23,17 +23,10 @@ class GetMembers: API() {
         try {
             val token = FirebaseUtil().getToken() ?: throw Exception("can't get token.")
 
-            val members =  getAsyncMembers(token, room_id)
-
-//            repo.updateAll(members)
-            return members
+            return  getAsyncMembers(token, room_id)
 
         } catch (t: HttpException) {
             throw Exception("update failed.")
         }
     }
-
-//    fun getMembersFromDb(room_id: Long) : RealmResults<User>{
-//        return repo.getAll(room_id)
-//    }
 }

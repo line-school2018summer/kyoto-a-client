@@ -10,10 +10,10 @@ import io.realm.Sort
 
 class EventRespository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+	private val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): Event? {
 		return mRealm.where(Event::class.java).equalTo("id", id).findFirstAsync()
@@ -79,8 +79,9 @@ class EventRespository {
 
 	fun delete(event: Event) {
 		mRealm.executeTransaction {
-			var delete_event = mRealm.where(Event::class.java).equalTo("id", event.id).findAllAsync()
-			delete_event.deleteFromRealm(0)
+			mRealm.where(Event::class.java).equalTo("id", event.id).findAllAsync().apply{
+				this.deleteFromRealm(0)
+			}
 		}
 	}
 }

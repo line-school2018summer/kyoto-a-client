@@ -22,11 +22,11 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 
 class PostIcon(file: File): API() {
-    val api = retrofit.create(UserAPI::class.java)
+    private val api = retrofit.create(UserAPI::class.java)
     val img = file
 
-    val mime = IconFiles(). getMimeTypeOfFile(file.absolutePath)
-    val requestBody: RequestBody = RequestBody
+    private val mime = IconFiles(). getMimeTypeOfFile(file.absolutePath)
+    private val requestBody: RequestBody = RequestBody
 			.create(MediaType.parse(mime), file)
 
     val body: MultipartBody.Part = MultipartBody.Part

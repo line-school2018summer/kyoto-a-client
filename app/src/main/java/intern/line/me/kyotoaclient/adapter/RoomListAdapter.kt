@@ -24,11 +24,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 
 class RoomListAdapter(private val context: Context, realm_results: RealmResults<Room>) : RealmBaseAdapter<Room>(realm_results), ListAdapter {
-    var layoutInflater: LayoutInflater
+    private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    init {
-        this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
 
     override fun getView(position: Int, originalConvertView: View?, parent: ViewGroup?): View? {
         val convertView = originalConvertView ?: layoutInflater.inflate(R.layout.room_display, parent, false)

@@ -15,7 +15,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 class CreateMessage: API() {
-	val api = retrofit.create(RoomsAPI::class.java)
+	private val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = MessageRepository()
 
 	private suspend fun createAsyncMessage(token: String, room_id: Long, text: String): Response<Message> = withContext(CommonPool) {

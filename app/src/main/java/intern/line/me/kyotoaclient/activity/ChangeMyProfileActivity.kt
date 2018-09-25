@@ -31,7 +31,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     private val job = Job()
     private var myId = 0L
-    val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
+    private val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -121,21 +121,13 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     }
 
     //ユーザー情報をセットする
-    fun setUserInfo(user: User){
+    private fun setUserInfo(user: User){
         my_profile_progress_bar.visibility = View.INVISIBLE
         changed_name.hint = user.name
     }
 
     //画像をセットする
-    fun setImg(id: Long){
-        val imageView = findViewById<ImageView>(R.id.icon)
-        Glide.with(this)
-                .load("https://kyoto-a-api.pinfort.me/download/icon/$id")
-                .into(imageView)
-    }
-
-    //同上
-    fun setImgByC(id: Long){
+    private fun setImgByC(id: Long){
         val imageView = findViewById<ImageView>(R.id.icon)
         launch(job + UI) {
             GetIcon(id).getIcon().let {

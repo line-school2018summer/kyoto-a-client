@@ -40,7 +40,7 @@ class RoomListActivity : AppCompatActivity() {
 	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
-    var client : StompClient? = null
+    private var client : StompClient? = null
     private val gson = Gson()
     private val update_event_presenter = UpdateModel(this)
     private val repo = EventRespository()
@@ -91,7 +91,7 @@ class RoomListActivity : AppCompatActivity() {
         }
     }
 
-    fun connectStomp(){
+    private fun connectStomp(){
         val util = FirebaseUtil()
 
         launch(job + UI) {

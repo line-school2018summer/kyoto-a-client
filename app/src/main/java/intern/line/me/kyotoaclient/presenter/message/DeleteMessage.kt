@@ -17,7 +17,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 class DeleteMessage: API() {
-	val api = retrofit.create(MessagesAPI::class.java)
+	private val api = retrofit.create(MessagesAPI::class.java)
 	private val repo = MessageRepository()
 
 	private suspend fun deleteAsyncMessage(token: String, message_id: Long): Response<HashMap<String, Boolean>> = withContext(CommonPool) {

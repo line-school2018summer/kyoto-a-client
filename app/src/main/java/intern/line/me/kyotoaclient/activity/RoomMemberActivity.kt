@@ -92,7 +92,7 @@ class RoomMemberActivity : AppCompatActivity() {
 
         edit_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("image/*")
+            intent.type = "image/*"
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 	}
@@ -143,7 +143,7 @@ class RoomMemberActivity : AppCompatActivity() {
 		}
     }
 
-    fun goBack() {
+    private fun goBack() {
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
     }

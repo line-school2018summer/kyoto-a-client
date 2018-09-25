@@ -34,9 +34,9 @@ class UpdateMember(private  val name: String, val users: List<User>, val room: R
 
 			val userIds = mutableListOf<Long>()
 
-			users.forEach({
+			users.forEach{
 				userIds.add(it.id)
-			})
+			}
 
 			println(userIds)
 

@@ -9,7 +9,7 @@ import retrofit2.HttpException
 import ru.gildor.coroutines.retrofit.await
 
 class DeleteIcon(): API() {
-    val api = retrofit.create(UserAPI::class.java)
+    private val api = retrofit.create(UserAPI::class.java)
 
     private suspend fun deleteAsyncIcon(token: String): Boolean = withContext(CommonPool){
         api.deleteIcon(token).await()

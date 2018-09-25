@@ -32,10 +32,10 @@ class APIInterceptor: Interceptor {
 
 open class API {
     protected val job = Job()
-    var debug = true
+    private var debug = true
     private val gson = GsonBuilder().create()
     private var client = OkHttpClient.Builder()
-    val auth = FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
 
     init {

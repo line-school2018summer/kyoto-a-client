@@ -20,11 +20,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
 class MessageListAdapter(private val context: Context, private val realm_results : RealmResults<Message>): RealmBaseAdapter<Message>(realm_results), ListAdapter {
-    var layoutInflater: LayoutInflater
-
-    init {
-        this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
+     private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 
     override fun getView(position: Int,
