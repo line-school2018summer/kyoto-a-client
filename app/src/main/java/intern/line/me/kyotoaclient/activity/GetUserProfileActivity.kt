@@ -27,7 +27,7 @@ class GetUserProfileActivity : AppCompatActivity() {
         user_profile_progress_bar.visibility = View.VISIBLE
 
         launch(job + UI) {
-            GetUserInfo(selectedId).getUserInfo().let{ setUserInfo(it) }
+            setUserInfo(GetUserInfo(selectedId).getUserInfo())
         }
 
         launch(job + UI){
@@ -39,7 +39,7 @@ class GetUserProfileActivity : AppCompatActivity() {
     }
 
 
-    fun setUserInfo(set_user: User) {
+    private fun setUserInfo(set_user: User) {
         user_name.text = set_user.name
         user_profile_progress_bar.visibility = View.INVISIBLE
     }

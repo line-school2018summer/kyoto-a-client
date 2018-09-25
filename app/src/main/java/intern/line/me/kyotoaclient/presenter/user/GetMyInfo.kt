@@ -12,7 +12,7 @@ import ru.gildor.coroutines.retrofit.await
 
 class GetMyInfo: API(){
 
-	val api = retrofit.create(UserAPI::class.java)
+	private val api = retrofit.create(UserAPI::class.java)
 	private val repo = UserRepository()
 
 	private suspend fun getAsyncMyInfo(token : String): User = withContext(CommonPool){
@@ -27,14 +27,9 @@ class GetMyInfo: API(){
 			//TODO(ローカル参照する前にRESTを叩かないと行けない糞仕様)
 			val user =  getAsyncMyInfo(token)
 
-			val realm_user = repo.getById(user.id)
+			val realmUser = repo.getById(user.id)
 
-			if(realm_user != null){
-				return realm_user
-			}else{
-				return user
-			}
-
+			return realmUser ?: user
 		} catch (t: HttpException) {
 			throw Exception("Update failed.")
 		}

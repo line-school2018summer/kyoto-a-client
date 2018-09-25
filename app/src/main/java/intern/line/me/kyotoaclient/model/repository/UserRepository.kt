@@ -8,14 +8,13 @@ import io.realm.Sort
 
 class UserRepository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+	private val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): User? {
-		val r_user = mRealm.where(User::class.java).equalTo("id", id).findFirst()
-		return r_user
+		return  mRealm.where(User::class.java).equalTo("id", id).findFirst()
 	}
 
 	fun getUsersListExcludeId(id: Long): RealmResults<User>{
@@ -33,21 +32,21 @@ class UserRepository {
 
 	fun create(user: User) {
 		mRealm.executeTransaction {
-			var create_user = mRealm.copyToRealmOrUpdate(user)
-			create_user.name = user.name
-			create_user.created_at = user.created_at
-			create_user.updated_at = user.updated_at
+			val createUser = mRealm.copyToRealmOrUpdate(user)
+			createUser.name = user.name
+			createUser.created_at = user.created_at
+			createUser.updated_at = user.updated_at
 
 		}
 	}
 
 	fun update(user: User) {
 		mRealm.executeTransaction {
-			var update_user = mRealm.copyToRealmOrUpdate(user)
+			val updateUser = mRealm.copyToRealmOrUpdate(user)
 
-			update_user.name = user.name
-			update_user.created_at = user.created_at
-			update_user.updated_at = user.updated_at
+			updateUser.name = user.name
+			updateUser.created_at = user.created_at
+			updateUser.updated_at = user.updated_at
 
 		}
 	}
@@ -60,8 +59,8 @@ class UserRepository {
 
 	fun delete(user: User) {
 		mRealm.executeTransaction {
-			var delete_user = mRealm.where(User::class.java).equalTo("id", user.id).findAll()
-			delete_user.deleteFromRealm(0)
+			val deleteUser = mRealm.where(User::class.java).equalTo("id", user.id).findAll()
+			deleteUser.deleteFromRealm(0)
 		}
 	}
 }

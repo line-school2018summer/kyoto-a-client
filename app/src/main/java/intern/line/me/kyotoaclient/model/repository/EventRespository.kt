@@ -10,10 +10,10 @@ import io.realm.Sort
 
 class EventRespository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
-	val mRealm = Realm.getInstance(realmConfig)
+	private val mRealm = Realm.getInstance(realmConfig)
 
 	fun getById(id: Long): Event? {
 		return mRealm.where(Event::class.java).equalTo("id", id).findFirstAsync()
@@ -30,17 +30,20 @@ class EventRespository {
 				EventTypes.MESSAGE_UPDATED.ordinal,
 				EventTypes.MESSAGE_DELETED.ordinal
 		)
-		try {
-			return mRealm.where(Event::class.java).equalTo("isCompleted",false).`in`("event_type", eTypes).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
+		val retVal: Event?
+		retVal = try {
+			mRealm.where(Event::class.java).equalTo("isCompleted",false).`in`("event_type", eTypes).equalTo("room_id", room_id).findAll().sort("id", Sort.ASCENDING).last()
 		}catch(e : Throwable){
 			Log.e("getLatest","can't get latest event",e)
-			return null
+			null
 		}
+		return retVal
 	}
 
 	//完了していないイベントの中で最小のidを返す
 	fun getLatestForRooms(): Event? {
-		try {
+		val retVal: Event?
+		retVal = try {
 			val eTypes: Array<out Int> = arrayOf(
 					EventTypes.ROOM_CREATED.ordinal,
 					EventTypes.ROOM_UPDATED.ordinal,
@@ -50,11 +53,12 @@ class EventRespository {
 					EventTypes.ROOM_ICON_UPDATED.ordinal
 			)
 
-			return mRealm.where(Event::class.java).equalTo("isCompleted",false).`in`("event_type", eTypes).findAll().sort("id", Sort.ASCENDING).last()
+			mRealm.where(Event::class.java).equalTo("isCompleted",false).`in`("event_type", eTypes).findAll().sort("id", Sort.ASCENDING).last()
 		}catch(e : Throwable){
 			Log.e("getLatest","can't get latest event",e)
-			return null
+			null
 		}
+		return retVal
 	}
 
 
@@ -79,8 +83,9 @@ class EventRespository {
 
 	fun delete(event: Event) {
 		mRealm.executeTransaction {
-			var delete_event = mRealm.where(Event::class.java).equalTo("id", event.id).findAllAsync()
-			delete_event.deleteFromRealm(0)
+			mRealm.where(Event::class.java).equalTo("id", event.id).findAllAsync().apply{
+				this.deleteFromRealm(0)
+			}
 		}
 	}
 }

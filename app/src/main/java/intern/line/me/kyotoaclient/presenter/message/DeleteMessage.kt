@@ -17,7 +17,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 class DeleteMessage: API() {
-	val api = retrofit.create(MessagesAPI::class.java)
+	private val api = retrofit.create(MessagesAPI::class.java)
 	private val repo = MessageRepository()
 
 	private suspend fun deleteAsyncMessage(token: String, message_id: Long): Response<HashMap<String, Boolean>> = withContext(CommonPool) {
@@ -34,16 +34,10 @@ class DeleteMessage: API() {
 
 		} catch (t: HttpException) {
 			Log.v("MESSAGE_DELETER", "API failed: 403 forbidden")
-			return false
-
 		} catch (t: SocketTimeoutException) {
 			Log.v("MESSAGE_DELETER", "API failed: timeout")
-			return false
-
 		} catch (t: IOException) {
 			Log.v("MESSAGE_DELETER", "API failed: unknown reason")
-			return false
-
 		}
 		return false
 	}

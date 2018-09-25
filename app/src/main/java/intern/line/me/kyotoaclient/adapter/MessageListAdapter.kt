@@ -3,7 +3,6 @@ package intern.line.me.kyotoaclient.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.content.Context
 import android.text.format.DateUtils
 import android.text.format.DateUtils.*
@@ -11,7 +10,6 @@ import android.widget.ListAdapter
 import android.widget.TextView
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.model.entity.Message
-import intern.line.me.kyotoaclient.model.entity.Room
 import io.realm.RealmBaseAdapter
 import io.realm.RealmResults
 import java.lang.Math.max
@@ -20,11 +18,7 @@ import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
 class MessageListAdapter(private val context: Context, private val realm_results : RealmResults<Message>): RealmBaseAdapter<Message>(realm_results), ListAdapter {
-    var layoutInflater: LayoutInflater
-
-    init {
-        this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
+     private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 
     override fun getView(position: Int,
@@ -39,7 +33,7 @@ class MessageListAdapter(private val context: Context, private val realm_results
         var oldYear: String? = null
         var oldDate: String? = null
 
-        val created_at: Timestamp = (Timestamp(message.created_at.time))
+        val createdAt: Timestamp = (Timestamp(message.created_at.time))
         val format = SimpleDateFormat("HH:mm")
         val formatForDateChk = SimpleDateFormat("MM/dd")
         val formatForYearChk = SimpleDateFormat("yyyy")
@@ -48,7 +42,7 @@ class MessageListAdapter(private val context: Context, private val realm_results
             oldDate = formatForDateChk.format(Date(oldTime))
         }
 
-        val time = Date(created_at.time)
+        val time = Date(createdAt.time)
         val newDate = formatForDateChk.format(time)
         val newYear = formatForYearChk.format(time)
         var flags = 0
@@ -62,7 +56,7 @@ class MessageListAdapter(private val context: Context, private val realm_results
 
         val dateView = view.findViewById(R.id.message_date) as TextView
         if (flags != 0){
-			dateView.text = DateUtils.formatDateTime(context, created_at.time,  flags or FORMAT_ABBREV_ALL)
+			dateView.text = DateUtils.formatDateTime(context, createdAt.time,  flags or FORMAT_ABBREV_ALL)
             dateView.visibility = View.VISIBLE
         } else {
             dateView.visibility = View.GONE

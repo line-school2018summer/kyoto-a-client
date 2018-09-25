@@ -16,7 +16,7 @@ import ru.gildor.coroutines.retrofit.await
 
 
 class GetMessages: API() {
-    val api = retrofit.create(RoomsAPI::class.java)
+    private val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = MessageRepository()
 
     private suspend fun getAsyncMessages(token: String, room_id: Long): List<Message> = withContext(CommonPool) {

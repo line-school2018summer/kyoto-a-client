@@ -1,7 +1,6 @@
 package intern.line.me.kyotoaclient.activity
 
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.app.AppCompatActivity
@@ -18,23 +17,14 @@ import intern.line.me.kyotoaclient.model.repository.RoomRepository
 import intern.line.me.kyotoaclient.model.repository.UserRepository
 import intern.line.me.kyotoaclient.presenter.room.GetRoomIcon
 import intern.line.me.kyotoaclient.presenter.room.PostRoomIcon
-import kotlinx.android.synthetic.main.activity_room_create.*
 import kotlinx.android.synthetic.main.activity_room_member.*
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 import java.io.File
 import java.io.UnsupportedEncodingException
-import java.net.URLDecoder
-import android.provider.MediaStore
-import android.provider.DocumentsContract
-import android.content.ContentUris
-import android.content.Context
-import android.os.Environment
-import android.webkit.MimeTypeMap
-import com.google.android.gms.common.util.IOUtils
 import intern.line.me.kyotoaclient.lib.util.FileUtils
-import java.io.FileOutputStream
+import intern.line.me.kyotoaclient.presenter.room.GetMembers
 
 
 class RoomMemberActivity : AppCompatActivity() {
@@ -58,12 +48,12 @@ class RoomMemberActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room_member)
 
-        val room_id = intent.getSerializableExtra("room_id") as Long
-		room = room_repo.getById(room_id)!!
+        val roomId = intent.getSerializableExtra("room_id") as Long
+		room = room_repo.getById(roomId)!!
 
-        val room_name = findViewById(R.id.room_name_text) as EditText
-        room_name.setText(room.name)
-        room_name.setSelection(room_name.text.length)
+        val roomName: EditText = findViewById(R.id.room_name_text)
+        roomName.setText(room.name)
+        roomName.setSelection(roomName.text.length)
 
 		adapter = UserSelectListAdapter(this,presenter.getUsersListFromDb())
 		val listView: ListView = this.findViewById(R.id.user_select_list)
@@ -75,16 +65,16 @@ class RoomMemberActivity : AppCompatActivity() {
 		}
 
         launch(job + UI) {
-            val members = GetMembers().getMembers(room_id)
-            val member_id_list = members.map { it.id }
+            val members = GetMembers().getMembers(roomId)
+            val memberIdList = members.map { it.id }
             val users = user_repo.getAll()
 
-            adapter.checkList = users.map{ it -> member_id_list.contains(it.id)} as MutableList<Boolean>
+            adapter.checkList = users.map{ it -> memberIdList.contains(it.id)} as MutableList<Boolean>
             adapter.notifyDataSetChanged()
         }
 
 		launch(job + UI) {
-			GetRoomIcon().getRoomIcon(room_id).let {
+			GetRoomIcon().getRoomIcon(roomId).let {
 				val image = BitmapFactory.decodeStream(it)
 				edit_room_icon_view.setImageBitmap(image)
 			}
@@ -92,7 +82,7 @@ class RoomMemberActivity : AppCompatActivity() {
 
         edit_room_icon_view.setOnClickListener{
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("image/*")
+            intent.type = "image/*"
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 	}
@@ -104,8 +94,6 @@ class RoomMemberActivity : AppCompatActivity() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val context = this
-
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
                 val uri = Uri.parse(data.dataString)
@@ -120,8 +108,8 @@ class RoomMemberActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onEditRoom(v: View) {
-        println("on click!")
         val room = room
         val roomName = (findViewById<TextView>(R.id.room_name_text)).text.toString()
         var selectedUsers = adapter.getCheckedUserList()
@@ -130,8 +118,6 @@ class RoomMemberActivity : AppCompatActivity() {
             selectedUsers = (selectedUsers as MutableList<User>)
             selectedUsers.add(me)
         }
-        println(selectedUsers)
-        selectedUsers ?: return
 
 		launch(UI) {
 			try {
@@ -147,7 +133,7 @@ class RoomMemberActivity : AppCompatActivity() {
 		}
     }
 
-    fun goBack() {
+    private fun goBack() {
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
         dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
     }

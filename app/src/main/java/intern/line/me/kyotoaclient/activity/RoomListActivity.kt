@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
-import intern.line.me.kyotoaclient.model.entity.Room
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
@@ -14,7 +13,6 @@ import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.entity.Event
 import intern.line.me.kyotoaclient.model.repository.EventRespository
-import intern.line.me.kyotoaclient.presenter.event.GetMessageEvent
 import intern.line.me.kyotoaclient.presenter.event.GetRoomEvent
 import intern.line.me.kyotoaclient.presenter.event.UpdateModel
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
@@ -42,11 +40,11 @@ class RoomListActivity : AppCompatActivity() {
 	private val presenter = GetRooms()
 
     lateinit var adapter: RoomListAdapter
-    var client : StompClient? = null
+    private var client : StompClient? = null
     private val gson = Gson()
-    private val update_event_presenter = UpdateModel(this)
+    private val updateEventPresenter = UpdateModel(this)
     private val repo = EventRespository()
-    private val event_presenter = GetRoomEvent()
+    private val eventPresenter = GetRoomEvent()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,10 +61,10 @@ class RoomListActivity : AppCompatActivity() {
         setAsyncRooms()
 
         //ルームをクリックしたらトークに飛ぶ
-        listView.setOnItemClickListener { parent, view, position, id ->
-            val selected_room_id = adapter.getItemId(position)
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedRoomId = adapter.getItemId(position)
             val intent = Intent(this, MessageActivity::class.java)
-            intent.putExtra("room_id", selected_room_id)
+            intent.putExtra("room_id", selectedRoomId)
             startActivity(intent)
         }
 
@@ -88,12 +86,12 @@ class RoomListActivity : AppCompatActivity() {
 
             val latest_event_id = repo.getLatestForRooms()?.id ?: 0
             Log.d("Event Rest",latest_event_id.toString())
-            val events = event_presenter.getRoomEvent(latest_event_id+ 1)
-            update_event_presenter.updateAllModel(events)
+            val events = eventPresenter.getRoomEvent(latest_event_id+ 1)
+            updateEventPresenter.updateAllModel(events)
         }
     }
 
-    fun connectStomp(){
+    private fun connectStomp(){
         val util = FirebaseUtil()
 
         launch(job + UI) {
@@ -106,13 +104,13 @@ class RoomListActivity : AppCompatActivity() {
                         myId = it.id
                     }
                     client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
-                    val res = client!!.topic("/topic/users/${myId}/rooms", mutableListOf(StompHeader("Token", token)))
+                    val res = client!!.topic("/topic/users/$myId/rooms", mutableListOf(StompHeader("Token", token)))
                             .openSubscription()
                     client!!.connect()
 
                     res.consumeEach {
                         val event = gson.fromJson<Event>(it.payload, Event::class.java)
-                        update_event_presenter.updateModel(event)
+                        updateEventPresenter.updateModel(event)
                     }
                 }
             } catch (e: Throwable) {

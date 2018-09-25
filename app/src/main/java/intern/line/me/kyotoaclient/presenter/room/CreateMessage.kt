@@ -15,7 +15,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 class CreateMessage: API() {
-	val api = retrofit.create(RoomsAPI::class.java)
+	private val api = retrofit.create(RoomsAPI::class.java)
 	private val repo = MessageRepository()
 
 	private suspend fun createAsyncMessage(token: String, room_id: Long, text: String): Response<Message> = withContext(CommonPool) {
@@ -37,15 +37,15 @@ class CreateMessage: API() {
 
 
 		} catch (t: HttpException) {
-			Log.v("ROOM_MESSAGES_CREATER", "API failed: 403 forbidden")
+			Log.v("ROOM_MESSAGES_CREATOR", "API failed: 403 forbidden")
 			throw t
 
 		} catch (t: SocketTimeoutException) {
-			Log.v("ROOM_MESSAGES_CREATER", "API failed: timeout")
+			Log.v("ROOM_MESSAGES_CREATOR", "API failed: timeout")
 			throw t
 
 		} catch (t: IOException) {
-			Log.v("ROOM_MESSAGES_CREATER", "API failed: unknown reason")
+			Log.v("ROOM_MESSAGES_CREATOR", "API failed: unknown reason")
 			throw t
 
 		}

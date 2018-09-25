@@ -12,7 +12,7 @@ import ru.gildor.coroutines.retrofit.awaitResponse
 import java.io.InputStream
 
 class GetRoomIcon: API()	 {
-	val api = retrofit.create(RoomsAPI::class.java)
+	private val api = retrofit.create(RoomsAPI::class.java)
 
 	private suspend fun getAsyncRoomIcon(id : Long): Response<ResponseBody> = withContext(CommonPool){
 		api.getRoomIcon(id).awaitResponse()

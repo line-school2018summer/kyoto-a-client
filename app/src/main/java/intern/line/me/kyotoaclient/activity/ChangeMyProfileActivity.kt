@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
-import com.bumptech.glide.Glide
 import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.util.FileUtils
 import intern.line.me.kyotoaclient.adapter.UserListAdapter
@@ -31,7 +30,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     private val job = Job()
     private var myId = 0L
-    val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
+    private val regex = Regex("[[ぁ-んァ-ヶ亜-熙] \\w ー 。 、]+")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +51,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
         if (ContextCompat.checkSelfPermission(
                         this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf<String>(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
+            requestPermissions(arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 0)
         }
 
         //ボタンを押したときの処理
@@ -62,7 +61,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
             launch(job + UI) {
                 if (regex.matches(inputText) ) {
-                    PutMyInfo(inputText).putMyInfo().let { setUserInfo(it) }
+                    setUserInfo(PutMyInfo(inputText).putMyInfo())
                     changed_name.text.clear()
                 } else {
                     changed_name.error = "不正な名前です"
@@ -75,7 +74,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
 
             val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.setType("image/*")
+            intent.type = "image/*"
             startActivityForResult(intent, CHOSE_FILE_CODE)
         }
 
@@ -98,8 +97,6 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     //主に画像選択後の処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val context = this
-
         try {
             if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
                 val uri = Uri.parse(data.dataString)
@@ -112,7 +109,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                     launch(job + UI) {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
-                        file!!.delete()
+                        file.delete()
                     }
                     UserListAdapter.list.clear()
                 }
@@ -123,21 +120,13 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     }
 
     //ユーザー情報をセットする
-    fun setUserInfo(user: User){
+    private fun setUserInfo(user: User){
         my_profile_progress_bar.visibility = View.INVISIBLE
         changed_name.hint = user.name
     }
 
     //画像をセットする
-    fun setImg(id: Long){
-        val imageView = findViewById<ImageView>(R.id.icon)
-        Glide.with(this)
-                .load("https://kyoto-a-api.pinfort.me/download/icon/${id}")
-                .into(imageView)
-    }
-
-    //同上
-    fun setImgByC(id: Long){
+    private fun setImgByC(id: Long){
         val imageView = findViewById<ImageView>(R.id.icon)
         launch(job + UI) {
             GetIcon(id).getIcon().let {

@@ -8,16 +8,16 @@ import io.realm.Sort
 
 class MessageRepository {
 
-	val realmConfig = RealmConfiguration.Builder()
+	private val realmConfig = RealmConfiguration.Builder()
 			.deleteRealmIfMigrationNeeded()
 			.build()
 
 
 	fun getById(id: Long): Message? {
 		val mRealm = Realm.getInstance(realmConfig)
-		val r_message = mRealm.where(Message::class.java).equalTo("id", id).findFirst()
-		mRealm.close()
-		return r_message
+		return  mRealm.where(Message::class.java).equalTo("id", id).findFirst().apply {
+			mRealm.close()
+		}
 	}
 
 	fun getAll(room_id : Long) : RealmResults<Message> {
@@ -58,10 +58,7 @@ class MessageRepository {
 	fun delete(message_id: Long) {
 		val mRealm = Realm.getInstance(realmConfig)
 		mRealm.executeTransaction {
-			var delete_message = mRealm.where(Message::class.java).equalTo("id", message_id).findFirst()
-			if(delete_message != null) {
-				delete_message.deleteFromRealm()
-			}
+			mRealm.where(Message::class.java).equalTo("id", message_id).findFirst()?.deleteFromRealm()
 		}
 		mRealm.close()
 	}

@@ -94,7 +94,7 @@ class AuthActivity : AppCompatActivity() {
 
 
     //FirebaseUIのログインページに飛ぶ
-    fun startFirebaseLoginActivity() {
+    private fun startFirebaseLoginActivity() {
 
         val providers = Arrays.asList(AuthUI.IdpConfig.GoogleBuilder().build(),
                 AuthUI.IdpConfig.EmailBuilder().build())
@@ -106,7 +106,7 @@ class AuthActivity : AppCompatActivity() {
                         .build(), RC_SIGN_IN)
     }
 
-    fun onCompleteSignIn(){
+    private fun onCompleteSignIn(){
         auth_progress_bar.visibility = View.GONE
         RoomListActivity.intent(this).let { startActivity(it) }
         finish()
@@ -114,7 +114,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
 
-    fun showFaildToSignIn(){
+    private fun showFaildToSignIn(){
         faild_to_sign_in_textview.visibility = View.VISIBLE
         retry_sign_in_button.visibility = View.VISIBLE
         auth_progress_bar.visibility = View.GONE

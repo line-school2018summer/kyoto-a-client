@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.widget.ImageView
 import android.widget.ListAdapter
 import android.widget.TextView
@@ -23,25 +22,19 @@ import java.text.SimpleDateFormat
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
 
 class RoomListAdapter(private val context: Context, realm_results: RealmResults<Room>) : RealmBaseAdapter<Room>(realm_results), ListAdapter {
-    var layoutInflater: LayoutInflater
+    private val layoutInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-    init {
-        this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-        var convertView =convertView?:  layoutInflater.inflate(R.layout.room_display, parent, false)
+    override fun getView(position: Int, originalConvertView: View?, parent: ViewGroup?): View? {
+        val convertView = originalConvertView ?: layoutInflater.inflate(R.layout.room_display, parent, false)
         val format = SimpleDateFormat("HH:mm")
-        val lastMessage_text = adapterData!![position].last_message_text
-        val id = getItemId(position)
-        if (lastMessage_text != null) {
+        val lastMessageText = adapterData!![position].last_message_text
+        if (lastMessageText != null) {
 
-            val created_at: Timestamp = Timestamp(adapterData!![position].last_message_created_at!!.time)
-            val time = Date(created_at.time)
+            val createdAt = Timestamp(adapterData!![position].last_message_created_at!!.time)
+            val time = Date(createdAt.time)
 
             (convertView.findViewById(R.id.message_time_view) as TextView).text = format.format(time)
             (convertView.findViewById(R.id.latest_message_view) as TextView).text = lastMessageText

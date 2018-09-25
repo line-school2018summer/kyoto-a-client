@@ -28,17 +28,14 @@ import intern.line.me.kyotoaclient.presenter.message.DeleteMessage
 import intern.line.me.kyotoaclient.presenter.message.UpdateMessage
 import intern.line.me.kyotoaclient.presenter.room.CreateMessage
 import intern.line.me.kyotoaclient.presenter.room.GetMessages
-import intern.line.me.kyotoaclient.presenter.room.GetRooms
 import intern.line.me.kyotoaclient.presenter.user.GetMyInfo
 import io.realm.*
 import kotlinx.android.synthetic.main.activity_message.*
-import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.channels.consumeEach
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.rx1.openSubscription
-import kotlinx.coroutines.experimental.withContext
 import ua.naiksoftware.stomp.Stomp
 import ua.naiksoftware.stomp.StompHeader
 import ua.naiksoftware.stomp.client.StompClient
@@ -64,7 +61,7 @@ class MessageActivity : AppCompatActivity() {
 
 	private var message_size = 0
 
-	var client : StompClient? = null
+	private var client : StompClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -115,27 +112,28 @@ class MessageActivity : AppCompatActivity() {
 		registerForContextMenu(main_list)
 
 
-		val memberEditButton = findViewById(R.id.member_edit_button) as FloatingActionButton
+		val memberEditButton: FloatingActionButton = findViewById(R.id.member_edit_button)
 		memberEditButton.setOnClickListener(View.OnClickListener {
 			val intent = Intent(application, RoomMemberActivity::class.java)
 			intent.putExtra("room_id", room_id)
 			startActivity(intent)
 		})
 
-		//websocketに接続
+		//web socketに接続
 		connectStomp()
 
-		//websocketに接続したらREST APIを叩く
+		//web socketに接続したらREST APIを叩く
 		launch(job + UI) {
 
-			val latest_event_id = repo.getLatestMessageEvent(room_id)?.id ?: 0
-			Log.d("Event Rest",latest_event_id.toString())
-			val events = event_presenter.getMessageEvent(room_id, latest_event_id+ 1)
+			val latestEventId = repo.getLatestMessageEvent(room_id)?.id ?: 0
+			Log.d("Event Rest",latestEventId.toString())
+			val events = event_presenter.getMessageEvent(room_id, latestEventId+ 1)
 			update_event_presenter.updateAllModel(events)
 		}
 	}
 
 
+	@Suppress("UNUSED_PARAMETER")
 	//送信ボタンを押した時
 	fun onSend(v: View) {
 		val sendButton: Button = findViewById(R.id.message_send_button)
@@ -237,6 +235,7 @@ class MessageActivity : AppCompatActivity() {
     }
 
 
+	@Suppress("UNUSED_PARAMETER")
 	//編集を実行したとき
     fun onEdit(v: View) {
 
@@ -277,7 +276,7 @@ class MessageActivity : AppCompatActivity() {
 		}
 	}
 
-	private fun drawMessagesList(scrollAt: Int? = null) {
+	private fun drawMessagesList() {
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
 	}
@@ -303,34 +302,14 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 
-	fun startPool(job: Job,room_id: Long) {
-
-		val pool_job = Job()
-
-		//結果をUIスレッドで受け取れるように
-		launch(job + UI) {
-
-			while (true) {
-				//別スレッドで常に取得してる
-				withContext(pool_job + CommonPool) {
-					// 1秒ごとに取得
-					Thread.sleep(1000)
-					presenter.getMessages(room_id)
-				}
-				drawMessagesList()
-			}
-		}
-	}
-
 	//最後までスクロール
-    fun scrollToEnd(view:View? = null) {
+    fun scrollToEnd() {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
 
-	fun connectStomp(){
+	private fun connectStomp(){
 		val util = FirebaseUtil()
-		val presenter = GetRooms()
 
 		launch(job + UI) {
 			val token = util.getToken()
@@ -338,7 +317,7 @@ class MessageActivity : AppCompatActivity() {
 			try {
 				if(token != null) {
 					client = Stomp.over(Stomp.ConnectionProvider.OKHTTP, "https://kyoto-a-api.pinfort.me/hello", mapOf("Token" to token))
-					val res = client!!.topic("/topic/rooms/${room_id}/messages", mutableListOf(StompHeader("Token", token)))
+					val res = client!!.topic("/topic/rooms/$room_id/messages", mutableListOf(StompHeader("Token", token)))
 							.openSubscription()
 					client!!.connect()
 
@@ -355,7 +334,8 @@ class MessageActivity : AppCompatActivity() {
 			}
 		}
 	}
-	fun goBack() {
+
+	private fun goBack() {
 		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_BACK))
 		dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_BACK))
 	}
