@@ -98,8 +98,6 @@ class ChangeMyProfileActivity : AppCompatActivity() {
 
     //主に画像選択後の処理
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val context = this
-
         try {
             if (requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data != null) {
                 val uri = Uri.parse(data.dataString)
@@ -112,7 +110,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
                     launch(job + UI) {
                         PostIcon(file).postIcon()
                         setImgByC(myId)
-                        file!!.delete()
+                        file.delete()
                     }
                     UserListAdapter.list.clear()
                 }
@@ -132,7 +130,7 @@ class ChangeMyProfileActivity : AppCompatActivity() {
     fun setImg(id: Long){
         val imageView = findViewById<ImageView>(R.id.icon)
         Glide.with(this)
-                .load("https://kyoto-a-api.pinfort.me/download/icon/${id}")
+                .load("https://kyoto-a-api.pinfort.me/download/icon/$id")
                 .into(imageView)
     }
 

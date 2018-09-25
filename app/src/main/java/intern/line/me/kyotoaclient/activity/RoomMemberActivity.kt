@@ -104,8 +104,6 @@ class RoomMemberActivity : AppCompatActivity() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val context = this
-
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
                 val uri = Uri.parse(data.dataString)
@@ -120,8 +118,8 @@ class RoomMemberActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onEditRoom(v: View) {
-        println("on click!")
         val room = room
         val roomName = (findViewById<TextView>(R.id.room_name_text)).text.toString()
         var selectedUsers = adapter.getCheckedUserList()
@@ -130,8 +128,6 @@ class RoomMemberActivity : AppCompatActivity() {
             selectedUsers = (selectedUsers as MutableList<User>)
             selectedUsers.add(me)
         }
-        println(selectedUsers)
-        selectedUsers ?: return
 
 		launch(UI) {
 			try {

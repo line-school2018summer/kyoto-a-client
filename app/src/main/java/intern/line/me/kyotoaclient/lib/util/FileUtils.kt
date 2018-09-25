@@ -58,7 +58,6 @@ class FileUtils(private val context: Context) {
             } else if ("com.android.providers.media.documents" == uri.authority) {// MediaProvider
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val type = split[0]
                 var contentUri: Uri? = null
                 contentUri = MediaStore.Files.getContentUri("external")
                 val selection = "_id=?"
@@ -81,8 +80,8 @@ class FileUtils(private val context: Context) {
         try {
             cursor = context!!.contentResolver.query(
                     uri, projection, selection, selectionArgs, null)
-            if (cursor != null && cursor!!.moveToFirst()) {
-                val cindex = cursor!!.getColumnIndexOrThrow(projection[0])
+            if (cursor != null && cursor.moveToFirst()) {
+                val cindex = cursor.getColumnIndexOrThrow(projection[0])
                 return cursor.getString(cindex)
             }
         } catch (e: Exception) {

@@ -3,7 +3,6 @@ package intern.line.me.kyotoaclient.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -29,12 +28,12 @@ class UserSelectListAdapter(private val context: Context,private val realm_resul
 
     init {
         this.layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        this. checkList = MutableList<Boolean>(count,{false})
+        this. checkList = MutableList(count,{false})
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
-        checkList.addAll(MutableList<Boolean>(count-checkList.size,{false}))
-        var convertView = convertView?: layoutInflater.inflate(R.layout.user_select, parent, false)
+    override fun getView(position: Int, originalConvertView: View?, parent: ViewGroup?): View? {
+        checkList.addAll(MutableList(count-checkList.size,{false}))
+        val convertView = originalConvertView?: layoutInflater.inflate(R.layout.user_select, parent, false)
         val checkView: CheckedTextView = convertView.findViewById(R.id.user_name_view)
         checkView.text = adapterData!![position].name
 

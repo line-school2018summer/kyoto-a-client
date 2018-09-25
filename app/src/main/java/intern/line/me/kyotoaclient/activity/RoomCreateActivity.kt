@@ -63,12 +63,10 @@ class RoomCreateActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val context = this
-
         try{
             if(requestCode == CHOSE_FILE_CODE && resultCode == RESULT_OK && data!=null){
-                var filePath = data.getDataString()
-                filePath=filePath.substring(filePath.indexOf("storage"))
+                var filePath = data.dataString ?: throw Exception("unsupported")
+                filePath = filePath.substring(filePath.indexOf("storage"))
                 val decodedPath = URLDecoder.decode(filePath, "utf-8")
                 //val decodedPath = "/sdcard/P.jpg"
                 Toast.makeText(this, decodedPath, Toast.LENGTH_LONG).show()
@@ -85,8 +83,8 @@ class RoomCreateActivity : AppCompatActivity() {
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
     fun onCreateRoom(v: View) {
-        println("on click!")
         val roomName = room_name_text.text.toString()
         var selectedUsers = adapter.getCheckedUserList()
 

@@ -136,6 +136,7 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 
+	@Suppress("UNUSED_PARAMETER")
 	//送信ボタンを押した時
 	fun onSend(v: View) {
 		val sendButton: Button = findViewById(R.id.message_send_button)
@@ -237,6 +238,7 @@ class MessageActivity : AppCompatActivity() {
     }
 
 
+	@Suppress("UNUSED_PARAMETER")
 	//編集を実行したとき
     fun onEdit(v: View) {
 
@@ -277,7 +279,7 @@ class MessageActivity : AppCompatActivity() {
 		}
 	}
 
-	private fun drawMessagesList(scrollAt: Int? = null) {
+	private fun drawMessagesList() {
 		main_list.visibility = View.VISIBLE
 		message_loading.visibility = View.INVISIBLE
 	}
@@ -323,14 +325,13 @@ class MessageActivity : AppCompatActivity() {
 	}
 
 	//最後までスクロール
-    fun scrollToEnd(view:View? = null) {
+    fun scrollToEnd() {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
 
 	fun connectStomp(){
 		val util = FirebaseUtil()
-		val presenter = GetRooms()
 
 		launch(job + UI) {
 			val token = util.getToken()

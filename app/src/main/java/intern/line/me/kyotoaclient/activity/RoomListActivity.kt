@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ListView
 import intern.line.me.kyotoaclient.adapter.RoomListAdapter
-import intern.line.me.kyotoaclient.model.entity.Room
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
@@ -14,7 +13,6 @@ import intern.line.me.kyotoaclient.R
 import intern.line.me.kyotoaclient.lib.firebase.FirebaseUtil
 import intern.line.me.kyotoaclient.model.entity.Event
 import intern.line.me.kyotoaclient.model.repository.EventRespository
-import intern.line.me.kyotoaclient.presenter.event.GetMessageEvent
 import intern.line.me.kyotoaclient.presenter.event.GetRoomEvent
 import intern.line.me.kyotoaclient.presenter.event.UpdateModel
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
@@ -63,10 +61,10 @@ class RoomListActivity : AppCompatActivity() {
         setAsyncRooms()
 
         //ルームをクリックしたらトークに飛ぶ
-        listView.setOnItemClickListener { parent, view, position, id ->
-            val selected_room_id = adapter.getItemId(position)
+        listView.setOnItemClickListener { _, _, position, _ ->
+            val selectedRoomId = adapter.getItemId(position)
             val intent = Intent(this, MessageActivity::class.java)
-            intent.putExtra("room_id", selected_room_id)
+            intent.putExtra("room_id", selectedRoomId)
             startActivity(intent)
         }
 

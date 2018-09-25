@@ -34,16 +34,10 @@ class DeleteMessage: API() {
 
 		} catch (t: HttpException) {
 			Log.v("MESSAGE_DELETER", "API failed: 403 forbidden")
-			return false
-
 		} catch (t: SocketTimeoutException) {
 			Log.v("MESSAGE_DELETER", "API failed: timeout")
-			return false
-
 		} catch (t: IOException) {
 			Log.v("MESSAGE_DELETER", "API failed: unknown reason")
-			return false
-
 		}
 		return false
 	}
