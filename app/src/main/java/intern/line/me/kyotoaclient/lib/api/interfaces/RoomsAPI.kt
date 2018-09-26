@@ -9,7 +9,7 @@ import retrofit2.Call
 import retrofit2.http.*
 
 interface RoomsAPI {
-    @GET("/rooms/{id")
+    @GET("/rooms/{id}")
     fun getRoom(
             @Path("id") id: Long
     ): Call<Room>
