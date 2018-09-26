@@ -303,7 +303,7 @@ class MessageActivity : AppCompatActivity() {
 
 
 	//最後までスクロール
-    fun scrollToEnd() {
+    fun scrollToEnd(v: View? = null) {
 		val last = (listAdapter.count) - 1
 		main_list.setSelection(last)
 	}
