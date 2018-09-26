@@ -50,6 +50,7 @@ class RoomCreateActivity : AppCompatActivity() {
             me = GetMyInfo().getMyInfo()
             adapter = UserSelectListAdapter(applicationContext,presenter.getUsersListExcludeId(me.id))
             user_select_list.adapter = adapter
+            presenter.getUsersList()
         }
 
         create_room_icon_view.setOnClickListener{
