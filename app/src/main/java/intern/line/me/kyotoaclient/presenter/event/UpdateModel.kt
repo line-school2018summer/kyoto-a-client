@@ -8,6 +8,7 @@ import intern.line.me.kyotoaclient.model.entity.EventTypes
 import intern.line.me.kyotoaclient.model.repository.EventRespository
 import intern.line.me.kyotoaclient.model.repository.MessageRepository
 import intern.line.me.kyotoaclient.presenter.message.GetMessage
+import intern.line.me.kyotoaclient.presenter.room.GetRoom
 import intern.line.me.kyotoaclient.presenter.room.GetRooms
 
 class UpdateModel(private val context: Context) {
@@ -52,7 +53,10 @@ class UpdateModel(private val context: Context) {
 
 			EventTypes.ROOM_UPDATED.ordinal ->{
 				Log.d("ROOM_UPDATED","ROOM_UPDATED")
-				GetRooms().getRooms()
+				val room_id = event.room_id
+				if(room_id != null) {
+					GetRoom().getRoom(room_id)
+				}
 				eventRepo.complete(event)
 			}
 
