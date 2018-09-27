@@ -121,15 +121,6 @@ class MessageActivity : AppCompatActivity() {
 
 		//web socketに接続
 		connectStomp()
-
-		//web socketに接続したらREST APIを叩く
-		launch(job + UI) {
-
-			val latestEventId = repo.getLatestMessageEvent(room_id)?.id ?: 0
-			Log.d("Event Rest",latestEventId.toString())
-			val events = event_presenter.getMessageEvent(room_id, latestEventId+ 1)
-			update_event_presenter.updateAllModel(events)
-		}
 	}
 
 
@@ -332,6 +323,15 @@ class MessageActivity : AppCompatActivity() {
 					client!!.disconnect()
 				}
 			}
+		}
+
+		//web socketに接続したらREST APIを叩く
+		launch(job + UI) {
+
+			val latestEventId = repo.getLatestMessageEvent(room_id)?.id ?: 0
+			Log.d("Event Rest",latestEventId.toString())
+			val events = event_presenter.getMessageEvent(room_id, latestEventId+ 1)
+			update_event_presenter.updateAllModel(events)
 		}
 	}
 
